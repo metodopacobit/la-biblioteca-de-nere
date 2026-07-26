@@ -55,10 +55,6 @@
       cursor: pointer;
     }
 
-    /* =========================
-       BUSCADOR
-    ========================= */
-
     .buscador-box {
       background: white;
       padding: 14px;
@@ -107,10 +103,6 @@
       color: #666;
       font-size: 14px;
     }
-
-    /* =========================
-       TARJETAS
-    ========================= */
 
     #resultados,
     #listaBiblioteca {
@@ -171,10 +163,6 @@
       font-weight: bold;
     }
 
-    /* =========================
-       MI BIBLIOTECA
-    ========================= */
-
     .mi-biblioteca {
       margin-top: 26px;
     }
@@ -201,10 +189,6 @@
       border-radius: 50%;
       font-size: 13px;
     }
-
-    /* =========================
-       FICHA
-    ========================= */
 
     .volver {
       margin-bottom: 16px;
@@ -295,10 +279,6 @@
       font-weight: bold;
     }
 
-    /* =========================
-       LECTOR
-    ========================= */
-
     .lector {
       background: #fffdf8;
       border-radius: 14px;
@@ -326,7 +306,6 @@
       font-size: 18px;
       line-height: 1.75;
       white-space: pre-wrap;
-      word-break: normal;
       overflow-wrap: break-word;
     }
 
@@ -335,10 +314,6 @@
       padding: 40px 15px;
       font-size: 18px;
     }
-
-    /* =========================
-       ESCRITORIO
-    ========================= */
 
     @media (min-width: 700px) {
       #resultados,
@@ -357,10 +332,6 @@
 </header>
 
 <main>
-
-  <!-- =========================
-       INICIO
-  ========================== -->
 
   <section id="pantallaInicio">
 
@@ -423,51 +394,25 @@
 
     </section>
 
-
     <section id="resultados"></section>
-
 
     <section class="mi-biblioteca">
 
       <h2>Mi biblioteca</h2>
 
-      <div
-        class="categoria"
-        onclick="abrirBiblioteca('quiero')"
-      >
+      <div class="categoria" onclick="abrirBiblioteca('quiero')">
         <span>❤️ Quiero leer</span>
-        <span
-          id="contadorQuiero"
-          class="contador"
-        >
-          0
-        </span>
+        <span id="contadorQuiero" class="contador">0</span>
       </div>
 
-      <div
-        class="categoria"
-        onclick="abrirBiblioteca('leyendo')"
-      >
+      <div class="categoria" onclick="abrirBiblioteca('leyendo')">
         <span>📖 Leyendo</span>
-        <span
-          id="contadorLeyendo"
-          class="contador"
-        >
-          0
-        </span>
+        <span id="contadorLeyendo" class="contador">0</span>
       </div>
 
-      <div
-        class="categoria"
-        onclick="abrirBiblioteca('leidos')"
-      >
+      <div class="categoria" onclick="abrirBiblioteca('leidos')">
         <span>✅ Leídos</span>
-        <span
-          id="contadorLeidos"
-          class="contador"
-        >
-          0
-        </span>
+        <span id="contadorLeidos" class="contador">0</span>
       </div>
 
     </section>
@@ -475,67 +420,31 @@
   </section>
 
 
-  <!-- =========================
-       FICHA
-  ========================== -->
+  <section id="pantallaFicha" class="oculto">
 
-  <section
-    id="pantallaFicha"
-    class="oculto"
-  >
-
-    <button
-      class="volver"
-      onclick="volverInicio()"
-    >
+    <button class="volver" onclick="volverInicio()">
       ← Volver
     </button>
 
-    <div
-      id="contenidoFicha"
-      class="ficha"
-    ></div>
+    <div id="contenidoFicha" class="ficha"></div>
 
   </section>
 
 
-  <!-- =========================
-       LECTOR
-  ========================== -->
+  <section id="pantallaLector" class="oculto">
 
-  <section
-    id="pantallaLector"
-    class="oculto"
-  >
-
-    <button
-      class="volver"
-      onclick="volverFicha()"
-    >
+    <button class="volver" onclick="volverFicha()">
       ← Volver al libro
     </button>
 
-    <div
-      id="contenidoLector"
-      class="lector"
-    ></div>
+    <div id="contenidoLector" class="lector"></div>
 
   </section>
 
 
-  <!-- =========================
-       BIBLIOTECA
-  ========================== -->
+  <section id="pantallaBiblioteca" class="oculto">
 
-  <section
-    id="pantallaBiblioteca"
-    class="oculto"
-  >
-
-    <button
-      class="volver"
-      onclick="volverInicio()"
-    >
+    <button class="volver" onclick="volverInicio()">
       ← Volver
     </button>
 
@@ -550,15 +459,10 @@
 
 <script>
 
-/* ===================================
-   CONFIGURACIÓN
-=================================== */
-
 const WORKER_URL =
   "https://biblioteca-nere-worker.rjaresarias.workers.dev/";
 
 let filtroActual = "todo";
-
 let libroSeleccionado = null;
 
 let biblioteca =
@@ -567,9 +471,9 @@ let biblioteca =
   ) || [];
 
 
-/* ===================================
+/* =========================
    UTILIDADES
-=================================== */
+========================= */
 
 function guardarBiblioteca() {
 
@@ -605,20 +509,16 @@ function actualizarContadores() {
 
 function ocultarPantallas() {
 
-  document
-    .getElementById("pantallaInicio")
+  document.getElementById("pantallaInicio")
     .classList.add("oculto");
 
-  document
-    .getElementById("pantallaFicha")
+  document.getElementById("pantallaFicha")
     .classList.add("oculto");
 
-  document
-    .getElementById("pantallaLector")
+  document.getElementById("pantallaLector")
     .classList.add("oculto");
 
-  document
-    .getElementById("pantallaBiblioteca")
+  document.getElementById("pantallaBiblioteca")
     .classList.add("oculto");
 
 }
@@ -659,9 +559,9 @@ function nombreEstado(estado) {
 }
 
 
-/* ===================================
+/* =========================
    FILTROS
-=================================== */
+========================= */
 
 function cambiarFiltro(tipo) {
 
@@ -674,36 +574,24 @@ function cambiarFiltro(tipo) {
         boton.classList.remove("activo")
     );
 
-  if (tipo === "todo") {
-    document
-      .getElementById("filtroTodo")
-      .classList.add("activo");
-  }
-
-  if (tipo === "titulo") {
-    document
-      .getElementById("filtroTitulo")
-      .classList.add("activo");
-  }
-
-  if (tipo === "autor") {
-    document
-      .getElementById("filtroAutor")
-      .classList.add("activo");
-  }
-
-  if (tipo === "gratis") {
-    document
-      .getElementById("filtroGratis")
-      .classList.add("activo");
-  }
+  document
+    .getElementById(
+      tipo === "todo"
+        ? "filtroTodo"
+        : tipo === "titulo"
+        ? "filtroTitulo"
+        : tipo === "autor"
+        ? "filtroAutor"
+        : "filtroGratis"
+    )
+    .classList.add("activo");
 
 }
 
 
-/* ===================================
+/* =========================
    BUSCADOR
-=================================== */
+========================= */
 
 async function buscarLibros() {
 
@@ -740,9 +628,9 @@ async function buscarLibros() {
 
   try {
 
-    /* ===============================
-       GRATIS - GUTENDEX / GUTENBERG
-    =============================== */
+    /* =========================
+       LIBROS GRATIS
+    ========================= */
 
     if (filtroActual === "gratis") {
 
@@ -754,11 +642,7 @@ async function buscarLibros() {
 
 
       if (!respuesta.ok) {
-
-        throw new Error(
-          "Error al consultar Gutendex"
-        );
-
+        throw new Error("Error Gutendex");
       }
 
 
@@ -797,9 +681,9 @@ async function buscarLibros() {
     }
 
 
-    /* ===============================
+    /* =========================
        OPEN LIBRARY
-    =============================== */
+    ========================= */
 
     let consulta = "";
 
@@ -839,11 +723,7 @@ async function buscarLibros() {
 
 
     if (!respuesta.ok) {
-
-      throw new Error(
-        "Error Open Library"
-      );
-
+      throw new Error("Error Open Library");
     }
 
 
@@ -864,8 +744,6 @@ async function buscarLibros() {
     let libros =
       datos.docs;
 
-
-    /* Mejor orden para búsqueda general */
 
     if (filtroActual === "todo") {
 
@@ -943,9 +821,9 @@ async function buscarLibros() {
 }
 
 
-/* ===================================
-   TARJETAS OPEN LIBRARY
-=================================== */
+/* =========================
+   TARJETA OPEN LIBRARY
+========================= */
 
 function pintarLibroOpenLibrary(
   libro,
@@ -1041,10 +919,7 @@ function pintarLibroOpenLibrary(
           año,
 
         coverId:
-          coverId,
-
-        estado:
-          libro.estado || null
+          coverId
 
       });
 
@@ -1058,9 +933,9 @@ function pintarLibroOpenLibrary(
 }
 
 
-/* ===================================
-   TARJETAS GRATIS
-=================================== */
+/* =========================
+   TARJETA GUTENBERG
+========================= */
 
 function pintarLibroGratis(
   libro,
@@ -1096,22 +971,9 @@ function pintarLibroGratis(
     || null;
 
 
-  const texto =
-    libro.texto
-    || libro.formats?.[
-      "text/plain; charset=utf-8"
-    ]
-    || libro.formats?.["text/plain"]
-    || null;
-
-
-  const html =
-    libro.html
-    || libro.formats?.[
-      "text/html; charset=utf-8"
-    ]
-    || libro.formats?.["text/html"]
-    || null;
+  const gutenbergId =
+    libro.id
+    || libro.gutenbergId;
 
 
   const tarjeta =
@@ -1168,15 +1030,14 @@ function pintarLibroGratis(
           "gutenberg",
 
         id:
-          libro.id
-          || libro.gutenbergId,
+          gutenbergId,
+
+        gutenbergId:
+          gutenbergId,
 
         key:
           "gutenberg-"
-          + (
-            libro.id
-            || libro.gutenbergId
-          ),
+          + gutenbergId,
 
         titulo:
           titulo,
@@ -1187,18 +1048,9 @@ function pintarLibroGratis(
         portada:
           portada,
 
-        texto:
-          texto,
-
-        html:
-          html,
-
         descripcion:
           libro.descripcion
-          || null,
-
-        estado:
-          libro.estado || null
+          || null
 
       });
 
@@ -1212,9 +1064,9 @@ function pintarLibroGratis(
 }
 
 
-/* ===================================
+/* =========================
    FICHA OPEN LIBRARY
-=================================== */
+========================= */
 
 async function abrirFichaOpenLibrary(
   libro
@@ -1299,7 +1151,7 @@ async function abrirFichaOpenLibrary(
   catch (error) {
 
     console.log(
-      "No se pudo cargar la descripción."
+      "No se pudo cargar descripción."
     );
 
   }
@@ -1317,9 +1169,9 @@ async function abrirFichaOpenLibrary(
 }
 
 
-/* ===================================
+/* =========================
    FICHA GUTENBERG
-=================================== */
+========================= */
 
 async function abrirFichaGratis(
   libro
@@ -1338,22 +1190,14 @@ async function abrirFichaGratis(
     .remove("oculto");
 
 
-  const ficha =
-    document
-      .getElementById("contenidoFicha");
+  document
+    .getElementById("contenidoFicha")
+    .innerHTML = `
+      <div class="cargando">
+        Cargando ficha...
+      </div>
+    `;
 
-
-  ficha.innerHTML = `
-    <div class="cargando">
-      Cargando ficha...
-    </div>
-  `;
-
-
-  /*
-    Intentamos obtener una descripción
-    de Open Library usando título + autor.
-  */
 
   if (!libro.descripcion) {
 
@@ -1378,9 +1222,9 @@ async function abrirFichaGratis(
 }
 
 
-/* ===================================
-   BUSCAR RESEÑA PARA GUTENBERG
-=================================== */
+/* =========================
+   BUSCAR RESEÑA
+========================= */
 
 async function buscarDescripcion(
   titulo,
@@ -1389,32 +1233,30 @@ async function buscarDescripcion(
 
   try {
 
-    const consulta =
-      titulo + " " + autor;
-
-
-    const respuestaBusqueda =
+    const respuesta =
       await fetch(
         "https://openlibrary.org/search.json?q="
-        + encodeURIComponent(consulta)
+        + encodeURIComponent(
+          titulo + " " + autor
+        )
         + "&fields=key,title,author_name"
         + "&limit=5"
       );
 
 
-    if (!respuestaBusqueda.ok) {
+    if (!respuesta.ok) {
 
       return "No hay una reseña disponible para este libro.";
 
     }
 
 
-    const datosBusqueda =
-      await respuestaBusqueda.json();
+    const datos =
+      await respuesta.json();
 
 
     const obra =
-      datosBusqueda.docs?.find(
+      datos.docs?.find(
         libro =>
           libro.key
           &&
@@ -1467,8 +1309,6 @@ async function buscarDescripcion(
     }
 
 
-    return "No hay una reseña disponible para este libro.";
-
   }
 
   catch (error) {
@@ -1477,17 +1317,17 @@ async function buscarDescripcion(
       "No se pudo obtener reseña."
     );
 
-
-    return "No hay una reseña disponible para este libro.";
-
   }
+
+
+  return "No hay una reseña disponible para este libro.";
 
 }
 
 
-/* ===================================
+/* =========================
    PINTAR FICHA
-=================================== */
+========================= */
 
 function pintarFichaComun(
   libro,
@@ -1565,7 +1405,7 @@ function pintarFichaComun(
   }
 
 
-  const botonLeer =
+  const lectura =
     esGratis
       ? `
         <div class="disponibilidad disponible">
@@ -1581,7 +1421,7 @@ function pintarFichaComun(
       `
       : `
         <div class="disponibilidad">
-          ℹ️ Esta ficha pertenece al catálogo general.
+          ℹ️ Ficha del catálogo general
         </div>
       `;
 
@@ -1600,15 +1440,11 @@ function pintarFichaComun(
 
     ${
       libro.año
-        ? `
-          <p>
-            ${escaparHTML(libro.año)}
-          </p>
-        `
+        ? `<p>${escaparHTML(libro.año)}</p>`
         : ""
     }
 
-    ${botonLeer}
+    ${lectura}
 
     <h3>
       Sobre este libro
@@ -1652,17 +1488,16 @@ function pintarFichaComun(
 }
 
 
-/* ===================================
+/* =========================
    LECTOR
-=================================== */
+========================= */
 
 async function abrirLector() {
 
   if (
     !libroSeleccionado
     ||
-    libroSeleccionado.tipo
-    !== "gutenberg"
+    libroSeleccionado.tipo !== "gutenberg"
   ) {
 
     return;
@@ -1670,20 +1505,32 @@ async function abrirLector() {
   }
 
 
-  const urlLibro =
-    libroSeleccionado.texto
-    || libroSeleccionado.html;
+  const id =
+    libroSeleccionado.gutenbergId
+    || libroSeleccionado.id;
 
 
-  if (!urlLibro) {
+  if (!id) {
 
     alert(
-      "Este libro no tiene un formato de lectura compatible."
+      "No se ha encontrado el identificador del libro."
     );
 
     return;
 
   }
+
+
+  /*
+    Construimos nosotros la URL.
+  */
+
+  const urlLibro =
+    "https://www.gutenberg.org/cache/epub/"
+    + id
+    + "/pg"
+    + id
+    + ".txt";
 
 
   ocultarPantallas();
@@ -1713,10 +1560,7 @@ async function abrirLector() {
       WORKER_URL
       + "?url="
       + encodeURIComponent(
-        urlLibro.replace(
-          /^http:\/\//i,
-          "https://"
-        )
+        urlLibro
       );
 
 
@@ -1729,48 +1573,14 @@ async function abrirLector() {
     if (!respuesta.ok) {
 
       throw new Error(
-        "El Worker no pudo descargar el libro."
+        "Error al cargar el libro."
       );
 
     }
 
 
-    let contenido =
+    const contenido =
       await respuesta.text();
-
-
-    /*
-      Cuando Gutenberg nos devuelve HTML,
-      lo convertimos en texto limpio.
-    */
-
-    const pareceHTML =
-      contenido.includes("<html")
-      ||
-      contenido.includes("<body")
-      ||
-      contenido.includes("<p>")
-      ||
-      contenido.includes("<div");
-
-
-    if (pareceHTML) {
-
-      const parser =
-        new DOMParser();
-
-
-      const documento =
-        parser.parseFromString(
-          contenido,
-          "text/html"
-        );
-
-
-      contenido =
-        documento.body.innerText;
-
-    }
 
 
     lector.innerHTML = `
@@ -1817,7 +1627,7 @@ async function abrirLector() {
       </h3>
 
       <p>
-        La conexión con el servidor intermedio ha fallado.
+        No se ha encontrado una versión de texto compatible para este libro.
       </p>
     `;
 
@@ -1825,6 +1635,10 @@ async function abrirLector() {
 
 }
 
+
+/* =========================
+   VOLVER A FICHA
+========================= */
 
 function volverFicha() {
 
@@ -1838,8 +1652,7 @@ function volverFicha() {
 
 
   if (
-    libroSeleccionado.tipo
-    === "gutenberg"
+    libroSeleccionado.tipo === "gutenberg"
   ) {
 
     abrirFichaGratis(
@@ -1859,26 +1672,23 @@ function volverFicha() {
 }
 
 
-/* ===================================
-   GUARDAR LIBROS
-=================================== */
+/* =========================
+   GUARDAR
+========================= */
 
 function guardarLibro(
   estado
 ) {
 
   if (!libroSeleccionado) {
-
     return;
-
   }
 
 
   const existente =
     biblioteca.find(
       libro =>
-        libro.key
-        === libroSeleccionado.key
+        libro.key === libroSeleccionado.key
     );
 
 
@@ -1925,9 +1735,9 @@ function guardarLibro(
 }
 
 
-/* ===================================
-   ABRIR BIBLIOTECA
-=================================== */
+/* =========================
+   MI BIBLIOTECA
+========================= */
 
 function abrirBiblioteca(
   estado
@@ -2002,9 +1812,9 @@ function abrirBiblioteca(
 }
 
 
-/* ===================================
+/* =========================
    VOLVER
-=================================== */
+========================= */
 
 function volverInicio() {
 
@@ -2028,9 +1838,9 @@ function volverInicio() {
 }
 
 
-/* ===================================
+/* =========================
    ENTER
-=================================== */
+========================= */
 
 document
   .getElementById("buscador")
@@ -2038,9 +1848,7 @@ document
     "keydown",
     function(evento) {
 
-      if (
-        evento.key === "Enter"
-      ) {
+      if (evento.key === "Enter") {
 
         buscarLibros();
 
@@ -2049,10 +1857,6 @@ document
     }
   );
 
-
-/* ===================================
-   INICIO APP
-=================================== */
 
 actualizarContadores();
 
