@@ -223,7 +223,6 @@
       background: #1f7a3f;
       color: white;
       font-weight: bold;
-      text-align: center;
       width: 100%;
       margin-top: 12px;
     }
@@ -245,6 +244,25 @@
       align-items: center;
       justify-content: space-between;
       margin-top: 20px;
+    }
+
+    .lector {
+      background: #fffdf8;
+      padding: 18px;
+      border-radius: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .lector h2 {
+      margin-top: 0;
+    }
+
+    .lector-texto {
+      font-family: Georgia, serif;
+      font-size: 18px;
+      line-height: 1.75;
+      white-space: pre-wrap;
+      word-wrap: break-word;
     }
 
     @media (min-width: 700px) {
@@ -360,7 +378,7 @@
   </section>
 
 
-  <!-- FICHA LIBRO -->
+  <!-- FICHA -->
   <section
     id="pantallaFicha"
     class="oculto"
@@ -381,7 +399,28 @@
   </section>
 
 
-  <!-- BIBLIOTECA -->
+  <!-- LECTOR -->
+  <section
+    id="pantallaLector"
+    class="oculto"
+  >
+
+    <button
+      class="volver"
+      onclick="volverFichaGratis()"
+    >
+      ← Volver al libro
+    </button>
+
+    <div
+      id="contenidoLector"
+      class="lector"
+    ></div>
+
+  </section>
+
+
+  <!-- MI BIBLIOTECA -->
   <section
     id="pantallaBiblioteca"
     class="oculto"
@@ -411,9 +450,14 @@ let filtroActual = "todo";
 let libroSeleccionado = null;
 
 let biblioteca =
-  JSON.parse(localStorage.getItem("bibliotecaNere"))
-  || [];
+  JSON.parse(
+    localStorage.getItem("bibliotecaNere")
+  ) || [];
 
+
+/* =========================
+   UTILIDADES
+========================= */
 
 function guardarBiblioteca() {
 
@@ -424,6 +468,43 @@ function guardarBiblioteca() {
 
 }
 
+
+function ocultarPantallas() {
+
+  document
+    .getElementById("pantallaInicio")
+    .classList.add("oculto");
+
+  document
+    .getElementById("pantallaFicha")
+    .classList.add("oculto");
+
+  document
+    .getElementById("pantallaLector")
+    .classList.add("oculto");
+
+  document
+    .getElementById("pantallaBiblioteca")
+    .classList.add("oculto");
+
+}
+
+
+function escaparHTML(texto) {
+
+  return texto
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================
+   FILTROS
+========================= */
 
 function cambiarFiltro(tipo) {
 
@@ -463,6 +544,10 @@ function cambiarFiltro(tipo) {
 }
 
 
+/* =========================
+   BUSCADOR
+========================= */
+
 async function buscarLibros() {
 
   const texto =
@@ -498,56 +583,102 @@ async function buscarLibros() {
 
   try {
 
+    /* =========================
+       GUTENDEX - LIBROS GRATIS
+    ========================= */
+
+    if (filtroActual === "gratis") {
+
+      const respuesta =
+        await fetch(
+          "https://gutendex.com/books/?search="
+          + encodeURIComponent(texto)
+        );
+
+
+      if (!respuesta.ok) {
+        throw new Error("Error Gutendex");
+      }
+
+
+      const datos =
+        await respuesta.json();
+
+
+      if (!datos.results?.length) {
+
+        mensaje.innerHTML =
+          "No se encontraron libros gratuitos.";
+
+        return;
+
+      }
+
+
+      mensaje.innerHTML =
+        "📚 Libros gratuitos encontrados";
+
+
+      datos.results
+        .slice(0, 12)
+        .forEach(libro => {
+
+          pintarLibroGratis(
+            libro,
+            resultados
+          );
+
+        });
+
+
+      return;
+
+    }
+
+
+    /* =========================
+       OPEN LIBRARY
+    ========================= */
+
     let consulta = "";
+
 
     if (filtroActual === "titulo") {
 
       consulta =
-        "title=" +
-        encodeURIComponent(texto);
+        "title="
+        + encodeURIComponent(texto);
 
     }
 
     else if (filtroActual === "autor") {
 
       consulta =
-        "author=" +
-        encodeURIComponent(texto);
-
-    }
-
-    else if (filtroActual === "gratis") {
-
-      consulta =
-        "q=" +
-        encodeURIComponent(
-          texto + " ebook_access:public"
-        );
+        "author="
+        + encodeURIComponent(texto);
 
     }
 
     else {
 
       consulta =
-        "q=" +
-        encodeURIComponent(texto);
+        "q="
+        + encodeURIComponent(texto);
 
     }
 
 
-    const url =
-      "https://openlibrary.org/search.json?"
-      + consulta
-      + "&fields=key,title,author_name,first_publish_year,cover_i,ebook_access,ia"
-      + "&limit=20";
-
-
     const respuesta =
-      await fetch(url);
+      await fetch(
+        "https://openlibrary.org/search.json?"
+        + consulta
+        + "&fields=key,title,author_name,first_publish_year,cover_i"
+        + "&limit=20"
+      );
 
 
     if (!respuesta.ok) {
-      throw new Error("Error en Open Library");
+      throw new Error("Error Open Library");
     }
 
 
@@ -565,13 +696,15 @@ async function buscarLibros() {
     }
 
 
-    let libros = datos.docs;
+    let libros =
+      datos.docs;
 
 
     if (filtroActual === "todo") {
 
       const buscado =
         texto.toLowerCase();
+
 
       libros.sort((a, b) => {
 
@@ -587,6 +720,7 @@ async function buscarLibros() {
             (libro.author_name || [])
               .join(" ")
               .toLowerCase();
+
 
           if (titulo === buscado) {
             total += 10;
@@ -604,6 +738,7 @@ async function buscarLibros() {
 
         }
 
+
         return puntos(b) - puntos(a);
 
       });
@@ -611,22 +746,20 @@ async function buscarLibros() {
     }
 
 
-    libros =
-      libros.slice(0, 12);
-
-
     mensaje.innerHTML =
       "Resultados encontrados";
 
 
-    libros.forEach(libro => {
+    libros
+      .slice(0, 12)
+      .forEach(libro => {
 
-      pintarLibro(
-        libro,
-        resultados
-      );
+        pintarLibro(
+          libro,
+          resultados
+        );
 
-    });
+      });
 
 
   }
@@ -643,7 +776,14 @@ async function buscarLibros() {
 }
 
 
-function pintarLibro(libro, contenedor) {
+/* =========================
+   TARJETA OPEN LIBRARY
+========================= */
+
+function pintarLibro(
+  libro,
+  contenedor
+) {
 
   const titulo =
     libro.title
@@ -665,43 +805,28 @@ function pintarLibro(libro, contenedor) {
     || libro.coverId
     || null;
 
-  const ebookAccess =
-    libro.ebook_access
-    || libro.ebookAccess
-    || null;
-
-  let ia = null;
-
-  if (Array.isArray(libro.ia)) {
-    ia = libro.ia[0] || null;
-  } else {
-    ia = libro.ia || null;
-  }
-
 
   let portada = "";
 
 
   if (coverId) {
 
-    portada =
-      `
+    portada = `
       <img
         src="https://covers.openlibrary.org/b/id/${coverId}-M.jpg"
         alt="${titulo}"
       >
-      `;
+    `;
 
   }
 
   else {
 
-    portada =
-      `
+    portada = `
       <div class="sin-portada">
         📚
       </div>
-      `;
+    `;
 
   }
 
@@ -709,12 +834,12 @@ function pintarLibro(libro, contenedor) {
   const tarjeta =
     document.createElement("article");
 
+
   tarjeta.className =
     "libro";
 
 
-  tarjeta.innerHTML =
-    `
+  tarjeta.innerHTML = `
     <div class="portada-wrap">
       ${portada}
     </div>
@@ -726,7 +851,7 @@ function pintarLibro(libro, contenedor) {
     <div class="anio">
       ${año}
     </div>
-    `;
+  `;
 
 
   tarjeta.onclick =
@@ -734,24 +859,25 @@ function pintarLibro(libro, contenedor) {
 
       abrirFicha({
 
-        titulo: titulo,
+        tipo:
+          "openlibrary",
 
-        autor: autor,
+        titulo:
+          titulo,
 
-        año: año,
+        autor:
+          autor,
 
-        coverId: coverId,
+        año:
+          año,
+
+        coverId:
+          coverId,
 
         key:
           libro.key
           || libro.keyLibro
-          || titulo + autor,
-
-        ebookAccess:
-          ebookAccess,
-
-        ia:
-          ia
+          || titulo + autor
 
       });
 
@@ -765,21 +891,132 @@ function pintarLibro(libro, contenedor) {
 }
 
 
+/* =========================
+   TARJETA GUTENDEX
+========================= */
+
+function pintarLibroGratis(
+  libro,
+  contenedor
+) {
+
+  const autor =
+    libro.authors?.[0]?.name
+    || "Autor desconocido";
+
+
+  const portada =
+    libro.formats?.["image/jpeg"]
+    || null;
+
+
+  const html =
+    libro.formats?.["text/html"]
+    || libro.formats?.[
+      "text/html; charset=utf-8"
+    ]
+    || null;
+
+
+  const texto =
+    libro.formats?.[
+      "text/plain; charset=utf-8"
+    ]
+    || libro.formats?.["text/plain"]
+    || null;
+
+
+  const tarjeta =
+    document.createElement("article");
+
+
+  tarjeta.className =
+    "libro";
+
+
+  tarjeta.innerHTML = `
+
+    <div class="portada-wrap">
+
+      ${
+        portada
+
+        ? `
+          <img
+            src="${portada}"
+            alt="${libro.title}"
+          >
+        `
+
+        : `
+          <div class="sin-portada">
+            📚
+          </div>
+        `
+      }
+
+    </div>
+
+    <h3>${libro.title}</h3>
+
+    <p>${autor}</p>
+
+    <div class="anio">
+      🟢 Gratis
+    </div>
+  `;
+
+
+  tarjeta.onclick =
+    function() {
+
+      abrirFichaGratis({
+
+        tipo:
+          "gutenberg",
+
+        id:
+          libro.id,
+
+        titulo:
+          libro.title,
+
+        autor:
+          autor,
+
+        portada:
+          portada,
+
+        html:
+          html,
+
+        texto:
+          texto
+
+      });
+
+    };
+
+
+  contenedor.appendChild(
+    tarjeta
+  );
+
+}
+
+
+/* =========================
+   FICHA OPEN LIBRARY
+========================= */
+
 async function abrirFicha(libro) {
 
   libroSeleccionado =
     libro;
 
 
-  document
-    .getElementById("pantallaInicio")
-    .classList
-    .add("oculto");
+  ocultarPantallas();
 
-  document
-    .getElementById("pantallaBiblioteca")
-    .classList
-    .add("oculto");
 
   document
     .getElementById("pantallaFicha")
@@ -814,6 +1051,7 @@ async function abrirFicha(libro) {
           + libro.key
           + ".json"
         );
+
 
       if (respuesta.ok) {
 
@@ -860,25 +1098,23 @@ async function abrirFicha(libro) {
 
   if (libro.coverId) {
 
-    portada =
-      `
+    portada = `
       <img
         class="ficha-portada"
         src="https://covers.openlibrary.org/b/id/${libro.coverId}-L.jpg"
         alt="${libro.titulo}"
       >
-      `;
+    `;
 
   }
 
   else {
 
-    portada =
-      `
+    portada = `
       <div class="ficha-sin-portada">
         📚
       </div>
-      `;
+    `;
 
   }
 
@@ -892,59 +1128,23 @@ async function abrirFicha(libro) {
 
   let estado = "";
 
+
   if (guardado) {
 
-    estado =
-      `
+    estado = `
       <div class="estado-actual">
         Guardado en:
         ${nombreEstado(
           guardado.estado
         )}
       </div>
-      `;
+    `;
 
   }
 
 
-  let zonaLectura = "";
+  ficha.innerHTML = `
 
-
-  if (
-    libro.ebookAccess === "public"
-    && libro.ia
-  ) {
-
-    zonaLectura =
-      `
-      <div class="disponibilidad">
-        🟢 Este libro tiene una copia pública disponible.
-      </div>
-
-      <button
-        class="btn-leer"
-        onclick="leerLibro('${libro.ia}')"
-      >
-        📖 Leer gratis
-      </button>
-      `;
-
-  }
-
-  else {
-
-    zonaLectura =
-      `
-      <div class="disponibilidad">
-        🔒 No hay una copia gratuita disponible para leer desde esta ficha.
-      </div>
-      `;
-
-  }
-
-
-  ficha.innerHTML =
-    `
     ${portada}
 
     <h2>
@@ -959,9 +1159,13 @@ async function abrirFicha(libro) {
       ${libro.año}
     </p>
 
-    ${zonaLectura}
+    <div class="disponibilidad">
+      ℹ️ Ficha bibliográfica.
+    </div>
 
-    <h3>Descripción</h3>
+    <h3>
+      Descripción
+    </h3>
 
     <p>
       ${descripcion}
@@ -993,21 +1197,250 @@ async function abrirFicha(libro) {
       </button>
 
     </div>
+  `;
+
+}
+
+
+/* =========================
+   FICHA GRATIS
+========================= */
+
+function abrirFichaGratis(libro) {
+
+  libroSeleccionado =
+    libro;
+
+
+  ocultarPantallas();
+
+
+  document
+    .getElementById("pantallaFicha")
+    .classList
+    .remove("oculto");
+
+
+  const ficha =
+    document
+      .getElementById("contenidoFicha");
+
+
+  let portada = "";
+
+
+  if (libro.portada) {
+
+    portada = `
+      <img
+        class="ficha-portada"
+        src="${libro.portada}"
+        alt="${libro.titulo}"
+      >
     `;
 
+  }
+
+  else {
+
+    portada = `
+      <div class="ficha-sin-portada">
+        📚
+      </div>
+    `;
+
+  }
+
+
+  ficha.innerHTML = `
+
+    ${portada}
+
+    <h2>
+      ${libro.titulo}
+    </h2>
+
+    <p class="ficha-autor">
+      ${libro.autor}
+    </p>
+
+    <div class="disponibilidad">
+      🟢 Libro gratuito de dominio público
+    </div>
+
+    <button
+      class="btn-leer"
+      onclick="abrirLector()"
+    >
+      📖 Leer
+    </button>
+
+  `;
+
 }
 
 
-function leerLibro(identifier) {
+/* =========================
+   LECTOR
+========================= */
 
-  window.open(
-    "https://archive.org/details/"
-    + identifier,
-    "_blank"
-  );
+async function abrirLector() {
+
+  if (!libroSeleccionado) {
+    return;
+  }
+
+
+  const url =
+    libroSeleccionado.texto
+    || libroSeleccionado.html;
+
+
+  if (!url) {
+
+    alert(
+      "Este libro no tiene una versión de texto compatible."
+    );
+
+    return;
+
+  }
+
+
+  ocultarPantallas();
+
+
+  document
+    .getElementById("pantallaLector")
+    .classList
+    .remove("oculto");
+
+
+  const lector =
+    document
+      .getElementById("contenidoLector");
+
+
+  lector.innerHTML =
+    "📖 Cargando libro...";
+
+
+  try {
+
+    const respuesta =
+      await fetch(url);
+
+
+    if (!respuesta.ok) {
+
+      throw new Error(
+        "No se pudo descargar"
+      );
+
+    }
+
+
+    let contenido =
+      await respuesta.text();
+
+
+    if (
+      !libroSeleccionado.texto
+    ) {
+
+      const parser =
+        new DOMParser();
+
+
+      const documento =
+        parser.parseFromString(
+          contenido,
+          "text/html"
+        );
+
+
+      contenido =
+        documento.body.innerText;
+
+    }
+
+
+    lector.innerHTML = `
+
+      <h2>
+        ${libroSeleccionado.titulo}
+      </h2>
+
+      <p>
+        ${libroSeleccionado.autor}
+      </p>
+
+      <hr>
+
+      <div class="lector-texto">
+        ${escaparHTML(contenido)}
+      </div>
+    `;
+
+
+    window.scrollTo(
+      0,
+      0
+    );
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+
+    lector.innerHTML = `
+
+      <h3>
+        ❌ No se ha podido cargar el texto dentro de la app.
+      </h3>
+
+      <p>
+        El servidor del libro está bloqueando la lectura directa.
+      </p>
+
+      <p>
+        En ese caso tendremos que usar un servidor intermedio para La Biblioteca de Nere.
+      </p>
+    `;
+
+  }
 
 }
 
+
+function volverFichaGratis() {
+
+  if (
+    libroSeleccionado
+    &&
+    libroSeleccionado.tipo === "gutenberg"
+  ) {
+
+    abrirFichaGratis(
+      libroSeleccionado
+    );
+
+  }
+
+  else {
+
+    volverInicio();
+
+  }
+
+}
+
+
+/* =========================
+   GUARDADO
+========================= */
 
 function guardarLibro(estado) {
 
@@ -1029,12 +1462,6 @@ function guardarLibro(estado) {
     existente.estado =
       estado;
 
-    existente.ebookAccess =
-      libroSeleccionado.ebookAccess;
-
-    existente.ia =
-      libroSeleccionado.ia;
-
   }
 
   else {
@@ -1055,12 +1482,6 @@ function guardarLibro(estado) {
 
       coverId:
         libroSeleccionado.coverId,
-
-      ebookAccess:
-        libroSeleccionado.ebookAccess,
-
-      ia:
-        libroSeleccionado.ia,
 
       estado:
         estado
@@ -1105,17 +1526,16 @@ function nombreEstado(estado) {
 }
 
 
-function abrirBiblioteca(estado) {
+/* =========================
+   MI BIBLIOTECA
+========================= */
 
-  document
-    .getElementById("pantallaInicio")
-    .classList
-    .add("oculto");
+function abrirBiblioteca(
+  estado
+) {
 
-  document
-    .getElementById("pantallaFicha")
-    .classList
-    .add("oculto");
+  ocultarPantallas();
+
 
   document
     .getElementById("pantallaBiblioteca")
@@ -1171,13 +1591,7 @@ function abrirBiblioteca(estado) {
           libro.coverId,
 
         keyLibro:
-          libro.key,
-
-        ebookAccess:
-          libro.ebookAccess,
-
-        ia:
-          libro.ia
+          libro.key
       },
 
       lista
@@ -1188,17 +1602,14 @@ function abrirBiblioteca(estado) {
 }
 
 
+/* =========================
+   VOLVER
+========================= */
+
 function volverInicio() {
 
-  document
-    .getElementById("pantallaFicha")
-    .classList
-    .add("oculto");
+  ocultarPantallas();
 
-  document
-    .getElementById("pantallaBiblioteca")
-    .classList
-    .add("oculto");
 
   document
     .getElementById("pantallaInicio")
@@ -1207,6 +1618,10 @@ function volverInicio() {
 
 }
 
+
+/* =========================
+   ENTER BUSCADOR
+========================= */
 
 document
   .getElementById("buscador")
