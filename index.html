@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,212 +7,535 @@
   <title>La Biblioteca de Nere</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
+      margin: 0;
       font-family: Arial, sans-serif;
-      margin: 20px;
-      background: #faf8f3;
+      background: #f6f4ef;
       color: #222;
     }
 
-    h1 {
-      margin-bottom: 5px;
+    header {
+      background: white;
+      padding: 22px 18px 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
-    .buscador {
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      color: #666;
+    }
+
+    main {
+      padding: 18px;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    h2 {
+      margin-top: 10px;
+    }
+
+    .buscador-box {
+      background: white;
+      padding: 14px;
+      border-radius: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .fila-busqueda {
       display: flex;
       gap: 8px;
-      margin-bottom: 25px;
     }
 
     input {
       flex: 1;
-      padding: 12px;
+      min-width: 0;
+      padding: 13px;
       font-size: 16px;
-      border-radius: 8px;
-      border: 1px solid #aaa;
+      border-radius: 10px;
+      border: 1px solid #bbb;
     }
 
     button {
-      padding: 12px 18px;
-      font-size: 16px;
-      border-radius: 8px;
       border: none;
+      border-radius: 10px;
+      padding: 13px 16px;
+      font-size: 16px;
       cursor: pointer;
+    }
+
+    .filtros {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .filtro {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #eee;
+      font-size: 14px;
+    }
+
+    .filtro.activo {
+      background: #222;
+      color: white;
+    }
+
+    #mensaje {
+      margin-top: 14px;
+      color: #555;
     }
 
     #resultados {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-      margin-top: 20px;
+      gap: 14px;
+      margin-top: 18px;
     }
 
     .libro {
       background: white;
+      border-radius: 14px;
       padding: 10px;
-      border-radius: 10px;
-      box-shadow: 0 2px 7px rgba(0,0,0,0.12);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      overflow: hidden;
     }
 
-    .libro img {
+    .portada-wrap {
       width: 100%;
-      border-radius: 7px;
+      aspect-ratio: 2 / 3;
+      background: #eee;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .portada-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .sin-portada {
+      font-size: 48px;
     }
 
     .libro h3 {
       font-size: 16px;
-      margin-bottom: 5px;
+      margin: 10px 0 6px;
     }
 
     .libro p {
-      font-size: 14px;
       margin: 4px 0;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .anio {
+      font-size: 13px;
+      color: #777;
+    }
+
+    .mi-biblioteca {
+      margin-top: 28px;
+    }
+
+    .categoria {
+      background: white;
+      margin-bottom: 10px;
+      padding: 14px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      font-size: 16px;
+    }
+
+    @media (min-width: 700px) {
+      #resultados {
+        grid-template-columns: repeat(4, 1fr);
+      }
     }
   </style>
-
 </head>
 
 <body>
 
+<header>
   <h1>📚 La Biblioteca de Nere</h1>
   <p>Tu biblioteca digital</p>
+</header>
 
-  <h2>Buscar libros</h2>
+<main>
 
-  <div class="buscador">
+  <section class="buscador-box">
 
-    <input
-      type="text"
-      id="buscador"
-      placeholder="Título o autor..."
-    >
+    <h2>Buscar libros</h2>
 
-    <button onclick="buscarLibros()">
-      Buscar
-    </button>
+    <div class="fila-busqueda">
 
-  </div>
+      <input
+        id="buscador"
+        type="text"
+        placeholder="Título o autor..."
+        autocomplete="off"
+      >
 
-  <div id="mensaje"></div>
+      <button onclick="buscarLibros()">
+        Buscar
+      </button>
 
-  <div id="resultados"></div>
+    </div>
+
+    <div class="filtros">
+
+      <button
+        class="filtro activo"
+        id="filtroTodo"
+        onclick="cambiarFiltro('todo')"
+      >
+        Todo
+      </button>
+
+      <button
+        class="filtro"
+        id="filtroTitulo"
+        onclick="cambiarFiltro('titulo')"
+      >
+        Título
+      </button>
+
+      <button
+        class="filtro"
+        id="filtroAutor"
+        onclick="cambiarFiltro('autor')"
+      >
+        Autor
+      </button>
+
+    </div>
+
+    <div id="mensaje"></div>
+
+  </section>
 
 
-  <h2>Mi biblioteca</h2>
-
-  <p>❤️ Quiero leer</p>
-  <p>📖 Leyendo</p>
-  <p>✅ Leídos</p>
+  <section id="resultados"></section>
 
 
-  <script>
+  <section class="mi-biblioteca">
 
-    async function buscarLibros() {
+    <h2>Mi biblioteca</h2>
 
-      const texto = document.getElementById("buscador").value.trim();
-      const resultados = document.getElementById("resultados");
-      const mensaje = document.getElementById("mensaje");
+    <div class="categoria">
+      ❤️ Quiero leer
+    </div>
 
-      if (texto === "") {
-        mensaje.innerHTML = "Escribe un título o un autor.";
-        return;
-      }
+    <div class="categoria">
+      📖 Leyendo
+    </div>
 
-      mensaje.innerHTML = "🔎 Buscando libros...";
-      resultados.innerHTML = "";
+    <div class="categoria">
+      ✅ Leídos
+    </div>
 
-      try {
+  </section>
 
-        const url =
-          "https://openlibrary.org/search.json?q=" +
-          encodeURIComponent(texto) +
-          "&limit=10";
+</main>
 
-        const respuesta = await fetch(url);
 
-        if (!respuesta.ok) {
-          throw new Error("Error en Open Library");
-        }
+<script>
 
-        const datos = await respuesta.json();
+let filtroActual = "todo";
 
-        if (!datos.docs || datos.docs.length === 0) {
-          mensaje.innerHTML = "No se encontraron libros.";
-          return;
-        }
 
-        mensaje.innerHTML =
-          "Encontrados " + datos.numFound + " libros";
+function cambiarFiltro(tipo) {
 
-        datos.docs.forEach(function(libro) {
+  filtroActual = tipo;
 
-          const tarjeta = document.createElement("div");
+  document
+    .querySelectorAll(".filtro")
+    .forEach(boton => boton.classList.remove("activo"));
 
-          tarjeta.className = "libro";
+  if (tipo === "todo") {
+    document.getElementById("filtroTodo").classList.add("activo");
+  }
 
-          const titulo =
-            libro.title || "Sin título";
+  if (tipo === "titulo") {
+    document.getElementById("filtroTitulo").classList.add("activo");
+  }
 
-          const autor =
-            libro.author_name
-              ? libro.author_name[0]
-              : "Autor desconocido";
+  if (tipo === "autor") {
+    document.getElementById("filtroAutor").classList.add("activo");
+  }
 
-          const año =
-            libro.first_publish_year
-              ? libro.first_publish_year
-              : "";
+}
 
-          let portada = "";
 
-          if (libro.cover_i) {
+async function buscarLibros() {
 
-            portada =
-              '<img src="https://covers.openlibrary.org/b/id/' +
-              libro.cover_i +
-              '-M.jpg">';
+  const texto =
+    document.getElementById("buscador").value.trim();
 
-          } else {
+  const mensaje =
+    document.getElementById("mensaje");
 
-            portada =
-              '<div style="font-size:60px;text-align:center;">📚</div>';
+  const resultados =
+    document.getElementById("resultados");
 
-          }
+  if (!texto) {
 
-          tarjeta.innerHTML =
-            portada +
-            "<h3>" + titulo + "</h3>" +
-            "<p>" + autor + "</p>" +
-            "<p>" + año + "</p>";
+    mensaje.innerHTML =
+      "Escribe un título o autor.";
 
-          resultados.appendChild(tarjeta);
+    resultados.innerHTML = "";
 
-        });
+    return;
 
-      } catch (error) {
+  }
 
-        console.error(error);
+  mensaje.innerHTML =
+    "🔎 Buscando...";
 
-        mensaje.innerHTML =
-          "❌ No se ha podido conectar con la biblioteca.";
+  resultados.innerHTML = "";
 
-      }
+
+  try {
+
+    let consulta = "";
+
+    if (filtroActual === "titulo") {
+
+      consulta =
+        "title=" + encodeURIComponent(texto);
+
+    } else if (filtroActual === "autor") {
+
+      consulta =
+        "author=" + encodeURIComponent(texto);
+
+    } else {
+
+      consulta =
+        "q=" + encodeURIComponent(texto);
 
     }
 
 
-    document
-      .getElementById("buscador")
-      .addEventListener("keydown", function(evento) {
+    const url =
+      "https://openlibrary.org/search.json?" +
+      consulta +
+      "&limit=20";
 
-        if (evento.key === "Enter") {
-          buscarLibros();
-        }
 
-      });
+    const respuesta =
+      await fetch(url);
 
-  </script>
+
+    if (!respuesta.ok) {
+
+      throw new Error(
+        "Error al consultar Open Library"
+      );
+
+    }
+
+
+    const datos =
+      await respuesta.json();
+
+
+    if (!datos.docs || datos.docs.length === 0) {
+
+      mensaje.innerHTML =
+        "No se encontraron libros.";
+
+      return;
+
+    }
+
+
+    let libros = datos.docs;
+
+
+    if (filtroActual === "todo") {
+
+      const textoNormalizado =
+        texto.toLowerCase();
+
+      libros =
+        libros.sort((a, b) => {
+
+          const tituloA =
+            (a.title || "").toLowerCase();
+
+          const tituloB =
+            (b.title || "").toLowerCase();
+
+          const autoresA =
+            (a.author_name || [])
+              .join(" ")
+              .toLowerCase();
+
+          const autoresB =
+            (b.author_name || [])
+              .join(" ")
+              .toLowerCase();
+
+
+          let puntosA = 0;
+          let puntosB = 0;
+
+
+          if (tituloA === textoNormalizado) {
+            puntosA += 10;
+          }
+
+          if (tituloA.includes(textoNormalizado)) {
+            puntosA += 5;
+          }
+
+          if (autoresA.includes(textoNormalizado)) {
+            puntosA += 7;
+          }
+
+
+          if (tituloB === textoNormalizado) {
+            puntosB += 10;
+          }
+
+          if (tituloB.includes(textoNormalizado)) {
+            puntosB += 5;
+          }
+
+          if (autoresB.includes(textoNormalizado)) {
+            puntosB += 7;
+          }
+
+
+          return puntosB - puntosA;
+
+        });
+
+    }
+
+
+    libros =
+      libros.slice(0, 12);
+
+
+    mensaje.innerHTML =
+      "Resultados encontrados";
+
+
+    libros.forEach(libro => {
+
+      const titulo =
+        libro.title || "Sin título";
+
+      const autor =
+        libro.author_name?.[0]
+        || "Autor desconocido";
+
+      const año =
+        libro.first_publish_year
+        || "";
+
+      let portada = "";
+
+
+      if (libro.cover_i) {
+
+        portada =
+          `
+          <img
+            src="https://covers.openlibrary.org/b/id/${libro.cover_i}-M.jpg"
+            alt="${titulo}"
+          >
+          `;
+
+      } else {
+
+        portada =
+          `
+          <div class="sin-portada">
+            📚
+          </div>
+          `;
+
+      }
+
+
+      const tarjeta =
+        document.createElement("article");
+
+      tarjeta.className =
+        "libro";
+
+
+      tarjeta.innerHTML =
+        `
+        <div class="portada-wrap">
+          ${portada}
+        </div>
+
+        <h3>${titulo}</h3>
+
+        <p>${autor}</p>
+
+        <div class="anio">
+          ${año}
+        </div>
+        `;
+
+
+      resultados.appendChild(tarjeta);
+
+    });
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    mensaje.innerHTML =
+      "❌ No se ha podido conectar con la biblioteca.";
+
+  }
+
+}
+
+
+document
+  .getElementById("buscador")
+  .addEventListener(
+    "keydown",
+    function(evento) {
+
+      if (evento.key === "Enter") {
+
+        buscarLibros();
+
+      }
+
+    }
+  );
+
+</script>
 
 </body>
-
 </html>
