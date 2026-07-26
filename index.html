@@ -7,72 +7,212 @@
 
   <title>La Biblioteca de Nere</title>
 
-  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #faf8f3;
+      color: #222;
+    }
+
+    h1 {
+      margin-bottom: 5px;
+    }
+
+    .buscador {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 25px;
+    }
+
+    input {
+      flex: 1;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #aaa;
+    }
+
+    button {
+      padding: 12px 18px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+    }
+
+    #resultados {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .libro {
+      background: white;
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0 2px 7px rgba(0,0,0,0.12);
+    }
+
+    .libro img {
+      width: 100%;
+      border-radius: 7px;
+    }
+
+    .libro h3 {
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+
+    .libro p {
+      font-size: 14px;
+      margin: 4px 0;
+    }
+  </style>
+
 </head>
 
 <body>
 
-  <header>
-    <h1>📚 La Biblioteca de Nere</h1>
-    <p>Tu biblioteca digital</p>
-  </header>
+  <h1>📚 La Biblioteca de Nere</h1>
+  <p>Tu biblioteca digital</p>
 
-  <main>
+  <h2>Buscar libros</h2>
 
-    <!-- BUSCADOR -->
-    <section>
-      <h2>Buscar libros</h2>
+  <div class="buscador">
 
-      <div class="buscador-contenedor">
-        <input
-          type="text"
-          id="buscador"
-          placeholder="Título, autor..."
-          autocomplete="off"
-        >
+    <input
+      type="text"
+      id="buscador"
+      placeholder="Título o autor..."
+    >
 
-        <button id="botonBuscar">
-          Buscar
-        </button>
-      </div>
+    <button onclick="buscarLibros()">
+      Buscar
+    </button>
 
-      <!-- Aquí aparecerán los libros de Open Library -->
-      <div id="resultados"></div>
+  </div>
 
-    </section>
+  <div id="mensaje"></div>
+
+  <div id="resultados"></div>
 
 
-    <!-- MI BIBLIOTECA -->
-    <section>
+  <h2>Mi biblioteca</h2>
 
-      <h2>Mi biblioteca</h2>
-
-      <div class="categorias">
-
-        <div class="categoria">
-          <span>❤️</span>
-          <span>Quiero leer</span>
-        </div>
-
-        <div class="categoria">
-          <span>📖</span>
-          <span>Leyendo</span>
-        </div>
-
-        <div class="categoria">
-          <span>✅</span>
-          <span>Leídos</span>
-        </div>
-
-      </div>
-
-    </section>
-
-  </main>
+  <p>❤️ Quiero leer</p>
+  <p>📖 Leyendo</p>
+  <p>✅ Leídos</p>
 
 
-  <!-- JAVASCRIPT -->
-  <script src="script.js"></script>
+  <script>
+
+    async function buscarLibros() {
+
+      const texto = document.getElementById("buscador").value.trim();
+      const resultados = document.getElementById("resultados");
+      const mensaje = document.getElementById("mensaje");
+
+      if (texto === "") {
+        mensaje.innerHTML = "Escribe un título o un autor.";
+        return;
+      }
+
+      mensaje.innerHTML = "🔎 Buscando libros...";
+      resultados.innerHTML = "";
+
+      try {
+
+        const url =
+          "https://openlibrary.org/search.json?q=" +
+          encodeURIComponent(texto) +
+          "&limit=10";
+
+        const respuesta = await fetch(url);
+
+        if (!respuesta.ok) {
+          throw new Error("Error en Open Library");
+        }
+
+        const datos = await respuesta.json();
+
+        if (!datos.docs || datos.docs.length === 0) {
+          mensaje.innerHTML = "No se encontraron libros.";
+          return;
+        }
+
+        mensaje.innerHTML =
+          "Encontrados " + datos.numFound + " libros";
+
+        datos.docs.forEach(function(libro) {
+
+          const tarjeta = document.createElement("div");
+
+          tarjeta.className = "libro";
+
+          const titulo =
+            libro.title || "Sin título";
+
+          const autor =
+            libro.author_name
+              ? libro.author_name[0]
+              : "Autor desconocido";
+
+          const año =
+            libro.first_publish_year
+              ? libro.first_publish_year
+              : "";
+
+          let portada = "";
+
+          if (libro.cover_i) {
+
+            portada =
+              '<img src="https://covers.openlibrary.org/b/id/' +
+              libro.cover_i +
+              '-M.jpg">';
+
+          } else {
+
+            portada =
+              '<div style="font-size:60px;text-align:center;">📚</div>';
+
+          }
+
+          tarjeta.innerHTML =
+            portada +
+            "<h3>" + titulo + "</h3>" +
+            "<p>" + autor + "</p>" +
+            "<p>" + año + "</p>";
+
+          resultados.appendChild(tarjeta);
+
+        });
+
+      } catch (error) {
+
+        console.error(error);
+
+        mensaje.innerHTML =
+          "❌ No se ha podido conectar con la biblioteca.";
+
+      }
+
+    }
+
+
+    document
+      .getElementById("buscador")
+      .addEventListener("keydown", function(evento) {
+
+        if (evento.key === "Enter") {
+          buscarLibros();
+        }
+
+      });
+
+  </script>
 
 </body>
 
