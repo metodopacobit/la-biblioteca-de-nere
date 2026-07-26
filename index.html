@@ -6,28 +6,73 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>La Biblioteca de Nere</title>
+
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <h1>📚 La Biblioteca de Nere</h1>
-  <p>Tu biblioteca digital</p>
+  <header>
+    <h1>📚 La Biblioteca de Nere</h1>
+    <p>Tu biblioteca digital</p>
+  </header>
 
-  <h2>Buscar libros</h2>
+  <main>
 
-  <input
-    type="text"
-    id="buscador"
-    placeholder="Título, autor..."
-  >
+    <!-- BUSCADOR -->
+    <section>
+      <h2>Buscar libros</h2>
 
-  <button>Buscar</button>
+      <div class="buscador-contenedor">
+        <input
+          type="text"
+          id="buscador"
+          placeholder="Título, autor..."
+          autocomplete="off"
+        >
 
-  <h2>Mi biblioteca</h2>
+        <button id="botonBuscar">
+          Buscar
+        </button>
+      </div>
 
-  <p>❤️ Quiero leer</p>
-  <p>📖 Leyendo</p>
-  <p>✅ Leídos</p>
+      <!-- Aquí aparecerán los libros de Open Library -->
+      <div id="resultados"></div>
+
+    </section>
+
+
+    <!-- MI BIBLIOTECA -->
+    <section>
+
+      <h2>Mi biblioteca</h2>
+
+      <div class="categorias">
+
+        <div class="categoria">
+          <span>❤️</span>
+          <span>Quiero leer</span>
+        </div>
+
+        <div class="categoria">
+          <span>📖</span>
+          <span>Leyendo</span>
+        </div>
+
+        <div class="categoria">
+          <span>✅</span>
+          <span>Leídos</span>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- JAVASCRIPT -->
+  <script src="script.js"></script>
 
 </body>
 
