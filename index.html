@@ -11,6 +11,10 @@
       box-sizing: border-box;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -24,7 +28,7 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
       position: sticky;
       top: 0;
-      z-index: 10;
+      z-index: 20;
     }
 
     header h1 {
@@ -54,6 +58,10 @@
       font-size: 15px;
       cursor: pointer;
     }
+
+    /* =========================
+       BUSCADOR
+    ========================= */
 
     .buscador-box {
       background: white;
@@ -103,6 +111,10 @@
       color: #666;
       font-size: 14px;
     }
+
+    /* =========================
+       TARJETAS
+    ========================= */
 
     #resultados,
     #listaBiblioteca {
@@ -163,6 +175,10 @@
       font-weight: bold;
     }
 
+    /* =========================
+       MI BIBLIOTECA
+    ========================= */
+
     .mi-biblioteca {
       margin-top: 26px;
     }
@@ -189,6 +205,10 @@
       border-radius: 50%;
       font-size: 13px;
     }
+
+    /* =========================
+       FICHA
+    ========================= */
 
     .volver {
       margin-bottom: 16px;
@@ -255,7 +275,16 @@
       color: white;
       font-weight: bold;
       width: 100%;
-      margin: 5px 0 15px;
+      margin: 5px 0 10px;
+      font-size: 17px;
+    }
+
+    .btn-continuar {
+      background: #1769aa;
+      color: white;
+      font-weight: bold;
+      width: 100%;
+      margin-bottom: 15px;
       font-size: 17px;
     }
 
@@ -279,16 +308,78 @@
       font-weight: bold;
     }
 
+    /* =========================
+       LECTOR
+    ========================= */
+
+    #pantallaLector {
+      padding-bottom: 80px;
+    }
+
+    .barra-lector {
+      position: sticky;
+      top: 82px;
+      z-index: 15;
+      background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(10px);
+      border-radius: 14px;
+      padding: 10px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.10);
+    }
+
+    .controles-lector {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .control-lector {
+      background: #eee;
+      padding: 9px 11px;
+      font-size: 14px;
+    }
+
+    .progreso-contenedor {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .barra-progreso {
+      flex: 1;
+      height: 8px;
+      background: #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    #barraProgresoInterior {
+      width: 0%;
+      height: 100%;
+      background: #1f7a3f;
+      transition: width 0.15s;
+    }
+
+    #porcentajeLectura {
+      font-size: 13px;
+      min-width: 38px;
+      text-align: right;
+    }
+
     .lector {
       background: #fffdf8;
       border-radius: 14px;
       padding: 18px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: background 0.2s, color 0.2s;
     }
 
     .lector-cabecera {
       padding-bottom: 14px;
-      border-bottom: 1px solid #ddd;
+      border-bottom: 1px solid #bbb;
       margin-bottom: 22px;
     }
 
@@ -298,7 +389,7 @@
 
     .lector-cabecera p {
       margin: 0;
-      color: #666;
+      opacity: 0.7;
     }
 
     .lector-texto {
@@ -307,6 +398,25 @@
       line-height: 1.75;
       white-space: pre-wrap;
       overflow-wrap: break-word;
+    }
+
+    .lector.claro {
+      background: #fffdf8;
+      color: #222;
+    }
+
+    .lector.sepia {
+      background: #f2e6cc;
+      color: #3b3025;
+    }
+
+    .lector.oscuro {
+      background: #171717;
+      color: #e8e8e8;
+    }
+
+    .lector.oscuro .lector-cabecera {
+      border-color: #555;
     }
 
     .cargando {
@@ -333,6 +443,8 @@
 
 <main>
 
+  <!-- INICIO -->
+
   <section id="pantallaInicio">
 
     <section class="buscador-box">
@@ -356,35 +468,19 @@
 
       <div class="filtros">
 
-        <button
-          id="filtroTodo"
-          class="filtro activo"
-          onclick="cambiarFiltro('todo')"
-        >
+        <button id="filtroTodo" class="filtro activo" onclick="cambiarFiltro('todo')">
           Todo
         </button>
 
-        <button
-          id="filtroTitulo"
-          class="filtro"
-          onclick="cambiarFiltro('titulo')"
-        >
+        <button id="filtroTitulo" class="filtro" onclick="cambiarFiltro('titulo')">
           Título
         </button>
 
-        <button
-          id="filtroAutor"
-          class="filtro"
-          onclick="cambiarFiltro('autor')"
-        >
+        <button id="filtroAutor" class="filtro" onclick="cambiarFiltro('autor')">
           Autor
         </button>
 
-        <button
-          id="filtroGratis"
-          class="filtro"
-          onclick="cambiarFiltro('gratis')"
-        >
+        <button id="filtroGratis" class="filtro" onclick="cambiarFiltro('gratis')">
           🟢 Gratis
         </button>
 
@@ -394,7 +490,9 @@
 
     </section>
 
+
     <section id="resultados"></section>
+
 
     <section class="mi-biblioteca">
 
@@ -420,6 +518,8 @@
   </section>
 
 
+  <!-- FICHA -->
+
   <section id="pantallaFicha" class="oculto">
 
     <button class="volver" onclick="volverInicio()">
@@ -431,16 +531,64 @@
   </section>
 
 
+  <!-- LECTOR -->
+
   <section id="pantallaLector" class="oculto">
 
     <button class="volver" onclick="volverFicha()">
       ← Volver al libro
     </button>
 
-    <div id="contenidoLector" class="lector"></div>
+    <div class="barra-lector">
+
+      <div class="controles-lector">
+
+        <button class="control-lector" onclick="cambiarTamano(-1)">
+          A−
+        </button>
+
+        <button class="control-lector" onclick="cambiarTamano(1)">
+          A+
+        </button>
+
+        <button class="control-lector" onclick="cambiarTema('claro')">
+          ☀️
+        </button>
+
+        <button class="control-lector" onclick="cambiarTema('sepia')">
+          📜
+        </button>
+
+        <button class="control-lector" onclick="cambiarTema('oscuro')">
+          🌙
+        </button>
+
+        <button class="control-lector" onclick="irAlPrincipio()">
+          ⬆ Inicio
+        </button>
+
+      </div>
+
+      <div class="progreso-contenedor">
+
+        <div class="barra-progreso">
+          <div id="barraProgresoInterior"></div>
+        </div>
+
+        <span id="porcentajeLectura">
+          0%
+        </span>
+
+      </div>
+
+    </div>
+
+    <div id="contenidoLector" class="lector claro"></div>
 
   </section>
 
+
+  <!-- BIBLIOTECA -->
 
   <section id="pantallaBiblioteca" class="oculto">
 
@@ -459,6 +607,10 @@
 
 <script>
 
+/* =========================
+   CONFIG
+========================= */
+
 const WORKER_URL =
   "https://biblioteca-nere-worker.rjaresarias.workers.dev/";
 
@@ -466,9 +618,16 @@ let filtroActual = "todo";
 let libroSeleccionado = null;
 
 let biblioteca =
-  JSON.parse(
-    localStorage.getItem("bibliotecaNere")
-  ) || [];
+  JSON.parse(localStorage.getItem("bibliotecaNere"))
+  || [];
+
+let lectorTamano =
+  Number(localStorage.getItem("nereTamanoTexto"))
+  || 18;
+
+let lectorTema =
+  localStorage.getItem("nereTemaLector")
+  || "claro";
 
 
 /* =========================
@@ -490,45 +649,30 @@ function guardarBiblioteca() {
 function actualizarContadores() {
 
   document.getElementById("contadorQuiero").textContent =
-    biblioteca.filter(
-      libro => libro.estado === "quiero"
-    ).length;
+    biblioteca.filter(libro => libro.estado === "quiero").length;
 
   document.getElementById("contadorLeyendo").textContent =
-    biblioteca.filter(
-      libro => libro.estado === "leyendo"
-    ).length;
+    biblioteca.filter(libro => libro.estado === "leyendo").length;
 
   document.getElementById("contadorLeidos").textContent =
-    biblioteca.filter(
-      libro => libro.estado === "leidos"
-    ).length;
+    biblioteca.filter(libro => libro.estado === "leidos").length;
 
 }
 
 
 function ocultarPantallas() {
 
-  document.getElementById("pantallaInicio")
-    .classList.add("oculto");
-
-  document.getElementById("pantallaFicha")
-    .classList.add("oculto");
-
-  document.getElementById("pantallaLector")
-    .classList.add("oculto");
-
-  document.getElementById("pantallaBiblioteca")
-    .classList.add("oculto");
+  document.getElementById("pantallaInicio").classList.add("oculto");
+  document.getElementById("pantallaFicha").classList.add("oculto");
+  document.getElementById("pantallaLector").classList.add("oculto");
+  document.getElementById("pantallaBiblioteca").classList.add("oculto");
 
 }
 
 
 function escaparHTML(texto) {
 
-  if (!texto) {
-    return "";
-  }
+  if (!texto) return "";
 
   return String(texto)
     .replace(/&/g, "&amp;")
@@ -542,19 +686,235 @@ function escaparHTML(texto) {
 
 function nombreEstado(estado) {
 
-  if (estado === "quiero") {
-    return "❤️ Quiero leer";
-  }
-
-  if (estado === "leyendo") {
-    return "📖 Leyendo";
-  }
-
-  if (estado === "leidos") {
-    return "✅ Leídos";
-  }
+  if (estado === "quiero") return "❤️ Quiero leer";
+  if (estado === "leyendo") return "📖 Leyendo";
+  if (estado === "leidos") return "✅ Leídos";
 
   return "";
+
+}
+
+
+/* =========================
+   PROGRESO DE LECTURA
+========================= */
+
+function claveProgreso(libro) {
+
+  return "nereProgreso_" + libro.key;
+
+}
+
+
+function obtenerProgreso(libro) {
+
+  if (!libro) return 0;
+
+  return Number(
+    localStorage.getItem(
+      claveProgreso(libro)
+    )
+  ) || 0;
+
+}
+
+
+function guardarProgresoActual() {
+
+  if (
+    !libroSeleccionado ||
+    libroSeleccionado.tipo !== "gutenberg"
+  ) {
+    return;
+  }
+
+
+  const documento =
+    document.documentElement;
+
+
+  const maxScroll =
+    documento.scrollHeight -
+    window.innerHeight;
+
+
+  if (maxScroll <= 0) {
+    return;
+  }
+
+
+  const porcentaje =
+    Math.min(
+      100,
+      Math.max(
+        0,
+        (window.scrollY / maxScroll) * 100
+      )
+    );
+
+
+  localStorage.setItem(
+    claveProgreso(libroSeleccionado),
+    porcentaje.toFixed(2)
+  );
+
+
+  actualizarBarraProgreso(
+    porcentaje
+  );
+
+}
+
+
+function actualizarBarraProgreso(porcentaje) {
+
+  const barra =
+    document.getElementById(
+      "barraProgresoInterior"
+    );
+
+  const texto =
+    document.getElementById(
+      "porcentajeLectura"
+    );
+
+
+  if (!barra || !texto) return;
+
+
+  const valor =
+    Math.round(porcentaje || 0);
+
+
+  barra.style.width =
+    valor + "%";
+
+  texto.textContent =
+    valor + "%";
+
+}
+
+
+let temporizadorScroll = null;
+
+
+window.addEventListener(
+  "scroll",
+  function() {
+
+    if (
+      document
+        .getElementById("pantallaLector")
+        .classList.contains("oculto")
+    ) {
+      return;
+    }
+
+
+    clearTimeout(
+      temporizadorScroll
+    );
+
+
+    temporizadorScroll =
+      setTimeout(
+        guardarProgresoActual,
+        150
+      );
+
+  }
+);
+
+
+/* =========================
+   CONTROLES LECTOR
+========================= */
+
+function aplicarConfiguracionLector() {
+
+  const lector =
+    document.getElementById(
+      "contenidoLector"
+    );
+
+  const texto =
+    lector.querySelector(
+      ".lector-texto"
+    );
+
+
+  lector.classList.remove(
+    "claro",
+    "sepia",
+    "oscuro"
+  );
+
+
+  lector.classList.add(
+    lectorTema
+  );
+
+
+  if (texto) {
+
+    texto.style.fontSize =
+      lectorTamano + "px";
+
+  }
+
+}
+
+
+function cambiarTamano(cambio) {
+
+  lectorTamano +=
+    cambio * 2;
+
+
+  lectorTamano =
+    Math.max(
+      14,
+      Math.min(
+        lectorTamano,
+        30
+      )
+    );
+
+
+  localStorage.setItem(
+    "nereTamanoTexto",
+    lectorTamano
+  );
+
+
+  aplicarConfiguracionLector();
+
+}
+
+
+function cambiarTema(tema) {
+
+  lectorTema =
+    tema;
+
+
+  localStorage.setItem(
+    "nereTemaLector",
+    tema
+  );
+
+
+  aplicarConfiguracionLector();
+
+}
+
+
+function irAlPrincipio() {
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
 
 }
 
@@ -567,6 +927,7 @@ function cambiarFiltro(tipo) {
 
   filtroActual = tipo;
 
+
   document
     .querySelectorAll(".filtro")
     .forEach(
@@ -574,16 +935,17 @@ function cambiarFiltro(tipo) {
         boton.classList.remove("activo")
     );
 
+
+  const mapa = {
+    todo: "filtroTodo",
+    titulo: "filtroTitulo",
+    autor: "filtroAutor",
+    gratis: "filtroGratis"
+  };
+
+
   document
-    .getElementById(
-      tipo === "todo"
-        ? "filtroTodo"
-        : tipo === "titulo"
-        ? "filtroTitulo"
-        : tipo === "autor"
-        ? "filtroAutor"
-        : "filtroGratis"
-    )
+    .getElementById(mapa[tipo])
     .classList.add("activo");
 
 }
@@ -628,10 +990,6 @@ async function buscarLibros() {
 
   try {
 
-    /* =========================
-       LIBROS GRATIS
-    ========================= */
-
     if (filtroActual === "gratis") {
 
       const respuesta =
@@ -666,24 +1024,19 @@ async function buscarLibros() {
 
       datos.results
         .slice(0, 12)
-        .forEach(libro => {
-
-          pintarLibroGratis(
-            libro,
-            resultados
-          );
-
-        });
+        .forEach(
+          libro =>
+            pintarLibroGratis(
+              libro,
+              resultados
+            )
+        );
 
 
       return;
 
     }
 
-
-    /* =========================
-       OPEN LIBRARY
-    ========================= */
 
     let consulta = "";
 
@@ -797,14 +1150,13 @@ async function buscarLibros() {
 
     libros
       .slice(0, 12)
-      .forEach(libro => {
-
-        pintarLibroOpenLibrary(
-          libro,
-          resultados
-        );
-
-      });
+      .forEach(
+        libro =>
+          pintarLibroOpenLibrary(
+            libro,
+            resultados
+          )
+      );
 
 
   }
@@ -852,7 +1204,9 @@ function pintarLibroOpenLibrary(
 
 
   const tarjeta =
-    document.createElement("article");
+    document.createElement(
+      "article"
+    );
 
 
   tarjeta.className =
@@ -976,8 +1330,18 @@ function pintarLibroGratis(
     || libro.gutenbergId;
 
 
+  const progreso =
+    obtenerProgreso({
+      key:
+        "gutenberg-"
+        + gutenbergId
+    });
+
+
   const tarjeta =
-    document.createElement("article");
+    document.createElement(
+      "article"
+    );
 
 
   tarjeta.className =
@@ -1018,6 +1382,16 @@ function pintarLibroGratis(
     <div class="anio gratis">
       🟢 Gratis
     </div>
+
+    ${
+      progreso > 1
+        ? `
+          <div class="anio">
+            📖 ${Math.round(progreso)}% leído
+          </div>
+        `
+        : ""
+    }
   `;
 
 
@@ -1085,16 +1459,10 @@ async function abrirFichaOpenLibrary(
     .remove("oculto");
 
 
-  const ficha =
-    document
-      .getElementById("contenidoFicha");
-
-
-  ficha.innerHTML = `
-    <div class="cargando">
-      Cargando ficha...
-    </div>
-  `;
+  document
+    .getElementById("contenidoFicha")
+    .innerHTML =
+      '<div class="cargando">Cargando ficha...</div>';
 
 
   let descripcion =
@@ -1192,11 +1560,8 @@ async function abrirFichaGratis(
 
   document
     .getElementById("contenidoFicha")
-    .innerHTML = `
-      <div class="cargando">
-        Cargando ficha...
-      </div>
-    `;
+    .innerHTML =
+      '<div class="cargando">Cargando ficha...</div>';
 
 
   if (!libro.descripcion) {
@@ -1223,7 +1588,7 @@ async function abrirFichaGratis(
 
 
 /* =========================
-   BUSCAR RESEÑA
+   RESEÑA
 ========================= */
 
 async function buscarDescripcion(
@@ -1308,7 +1673,6 @@ async function buscarDescripcion(
 
     }
 
-
   }
 
   catch (error) {
@@ -1335,8 +1699,9 @@ function pintarFichaComun(
 ) {
 
   const ficha =
-    document
-      .getElementById("contenidoFicha");
+    document.getElementById(
+      "contenidoFicha"
+    );
 
 
   const guardado =
@@ -1346,17 +1711,10 @@ function pintarFichaComun(
     );
 
 
-  const estadoActual =
-    guardado
-      ? `
-        <div class="estado-actual">
-          Guardado en:
-          ${nombreEstado(
-            guardado.estado
-          )}
-        </div>
-      `
-      : "";
+  const progreso =
+    esGratis
+      ? obtenerProgreso(libro)
+      : 0;
 
 
   let portada = "";
@@ -1388,7 +1746,6 @@ function pintarFichaComun(
       <img
         class="ficha-portada"
         src="https://covers.openlibrary.org/b/id/${libro.coverId}-L.jpg"
-        alt="${escaparHTML(libro.titulo)}"
       >
     `;
 
@@ -1405,25 +1762,49 @@ function pintarFichaComun(
   }
 
 
-  const lectura =
-    esGratis
-      ? `
-        <div class="disponibilidad disponible">
-          🟢 Libro gratuito de dominio público
-        </div>
+  let lectura = "";
 
-        <button
-          class="btn-leer"
-          onclick="abrirLector()"
-        >
-          📖 Leer
-        </button>
-      `
-      : `
-        <div class="disponibilidad">
-          ℹ️ Ficha del catálogo general
-        </div>
-      `;
+
+  if (esGratis) {
+
+    lectura = `
+
+      <div class="disponibilidad disponible">
+        🟢 Libro gratuito de dominio público
+      </div>
+
+      <button
+        class="btn-leer"
+        onclick="abrirLector(false)"
+      >
+        📖 Leer desde el principio
+      </button>
+
+      ${
+        progreso > 1
+          ? `
+            <button
+              class="btn-continuar"
+              onclick="abrirLector(true)"
+            >
+              ▶ Continuar leyendo · ${Math.round(progreso)}%
+            </button>
+          `
+          : ""
+      }
+    `;
+
+  }
+
+  else {
+
+    lectura = `
+      <div class="disponibilidad">
+        ℹ️ Ficha del catálogo general
+      </div>
+    `;
+
+  }
 
 
   ficha.innerHTML = `
@@ -1457,28 +1838,30 @@ function pintarFichaComun(
       )}
     </p>
 
-    ${estadoActual}
+    ${
+      guardado
+        ? `
+          <div class="estado-actual">
+            Guardado en:
+            ${nombreEstado(
+              guardado.estado
+            )}
+          </div>
+        `
+        : ""
+    }
 
     <div class="acciones">
 
-      <button
-        class="btn-guardar"
-        onclick="guardarLibro('quiero')"
-      >
+      <button class="btn-guardar" onclick="guardarLibro('quiero')">
         ❤️ Quiero leer
       </button>
 
-      <button
-        class="btn-guardar"
-        onclick="guardarLibro('leyendo')"
-      >
+      <button class="btn-guardar" onclick="guardarLibro('leyendo')">
         📖 Estoy leyendo
       </button>
 
-      <button
-        class="btn-guardar"
-        onclick="guardarLibro('leidos')"
-      >
+      <button class="btn-guardar" onclick="guardarLibro('leidos')">
         ✅ Leído
       </button>
 
@@ -1492,12 +1875,15 @@ function pintarFichaComun(
    LECTOR
 ========================= */
 
-async function abrirLector() {
+async function abrirLector(
+  continuar = false
+) {
 
   if (
     !libroSeleccionado
     ||
-    libroSeleccionado.tipo !== "gutenberg"
+    libroSeleccionado.tipo
+    !== "gutenberg"
   ) {
 
     return;
@@ -1509,21 +1895,6 @@ async function abrirLector() {
     libroSeleccionado.gutenbergId
     || libroSeleccionado.id;
 
-
-  if (!id) {
-
-    alert(
-      "No se ha encontrado el identificador del libro."
-    );
-
-    return;
-
-  }
-
-
-  /*
-    Construimos nosotros la URL.
-  */
 
   const urlLibro =
     "https://www.gutenberg.org/cache/epub/"
@@ -1543,37 +1914,31 @@ async function abrirLector() {
 
 
   const lector =
-    document
-      .getElementById("contenidoLector");
+    document.getElementById(
+      "contenidoLector"
+    );
 
 
-  lector.innerHTML = `
-    <div class="cargando">
-      📖 Cargando libro...
-    </div>
-  `;
+  lector.innerHTML =
+    '<div class="cargando">📖 Cargando libro...</div>';
 
 
   try {
 
-    const urlWorker =
-      WORKER_URL
-      + "?url="
-      + encodeURIComponent(
-        urlLibro
-      );
-
-
     const respuesta =
       await fetch(
-        urlWorker
+        WORKER_URL
+        + "?url="
+        + encodeURIComponent(
+          urlLibro
+        )
       );
 
 
     if (!respuesta.ok) {
 
       throw new Error(
-        "Error al cargar el libro."
+        "Error al cargar libro"
       );
 
     }
@@ -1607,9 +1972,58 @@ async function abrirLector() {
     `;
 
 
-    window.scrollTo(
-      0,
-      0
+    aplicarConfiguracionLector();
+
+
+    const progreso =
+      obtenerProgreso(
+        libroSeleccionado
+      );
+
+
+    actualizarBarraProgreso(
+      continuar
+        ? progreso
+        : 0
+    );
+
+
+    setTimeout(
+      function() {
+
+        if (
+          continuar
+          &&
+          progreso > 0
+        ) {
+
+          const maxScroll =
+            document
+              .documentElement
+              .scrollHeight
+            -
+            window.innerHeight;
+
+
+          window.scrollTo(
+            0,
+            maxScroll
+            * (progreso / 100)
+          );
+
+        }
+
+        else {
+
+          window.scrollTo(
+            0,
+            0
+          );
+
+        }
+
+      },
+      250
     );
 
 
@@ -1627,7 +2041,7 @@ async function abrirLector() {
       </h3>
 
       <p>
-        No se ha encontrado una versión de texto compatible para este libro.
+        No se ha encontrado una versión de texto compatible.
       </p>
     `;
 
@@ -1642,6 +2056,9 @@ async function abrirLector() {
 
 function volverFicha() {
 
+  guardarProgresoActual();
+
+
   if (!libroSeleccionado) {
 
     volverInicio();
@@ -1652,7 +2069,8 @@ function volverFicha() {
 
 
   if (
-    libroSeleccionado.tipo === "gutenberg"
+    libroSeleccionado.tipo
+    === "gutenberg"
   ) {
 
     abrirFichaGratis(
@@ -1676,9 +2094,7 @@ function volverFicha() {
    GUARDAR
 ========================= */
 
-function guardarLibro(
-  estado
-) {
+function guardarLibro(estado) {
 
   if (!libroSeleccionado) {
     return;
@@ -1688,7 +2104,8 @@ function guardarLibro(
   const existente =
     biblioteca.find(
       libro =>
-        libro.key === libroSeleccionado.key
+        libro.key
+        === libroSeleccionado.key
     );
 
 
@@ -1729,38 +2146,42 @@ function guardarLibro(
 
   pintarFichaComun(
     libroSeleccionado,
-    libroSeleccionado.tipo === "gutenberg"
+    libroSeleccionado.tipo
+      === "gutenberg"
   );
 
 }
 
 
 /* =========================
-   MI BIBLIOTECA
+   BIBLIOTECA
 ========================= */
 
-function abrirBiblioteca(
-  estado
-) {
+function abrirBiblioteca(estado) {
 
   ocultarPantallas();
 
 
   document
-    .getElementById("pantallaBiblioteca")
+    .getElementById(
+      "pantallaBiblioteca"
+    )
     .classList
     .remove("oculto");
 
 
   document
-    .getElementById("tituloBiblioteca")
+    .getElementById(
+      "tituloBiblioteca"
+    )
     .textContent =
       nombreEstado(estado);
 
 
   const lista =
-    document
-      .getElementById("listaBiblioteca");
+    document.getElementById(
+      "listaBiblioteca"
+    );
 
 
   lista.innerHTML = "";
@@ -1822,7 +2243,9 @@ function volverInicio() {
 
 
   document
-    .getElementById("pantallaInicio")
+    .getElementById(
+      "pantallaInicio"
+    )
     .classList
     .remove("oculto");
 
@@ -1848,7 +2271,9 @@ document
     "keydown",
     function(evento) {
 
-      if (evento.key === "Enter") {
+      if (
+        evento.key === "Enter"
+      ) {
 
         buscarLibros();
 
