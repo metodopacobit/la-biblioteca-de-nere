@@ -80,6 +80,7 @@
       display: flex;
       gap: 8px;
       margin-top: 10px;
+      flex-wrap: wrap;
     }
 
     .filtro {
@@ -215,11 +216,28 @@
     .btn-guardar {
       text-align: left;
       background: #f1f1f1;
+      width: 100%;
+    }
+
+    .btn-leer {
+      background: #1f7a3f;
+      color: white;
+      font-weight: bold;
+      text-align: center;
+      width: 100%;
+      margin-top: 12px;
     }
 
     .estado-actual {
       margin-top: 12px;
       font-weight: bold;
+    }
+
+    .disponibilidad {
+      margin-top: 12px;
+      padding: 10px;
+      border-radius: 10px;
+      background: #f2f2f2;
     }
 
     .titulo-biblioteca {
@@ -293,6 +311,14 @@
           onclick="cambiarFiltro('autor')"
         >
           Autor
+        </button>
+
+        <button
+          id="filtroGratis"
+          class="filtro"
+          onclick="cambiarFiltro('gratis')"
+        >
+          🟢 Gratis
         </button>
 
       </div>
@@ -428,6 +454,12 @@ function cambiarFiltro(tipo) {
       .classList.add("activo");
   }
 
+  if (tipo === "gratis") {
+    document
+      .getElementById("filtroGratis")
+      .classList.add("activo");
+  }
+
 }
 
 
@@ -484,6 +516,16 @@ async function buscarLibros() {
 
     }
 
+    else if (filtroActual === "gratis") {
+
+      consulta =
+        "q=" +
+        encodeURIComponent(
+          texto + " ebook_access:public"
+        );
+
+    }
+
     else {
 
       consulta =
@@ -493,12 +535,20 @@ async function buscarLibros() {
     }
 
 
+    const url =
+      "https://openlibrary.org/search.json?"
+      + consulta
+      + "&fields=key,title,author_name,first_publish_year,cover_i,ebook_access,ia"
+      + "&limit=20";
+
+
     const respuesta =
-      await fetch(
-        "https://openlibrary.org/search.json?"
-        + consulta
-        + "&limit=20"
-      );
+      await fetch(url);
+
+
+    if (!respuesta.ok) {
+      throw new Error("Error en Open Library");
+    }
 
 
     const datos =
@@ -593,13 +643,12 @@ async function buscarLibros() {
 }
 
 
-function pintarLibro(
-  libro,
-  contenedor
-) {
+function pintarLibro(libro, contenedor) {
 
   const titulo =
-    libro.title || "Sin título";
+    libro.title
+    || libro.titulo
+    || "Sin título";
 
   const autor =
     libro.author_name?.[0]
@@ -615,6 +664,19 @@ function pintarLibro(
     libro.cover_i
     || libro.coverId
     || null;
+
+  const ebookAccess =
+    libro.ebook_access
+    || libro.ebookAccess
+    || null;
+
+  let ia = null;
+
+  if (Array.isArray(libro.ia)) {
+    ia = libro.ia[0] || null;
+  } else {
+    ia = libro.ia || null;
+  }
 
 
   let portada = "";
@@ -673,13 +735,23 @@ function pintarLibro(
       abrirFicha({
 
         titulo: titulo,
+
         autor: autor,
+
         año: año,
+
         coverId: coverId,
+
         key:
           libro.key
           || libro.keyLibro
-          || titulo + autor
+          || titulo + autor,
+
+        ebookAccess:
+          ebookAccess,
+
+        ia:
+          ia
 
       });
 
@@ -697,6 +769,7 @@ async function abrirFicha(libro) {
 
   libroSeleccionado =
     libro;
+
 
   document
     .getElementById("pantallaInicio")
@@ -742,26 +815,30 @@ async function abrirFicha(libro) {
           + ".json"
         );
 
-      const datos =
-        await respuesta.json();
+      if (respuesta.ok) {
+
+        const datos =
+          await respuesta.json();
 
 
-      if (
-        typeof datos.description
-        === "string"
-      ) {
+        if (
+          typeof datos.description
+          === "string"
+        ) {
 
-        descripcion =
-          datos.description;
+          descripcion =
+            datos.description;
 
-      }
+        }
 
-      else if (
-        datos.description?.value
-      ) {
+        else if (
+          datos.description?.value
+        ) {
 
-        descripcion =
-          datos.description.value;
+          descripcion =
+            datos.description.value;
+
+        }
 
       }
 
@@ -788,6 +865,7 @@ async function abrirFicha(libro) {
       <img
         class="ficha-portada"
         src="https://covers.openlibrary.org/b/id/${libro.coverId}-L.jpg"
+        alt="${libro.titulo}"
       >
       `;
 
@@ -829,6 +907,42 @@ async function abrirFicha(libro) {
   }
 
 
+  let zonaLectura = "";
+
+
+  if (
+    libro.ebookAccess === "public"
+    && libro.ia
+  ) {
+
+    zonaLectura =
+      `
+      <div class="disponibilidad">
+        🟢 Este libro tiene una copia pública disponible.
+      </div>
+
+      <button
+        class="btn-leer"
+        onclick="leerLibro('${libro.ia}')"
+      >
+        📖 Leer gratis
+      </button>
+      `;
+
+  }
+
+  else {
+
+    zonaLectura =
+      `
+      <div class="disponibilidad">
+        🔒 No hay una copia gratuita disponible para leer desde esta ficha.
+      </div>
+      `;
+
+  }
+
+
   ficha.innerHTML =
     `
     ${portada}
@@ -844,6 +958,8 @@ async function abrirFicha(libro) {
     <p>
       ${libro.año}
     </p>
+
+    ${zonaLectura}
 
     <h3>Descripción</h3>
 
@@ -882,9 +998,18 @@ async function abrirFicha(libro) {
 }
 
 
-function guardarLibro(
-  estado
-) {
+function leerLibro(identifier) {
+
+  window.open(
+    "https://archive.org/details/"
+    + identifier,
+    "_blank"
+  );
+
+}
+
+
+function guardarLibro(estado) {
 
   if (!libroSeleccionado) {
     return;
@@ -903,6 +1028,12 @@ function guardarLibro(
 
     existente.estado =
       estado;
+
+    existente.ebookAccess =
+      libroSeleccionado.ebookAccess;
+
+    existente.ia =
+      libroSeleccionado.ia;
 
   }
 
@@ -924,6 +1055,12 @@ function guardarLibro(
 
       coverId:
         libroSeleccionado.coverId,
+
+      ebookAccess:
+        libroSeleccionado.ebookAccess,
+
+      ia:
+        libroSeleccionado.ia,
 
       estado:
         estado
@@ -949,9 +1086,7 @@ function guardarLibro(
 }
 
 
-function nombreEstado(
-  estado
-) {
+function nombreEstado(estado) {
 
   if (estado === "quiero") {
     return "❤️ Quiero leer";
@@ -970,9 +1105,7 @@ function nombreEstado(
 }
 
 
-function abrirBiblioteca(
-  estado
-) {
+function abrirBiblioteca(estado) {
 
   document
     .getElementById("pantallaInicio")
@@ -1038,7 +1171,13 @@ function abrirBiblioteca(
           libro.coverId,
 
         keyLibro:
-          libro.key
+          libro.key,
+
+        ebookAccess:
+          libro.ebookAccess,
+
+        ia:
+          libro.ia
       },
 
       lista
