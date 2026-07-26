@@ -1,7 +1,6 @@
 /* ===================================================== */
 /* LA BIBLIOTECA DE NERE                                */
-/* LECTOR.JS                                            */
-/* Lector, progreso, temas y tamaño de texto            */
+/* LECTOR.JS - PROGRESO CORREGIDO                       */
 /* ===================================================== */
 
 
@@ -32,44 +31,47 @@ let tamanoTextoActual =
     || 18;
 
 
-let libroEnLectura =
-    null;
+let libroEnLectura = null;
+
+let guardadoScrollPendiente = null;
 
 
-let guardadoScrollPendiente =
-    null;
+/*
+   MUY IMPORTANTE:
+
+   Mientras abrimos el libro o restauramos
+   su posición, bloqueamos temporalmente
+   el guardado automático.
+
+   Esto evita que se guarde 100% por error.
+*/
+
+let restaurandoPosicion = false;
+
+let lectorCargado = false;
 
 
 /* ===================================================== */
 /* ABRIR LECTOR                                         */
 /* ===================================================== */
 
-async function abrirLector(
-    libro
-) {
+async function abrirLector(libro) {
 
     if (!libro) {
-
         return;
-
     }
 
 
-    libroEnLectura =
-        libro;
+    libroEnLectura = libro;
+
+    lectorCargado = false;
+
+    restaurandoPosicion = true;
 
 
-    /*
-      También mantenemos sincronizado
-      el libro actual de app.js.
-    */
+    if (window.estadoApp) {
 
-    if (
-        window.estadoApp
-    ) {
-
-        window.estadoApp
-            .libroActual =
+        window.estadoApp.libroActual =
             libro;
 
     }
@@ -79,9 +81,27 @@ async function abrirLector(
         libro;
 
 
+    /*
+       Primero mostramos el lector.
+    */
+
     mostrarPantalla(
         "pantalla-lector"
     );
+
+
+    /*
+       CORRECCIÓN IMPORTANTE:
+
+       No heredamos la posición de scroll
+       de Infantil, Juvenil, Buscar, etc.
+    */
+
+    window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "auto"
+    });
 
 
     prepararCabeceraLector(
@@ -92,12 +112,12 @@ async function abrirLector(
     mostrarCargandoLector();
 
 
-    try {
+    actualizarIndicadorProgreso(
+        0
+    );
 
-        /*
-          api.js implementa descargarLibroTexto()
-          y prepararContenidoLibro().
-        */
+
+    try {
 
         if (
             typeof descargarLibroTexto
@@ -117,13 +137,12 @@ async function abrirLector(
             );
 
 
-        let contenido =
-            "";
+        let contenido = "";
 
 
         if (
-            typeof prepararContenidoLibro
-            === "function"
+            typeof prepararContenidoLibro ===
+            "function"
         ) {
 
             contenido =
@@ -162,19 +181,24 @@ async function abrirLector(
 
 
         /*
-          Esperamos a que el navegador
-          termine de pintar el texto.
+           Dejamos que el navegador calcule
+           primero la altura real del libro.
         */
 
-        setTimeout(
-            () => {
+        requestAnimationFrame(
+            function() {
 
-                restaurarProgresoLibro(
-                    libro
+                requestAnimationFrame(
+                    function() {
+
+                        restaurarProgresoLibro(
+                            libro
+                        );
+
+                    }
                 );
 
-            },
-            250
+            }
         );
 
     }
@@ -185,6 +209,14 @@ async function abrirLector(
             "Error abriendo libro:",
             error
         );
+
+
+        restaurandoPosicion =
+            false;
+
+
+        lectorCargado =
+            false;
 
 
         mostrarErrorLector(
@@ -199,7 +231,7 @@ async function abrirLector(
 
 
 /* ===================================================== */
-/* CABECERA DEL LECTOR                                  */
+/* CABECERA                                             */
 /* ===================================================== */
 
 function prepararCabeceraLector(
@@ -253,9 +285,7 @@ function mostrarCargandoLector() {
 
 
     if (!contenedor) {
-
         return;
-
     }
 
 
@@ -276,7 +306,7 @@ function mostrarCargandoLector() {
 
 
 /* ===================================================== */
-/* PINTAR TEXTO                                         */
+/* PINTAR CONTENIDO                                     */
 /* ===================================================== */
 
 function pintarContenidoLector(
@@ -290,9 +320,7 @@ function pintarContenidoLector(
 
 
     if (!contenedor) {
-
         return;
-
     }
 
 
@@ -300,17 +328,10 @@ function pintarContenidoLector(
         contenido;
 
 
-    /*
-      Añadimos clase a párrafos
-      para que el texto quede más limpio.
-    */
-
     contenedor
-        .querySelectorAll(
-            "p"
-        )
+        .querySelectorAll("p")
         .forEach(
-            parrafo => {
+            function(parrafo) {
 
                 parrafo.style.margin =
                     "0 0 1.2em";
@@ -319,18 +340,10 @@ function pintarContenidoLector(
         );
 
 
-    /*
-      Evitamos imágenes enormes
-      en caso de que Gutenberg
-      devuelva alguna.
-    */
-
     contenedor
-        .querySelectorAll(
-            "img"
-        )
+        .querySelectorAll("img")
         .forEach(
-            imagen => {
+            function(imagen) {
 
                 imagen.style.maxWidth =
                     "100%";
@@ -359,9 +372,7 @@ function mostrarErrorLector(
 
 
     if (!contenedor) {
-
         return;
-
     }
 
 
@@ -429,25 +440,43 @@ function mostrarErrorLector(
 
 function cerrarLector() {
 
-    guardarProgresoLectura();
+    /*
+       Guardamos únicamente si el libro
+       terminó de cargar correctamente.
+    */
+
+    if (
+        lectorCargado &&
+        !restaurandoPosicion
+    ) {
+
+        guardarProgresoLectura();
+
+    }
+
+
+    restaurandoPosicion =
+        true;
+
+
+    clearTimeout(
+        guardadoScrollPendiente
+    );
 
 
     if (
-        window.estadoApp
-        &&
+        window.estadoApp &&
         libroEnLectura
     ) {
 
-        window.estadoApp
-            .libroActual =
+        window.estadoApp.libroActual =
             libroEnLectura;
 
     }
 
 
     /*
-      Volvemos a la ficha del libro,
-      no directamente al inicio.
+       Volvemos a la ficha.
     */
 
     mostrarPantalla(
@@ -455,10 +484,16 @@ function cerrarLector() {
     );
 
 
+    window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "auto"
+    });
+
+
     if (
-        typeof pintarFichaLibro
-        === "function"
-        &&
+        typeof pintarFichaLibro ===
+        "function" &&
         libroEnLectura
     ) {
 
@@ -468,11 +503,22 @@ function cerrarLector() {
 
     }
 
+
+    setTimeout(
+        function() {
+
+            restaurandoPosicion =
+                false;
+
+        },
+        150
+    );
+
 }
 
 
 /* ===================================================== */
-/* PROGRESO                                             */
+/* ID                                                   */
 /* ===================================================== */
 
 function obtenerIdLibroLector(
@@ -480,8 +526,8 @@ function obtenerIdLibroLector(
 ) {
 
     if (
-        typeof obtenerIdLibro
-        === "function"
+        typeof obtenerIdLibro ===
+        "function"
     ) {
 
         return obtenerIdLibro(
@@ -504,6 +550,10 @@ function obtenerIdLibroLector(
 }
 
 
+/* ===================================================== */
+/* LEER PROGRESOS                                       */
+/* ===================================================== */
+
 function leerProgresosLector() {
 
     try {
@@ -515,9 +565,7 @@ function leerProgresosLector() {
 
 
         if (!datos) {
-
             return {};
-
         }
 
 
@@ -543,6 +591,10 @@ function leerProgresosLector() {
 
 }
 
+
+/* ===================================================== */
+/* GUARDAR PROGRESOS                                    */
+/* ===================================================== */
 
 function guardarProgresosLector(
     progresos
@@ -577,50 +629,63 @@ function guardarProgresosLector(
 
 function calcularPorcentajeLectura() {
 
-    const pantalla =
-        document.getElementById(
-            "pantalla-lector"
-        );
-
-
     if (
-        !pantalla
-        ||
-        !pantalla.classList
-            .contains("activa")
+        !lectorCargado ||
+        restaurandoPosicion
     ) {
 
-        return 0;
-
+        return null;
     }
 
 
-    const alturaDocumento =
-        document.documentElement
-            .scrollHeight;
+    const contenido =
+        document.getElementById(
+            "contenido-lector"
+        );
 
 
-    const alturaVentana =
-        window.innerHeight;
+    if (!contenido) {
+        return null;
+    }
 
 
-    const maxScroll =
+    /*
+       Calculamos el progreso respecto
+       al TEXTO DEL LIBRO.
+
+       Ya no usamos toda la página.
+    */
+
+    const inicioLibro =
+        contenido.offsetTop;
+
+
+    const alturaLibro =
+        contenido.scrollHeight;
+
+
+    const posicionActual =
+        window.scrollY;
+
+
+    const recorrido =
         Math.max(
             1,
-            alturaDocumento
-            -
-            alturaVentana
+            alturaLibro -
+            window.innerHeight
         );
+
+
+    const avance =
+        posicionActual -
+        inicioLibro;
 
 
     const porcentaje =
         (
-            window.scrollY
-            /
-            maxScroll
-        )
-        *
-        100;
+            avance /
+            recorrido
+        ) * 100;
 
 
     return Math.min(
@@ -640,7 +705,11 @@ function calcularPorcentajeLectura() {
 
 function guardarProgresoLectura() {
 
-    if (!libroEnLectura) {
+    if (
+        !libroEnLectura ||
+        restaurandoPosicion ||
+        !lectorCargado
+    ) {
 
         return;
 
@@ -654,9 +723,7 @@ function guardarProgresoLectura() {
 
 
     if (!id) {
-
         return;
-
     }
 
 
@@ -664,17 +731,37 @@ function guardarProgresoLectura() {
         calcularPorcentajeLectura();
 
 
+    if (
+        porcentaje === null ||
+        Number.isNaN(
+            porcentaje
+        )
+    ) {
+
+        return;
+
+    }
+
+
     const progresos =
         leerProgresosLector();
 
 
+    /*
+       Guardamos únicamente valores
+       válidos entre 0 y 100.
+    */
+
     progresos[id] = {
 
         porcentaje:
-            porcentaje,
-
-        scroll:
-            window.scrollY,
+            Math.min(
+                100,
+                Math.max(
+                    0,
+                    porcentaje
+                )
+            ),
 
         fecha:
             Date.now()
@@ -691,12 +778,6 @@ function guardarProgresoLectura() {
         porcentaje
     );
 
-
-    /*
-      Si el libro se está leyendo,
-      lo dejamos en estado "leyendo"
-      automáticamente.
-    */
 
     actualizarLibroComoLeyendo(
         libroEnLectura
@@ -720,117 +801,164 @@ function restaurarProgresoLibro(
     libro
 ) {
 
+    restaurandoPosicion =
+        true;
+
+
     const id =
         obtenerIdLibroLector(
             libro
         );
 
 
-    if (!id) {
-
-        subirInicioLector();
-
-        return;
-
-    }
-
-
     const progresos =
         leerProgresosLector();
 
 
-    const progreso =
-        progresos[id];
+    const guardado =
+        id
+        ? progresos[id]
+        : null;
 
 
-    if (!progreso) {
+    let porcentaje = 0;
 
-        subirInicioLector();
 
-        actualizarIndicadorProgreso(
-            0
+    if (
+        typeof guardado ===
+        "number"
+    ) {
+
+        porcentaje =
+            guardado;
+
+    }
+
+    else if (
+        guardado &&
+        typeof guardado.porcentaje ===
+        "number"
+    ) {
+
+        porcentaje =
+            guardado.porcentaje;
+
+    }
+
+
+    porcentaje =
+        Math.min(
+            100,
+            Math.max(
+                0,
+                porcentaje
+            )
         );
+
+
+    const contenido =
+        document.getElementById(
+            "contenido-lector"
+        );
+
+
+    if (!contenido) {
+
+        restaurandoPosicion =
+            false;
 
         return;
 
     }
 
 
-    let porcentaje =
-        0;
+    const inicioLibro =
+        contenido.offsetTop;
 
 
-    if (
-        typeof progreso
-        === "number"
-    ) {
-
-        porcentaje =
-            progreso;
-
-    }
-
-    else {
-
-        porcentaje =
-            Number(
-                progreso.porcentaje
-            )
-            ||
-            0;
-
-    }
-
-
-    /*
-      Restauramos por porcentaje
-      porque es más robusto si cambia
-      ligeramente el tamaño de texto.
-    */
-
-    const alturaDocumento =
-        document.documentElement
-            .scrollHeight;
-
-
-    const alturaVentana =
-        window.innerHeight;
-
-
-    const maxScroll =
+    const recorrido =
         Math.max(
             0,
-            alturaDocumento
-            -
-            alturaVentana
+            contenido.scrollHeight -
+            window.innerHeight
         );
 
 
     const destino =
-        maxScroll
-        *
+        inicioLibro
+        +
         (
-            porcentaje
-            /
+            recorrido *
+            porcentaje /
             100
         );
 
 
-    window.scrollTo(
-        0,
-        destino
-    );
+    /*
+       NUNCA usamos smooth aquí.
+
+       El movimiento suave disparaba
+       múltiples eventos scroll y podía
+       guardar porcentajes incorrectos.
+    */
+
+    window.scrollTo({
+        top:
+            porcentaje <= 0
+                ? 0
+                : destino,
+
+        left: 0,
+
+        behavior: "auto"
+    });
 
 
     actualizarIndicadorProgreso(
         porcentaje
     );
 
+
+    /*
+       Dejamos terminar por completo
+       el reposicionamiento antes de
+       permitir guardar progreso.
+    */
+
+    setTimeout(
+        function() {
+
+            lectorCargado =
+                true;
+
+
+            restaurandoPosicion =
+                false;
+
+
+            const real =
+                calcularPorcentajeLectura();
+
+
+            if (
+                real !== null
+            ) {
+
+                actualizarIndicadorProgreso(
+                    real
+                );
+
+            }
+
+        },
+        350
+    );
+
 }
 
 
 /* ===================================================== */
-/* BARRA DE PROGRESO                                    */
+/* INDICADOR                                            */
 /* ===================================================== */
 
 function actualizarIndicadorProgreso(
@@ -855,7 +983,9 @@ function actualizarIndicadorProgreso(
                 100,
                 Math.max(
                     0,
-                    porcentaje
+                    Number(
+                        porcentaje
+                    ) || 0
                 )
             )
         );
@@ -864,9 +994,7 @@ function actualizarIndicadorProgreso(
     if (relleno) {
 
         relleno.style.width =
-            valor
-            +
-            "%";
+            valor + "%";
 
     }
 
@@ -874,9 +1002,7 @@ function actualizarIndicadorProgreso(
     if (texto) {
 
         texto.textContent =
-            valor
-            +
-            "%";
+            valor + "%";
 
     }
 
@@ -889,7 +1015,7 @@ function actualizarIndicadorProgreso(
 
 window.addEventListener(
     "scroll",
-    () => {
+    function() {
 
         const pantalla =
             document.getElementById(
@@ -898,10 +1024,12 @@ window.addEventListener(
 
 
         if (
-            !pantalla
-            ||
-            !pantalla.classList
-                .contains("activa")
+            !pantalla ||
+            !pantalla.classList.contains(
+                "activa"
+            ) ||
+            restaurandoPosicion ||
+            !lectorCargado
         ) {
 
             return;
@@ -913,15 +1041,16 @@ window.addEventListener(
             calcularPorcentajeLectura();
 
 
-        actualizarIndicadorProgreso(
-            porcentaje
-        );
+        if (
+            porcentaje !== null
+        ) {
 
+            actualizarIndicadorProgreso(
+                porcentaje
+            );
 
-        /*
-          Evitamos escribir localStorage
-          en cada píxel de scroll.
-        */
+        }
+
 
         clearTimeout(
             guardadoScrollPendiente
@@ -930,12 +1059,12 @@ window.addEventListener(
 
         guardadoScrollPendiente =
             setTimeout(
-                () => {
+                function() {
 
                     guardarProgresoLectura();
 
                 },
-                250
+                300
             );
 
     },
@@ -954,11 +1083,10 @@ function actualizarLibroComoLeyendo(
 ) {
 
     if (
-        typeof obtenerBiblioteca
-        !== "function"
-        ||
-        typeof guardarBibliotecaLocal
-        !== "function"
+        typeof obtenerBiblioteca !==
+        "function" ||
+        typeof guardarBibliotecaLocal !==
+        "function"
     ) {
 
         return;
@@ -978,16 +1106,12 @@ function actualizarLibroComoLeyendo(
 
     const indice =
         biblioteca.findIndex(
-            item => {
-
-                const itemId =
-                    obtenerIdLibroLector(
-                        item
-                    );
-
+            function(item) {
 
                 return (
-                    itemId
+                    obtenerIdLibroLector(
+                        item
+                    )
                     === id
                 );
 
@@ -999,8 +1123,7 @@ function actualizarLibroComoLeyendo(
 
         ...libro,
 
-        idInterno:
-            id,
+        idInterno: id,
 
         estado:
             "leyendo",
@@ -1011,15 +1134,15 @@ function actualizarLibroComoLeyendo(
     };
 
 
-    if (
-        indice >= 0
-    ) {
+    if (indice >= 0) {
 
-        biblioteca[indice] =
-            {
-                ...biblioteca[indice],
-                ...guardado
-            };
+        biblioteca[indice] = {
+
+            ...biblioteca[indice],
+
+            ...guardado
+
+        };
 
     }
 
@@ -1051,27 +1174,31 @@ function toggleControlesLector() {
         );
 
 
-    if (!controles) {
-
-        return;
-
-    }
-
-
-    controles.classList.toggle(
-        "oculto"
-    );
+    controles
+        ?.classList
+        .toggle(
+            "oculto"
+        );
 
 }
 
 
 /* ===================================================== */
-/* TAMAÑO DE TEXTO                                      */
+/* TAMAÑO                                               */
 /* ===================================================== */
 
 function cambiarTamanoTexto(
     cambio
 ) {
+
+    /*
+       Guardamos dónde estábamos ANTES
+       de cambiar el tamaño.
+    */
+
+    const porcentaje =
+        calcularPorcentajeLectura();
+
 
     tamanoTextoActual +=
         cambio * 2;
@@ -1096,26 +1223,26 @@ function cambiarTamanoTexto(
     aplicarTamanoActual();
 
 
-    /*
-      Guardamos primero el porcentaje
-      antes de que cambie la altura
-      del documento.
-    */
+    if (
+        porcentaje !== null
+    ) {
 
-    const porcentaje =
-        calcularPorcentajeLectura();
+        restaurandoPosicion =
+            true;
 
 
-    setTimeout(
-        () => {
+        setTimeout(
+            function() {
 
-            restaurarPorcentaje(
-                porcentaje
-            );
+                restaurarPorcentaje(
+                    porcentaje
+                );
 
-        },
-        100
-    );
+            },
+            100
+        );
+
+    }
 
 }
 
@@ -1129,9 +1256,7 @@ function aplicarTamanoActual() {
 
 
     if (!contenido) {
-
         return;
-
     }
 
 
@@ -1151,19 +1276,12 @@ function cambiarTemaLector(
     tema
 ) {
 
-    const permitidos = [
-
-        "claro",
-
-        "sepia",
-
-        "oscuro"
-
-    ];
-
-
     if (
-        !permitidos.includes(
+        ![
+            "claro",
+            "sepia",
+            "oscuro"
+        ].includes(
             tema
         )
     ) {
@@ -1197,9 +1315,7 @@ function aplicarTemaActual() {
 
 
     if (!contenido) {
-
         return;
-
     }
 
 
@@ -1211,8 +1327,7 @@ function aplicarTemaActual() {
 
 
     contenido.classList.add(
-        "tema-"
-        +
+        "tema-" +
         temaLectorActual
     );
 
@@ -1220,86 +1335,97 @@ function aplicarTemaActual() {
 
 
 /* ===================================================== */
-/* IR AL PRINCIPIO                                      */
+/* IR ARRIBA                                            */
 /* ===================================================== */
 
 function subirInicioLector() {
 
     window.scrollTo({
-
         top: 0,
-
-        behavior:
-            "smooth"
-
+        left: 0,
+        behavior: "smooth"
     });
 
 }
 
 
 /* ===================================================== */
-/* RESTAURAR PORCENTAJE                                 */
+/* RESTAURAR TRAS CAMBIAR LETRA                         */
 /* ===================================================== */
 
 function restaurarPorcentaje(
     porcentaje
 ) {
 
-    const alturaDocumento =
-        document.documentElement
-            .scrollHeight;
+    const contenido =
+        document.getElementById(
+            "contenido-lector"
+        );
 
 
-    const alturaVentana =
-        window.innerHeight;
+    if (!contenido) {
+
+        restaurandoPosicion =
+            false;
+
+        return;
+
+    }
 
 
-    const maxScroll =
+    const inicioLibro =
+        contenido.offsetTop;
+
+
+    const recorrido =
         Math.max(
             0,
-            alturaDocumento
-            -
-            alturaVentana
+            contenido.scrollHeight -
+            window.innerHeight
         );
 
 
     const destino =
-        maxScroll
-        *
+        inicioLibro
+        +
+        recorrido *
         (
-            porcentaje
-            /
+            porcentaje /
             100
         );
 
 
-    window.scrollTo(
-        0,
-        destino
+    window.scrollTo({
+        top: destino,
+        left: 0,
+        behavior: "auto"
+    });
+
+
+    setTimeout(
+        function() {
+
+            restaurandoPosicion =
+                false;
+
+        },
+        250
     );
 
 }
 
 
 /* ===================================================== */
-/* GUARDAR AL SALIR DE LA PÁGINA                        */
+/* SALIR DE APP                                         */
 /* ===================================================== */
 
 window.addEventListener(
     "pagehide",
-    () => {
-
-        const pantalla =
-            document.getElementById(
-                "pantalla-lector"
-            );
-
+    function() {
 
         if (
-            pantalla
-            &&
-            pantalla.classList
-                .contains("activa")
+            lectorCargado &&
+            !restaurandoPosicion
         ) {
 
             guardarProgresoLectura();
@@ -1311,33 +1437,20 @@ window.addEventListener(
 
 
 /* ===================================================== */
-/* VISIBILIDAD                                          */
+/* APP EN SEGUNDO PLANO                                 */
 /* ===================================================== */
 
 document.addEventListener(
     "visibilitychange",
-    () => {
+    function() {
 
         if (
-            document.hidden
+            document.hidden &&
+            lectorCargado &&
+            !restaurandoPosicion
         ) {
 
-            const pantalla =
-                document.getElementById(
-                    "pantalla-lector"
-                );
-
-
-            if (
-                pantalla
-                &&
-                pantalla.classList
-                    .contains("activa")
-            ) {
-
-                guardarProgresoLectura();
-
-            }
+            guardarProgresoLectura();
 
         }
 
@@ -1346,7 +1459,7 @@ document.addEventListener(
 
 
 /* ===================================================== */
-/* ESCAPAR HTML                                         */
+/* HTML SEGURO                                          */
 /* ===================================================== */
 
 function escaparHTMLLector(
@@ -1356,37 +1469,27 @@ function escaparHTMLLector(
     return String(
         texto || ""
     )
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+
+    .replace(/&/g, "&amp;")
+
+    .replace(/</g, "&lt;")
+
+    .replace(/>/g, "&gt;")
+
+    .replace(/"/g, "&quot;")
+
+    .replace(/'/g, "&#039;");
 
 }
 
 
 /* ===================================================== */
-/* INICIO                                               */
+/* ARRANQUE                                             */
 /* ===================================================== */
 
 document.addEventListener(
     "DOMContentLoaded",
-    () => {
+    function() {
 
         aplicarTemaActual();
 
@@ -1397,5 +1500,5 @@ document.addEventListener(
 
 
 console.log(
-    "📖 Lector de La Biblioteca de Nere cargado"
+    "✅ Lector Nere con progreso corregido"
 );
