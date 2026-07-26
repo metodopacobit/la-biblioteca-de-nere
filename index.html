@@ -25,18 +25,16 @@
 
 <body>
 
-<!-- ========================= -->
-<!-- CABECERA -->
-<!-- ========================= -->
-
 <header class="cabecera">
 
     <div class="logo-app">
+
         <div class="logo-icono">
             📚
         </div>
 
         <div>
+
             <h1>
                 La Biblioteca
                 <span>de Nere</span>
@@ -45,7 +43,9 @@
             <p>
                 Tu biblioteca digital
             </p>
+
         </div>
+
     </div>
 
 </header>
@@ -76,7 +76,7 @@
     </div>
 
 
-    <!-- BUSCADOR -->
+    <!-- BUSCADOR PRINCIPAL -->
 
     <div class="buscador-principal">
 
@@ -120,8 +120,6 @@
     <div class="categorias-principales">
 
 
-        <!-- INFANTIL -->
-
         <button
             class="categoria-card infantil"
             onclick="abrirCatalogo('infantil')"
@@ -149,8 +147,6 @@
 
         </button>
 
-
-        <!-- JUVENIL -->
 
         <button
             class="categoria-card juvenil"
@@ -192,7 +188,9 @@
                 Continúa leyendo
             </h2>
 
-            <button onclick="mostrarPantalla('pantalla-biblioteca')">
+            <button
+                onclick="abrirBiblioteca('leyendo')"
+            >
                 Ver todo
             </button>
 
@@ -221,7 +219,7 @@
     </section>
 
 
-    <!-- MI BIBLIOTECA RESUMEN -->
+    <!-- MI BIBLIOTECA -->
 
     <section class="resumen-biblioteca">
 
@@ -247,6 +245,7 @@
                 </span>
 
                 <div>
+
                     <strong>
                         Quiero leer
                     </strong>
@@ -254,6 +253,7 @@
                     <small id="contador-quiero">
                         0
                     </small>
+
                 </div>
 
             </button>
@@ -269,6 +269,7 @@
                 </span>
 
                 <div>
+
                     <strong>
                         Leyendo
                     </strong>
@@ -276,6 +277,7 @@
                     <small id="contador-leyendo">
                         0
                     </small>
+
                 </div>
 
             </button>
@@ -291,6 +293,7 @@
                 </span>
 
                 <div>
+
                     <strong>
                         Leídos
                     </strong>
@@ -298,6 +301,7 @@
                     <small id="contador-leidos">
                         0
                     </small>
+
                 </div>
 
             </button>
@@ -347,6 +351,7 @@
                 id="input-busqueda-resultados"
                 type="search"
                 placeholder="Título, autor..."
+                autocomplete="off"
             >
 
             <button
@@ -383,6 +388,14 @@
                 onclick="cambiarFiltroBusqueda('autor', this)"
             >
                 Autor
+            </button>
+
+            <button
+                class="filtro"
+                data-filtro="gratis"
+                onclick="cambiarFiltroBusqueda('gratis', this)"
+            >
+                🟢 Gratis
             </button>
 
         </div>
@@ -432,31 +445,41 @@
     </div>
 
 
+    <!-- BUSCADOR DENTRO DEL CATÁLOGO -->
+
+    <div class="buscador-principal">
+
+        <div class="buscador-caja">
+
+            <span class="icono-buscar">
+                ⌕
+            </span>
+
+            <input
+                id="input-busqueda-catalogo"
+                type="search"
+                placeholder="Buscar dentro de esta sección..."
+                autocomplete="off"
+            >
+
+            <button
+                onclick="buscarEnCatalogo()"
+                aria-label="Buscar"
+            >
+                🔍
+            </button>
+
+        </div>
+
+    </div>
+
+
     <!-- EDADES -->
 
     <div
         id="filtros-edad"
         class="selector-edad"
     >
-
-        <button
-            onclick="filtrarEdad('3-5', this)"
-        >
-            3-5 años
-        </button>
-
-        <button
-            onclick="filtrarEdad('6-8', this)"
-        >
-            6-8 años
-        </button>
-
-        <button
-            onclick="filtrarEdad('9-11', this)"
-        >
-            9-11 años
-        </button>
-
     </div>
 
 
@@ -467,10 +490,7 @@
         <button
             onclick="filtrarCategoria('aventuras', this)"
         >
-            <span>
-                ⭐
-            </span>
-
+            <span>⭐</span>
             Aventuras
         </button>
 
@@ -478,10 +498,7 @@
         <button
             onclick="filtrarCategoria('fantasia', this)"
         >
-            <span>
-                🪄
-            </span>
-
+            <span>🪄</span>
             Fantasía
         </button>
 
@@ -489,10 +506,7 @@
         <button
             onclick="filtrarCategoria('misterio', this)"
         >
-            <span>
-                🔎
-            </span>
-
+            <span>🔎</span>
             Misterio
         </button>
 
@@ -500,10 +514,7 @@
         <button
             onclick="filtrarCategoria('animales', this)"
         >
-            <span>
-                🐾
-            </span>
-
+            <span>🐾</span>
             Animales
         </button>
 
@@ -511,10 +522,7 @@
         <button
             onclick="filtrarCategoria('historia', this)"
         >
-            <span>
-                🏰
-            </span>
-
+            <span>🏰</span>
             Historia
         </button>
 
@@ -522,10 +530,7 @@
         <button
             onclick="filtrarCategoria('clasicos', this)"
         >
-            <span>
-                📘
-            </span>
-
+            <span>📘</span>
             Clásicos
         </button>
 
@@ -543,7 +548,6 @@
             <input
                 id="solo-gratis"
                 type="checkbox"
-                checked
                 onchange="actualizarCatalogo()"
             >
 
@@ -551,6 +555,13 @@
 
         </label>
 
+    </div>
+
+
+    <div
+        id="estado-catalogo"
+        class="estado-busqueda"
+    >
     </div>
 
 
@@ -636,8 +647,6 @@
         </div>
 
 
-        <!-- RESEÑA -->
-
         <div class="resena-libro">
 
             <h3>
@@ -651,11 +660,9 @@
         </div>
 
 
-        <!-- GRATIS -->
-
         <div
             id="estado-gratis"
-            class="estado-gratis"
+            class="estado-gratis oculto"
         >
 
             <span class="check-gratis">
@@ -663,6 +670,7 @@
             </span>
 
             <div>
+
                 <strong>
                     Gratis
                 </strong>
@@ -670,16 +678,15 @@
                 <small>
                     Libro de dominio público
                 </small>
+
             </div>
 
         </div>
 
 
-        <!-- LEER -->
-
         <button
             id="boton-leer"
-            class="boton-principal"
+            class="boton-principal oculto"
             onclick="leerLibroActual()"
         >
             ▷ Leer ahora
@@ -695,27 +702,29 @@
         </button>
 
 
-        <!-- ESTADOS -->
-
         <div class="acciones-biblioteca">
 
             <button
                 onclick="guardarEstadoLibro('quiero')"
             >
                 ♡
+
                 <span>
                     Quiero leer
                 </span>
+
             </button>
 
 
             <button
                 onclick="guardarEstadoLibro('leyendo')"
             >
-                ♧
+                📖
+
                 <span>
                     Leyendo
                 </span>
+
             </button>
 
 
@@ -723,9 +732,11 @@
                 onclick="guardarEstadoLibro('leidos')"
             >
                 ✓
+
                 <span>
                     Leído
                 </span>
+
             </button>
 
         </div>
@@ -744,9 +755,6 @@
     id="pantalla-lector"
     class="pantalla lector-pantalla"
 >
-
-
-    <!-- BARRA FIJA DEL LECTOR -->
 
     <div class="lector-barra">
 
@@ -773,8 +781,6 @@
 
     </div>
 
-
-    <!-- CONTROLES -->
 
     <div
         id="controles-lector"
@@ -808,8 +814,6 @@
     </div>
 
 
-    <!-- PROGRESO -->
-
     <div class="lector-progreso">
 
         <div class="barra-progreso">
@@ -829,8 +833,6 @@
     </div>
 
 
-    <!-- TEXTO -->
-
     <article
         id="contenido-lector"
         class="contenido-lector tema-sepia"
@@ -848,8 +850,6 @@
 
     </article>
 
-
-    <!-- BOTONES FLOTANTES -->
 
     <div class="lector-flotantes">
 
@@ -905,14 +905,14 @@
             id="tab-leyendo"
             onclick="abrirBiblioteca('leyendo')"
         >
-            ✓ Leyendo
+            📖 Leyendo
         </button>
 
         <button
             id="tab-leidos"
             onclick="abrirBiblioteca('leidos')"
         >
-            ⊙ Leídos
+            ✓ Leídos
         </button>
 
     </div>
@@ -939,7 +939,6 @@
     id="navegacion-inferior"
     class="navegacion-inferior"
 >
-
 
     <button
         class="nav-activo"
@@ -993,19 +992,18 @@
 
     </button>
 
-
 </nav>
 
 
 
 <!-- ===================================================== -->
 <!-- JAVASCRIPT -->
-<!-- IMPORTANTE: ORDEN -->
+<!-- ORDEN IMPORTANTE -->
 <!-- ===================================================== -->
 
-<script src="catalogo.js"></script>
-
 <script src="api.js"></script>
+
+<script src="catalogo.js"></script>
 
 <script src="lector.js"></script>
 
