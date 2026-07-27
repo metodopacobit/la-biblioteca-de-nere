@@ -2660,3 +2660,306 @@ button:active {
     }
 
 }
+
+/* ===================================================== */
+/* V1.1 · ADULTOS + IDIOMAS                             */
+/* ===================================================== */
+
+
+/* TARJETA ADULTOS HORIZONTAL */
+
+.categoria-card.adultos {
+
+    width: 100%;
+
+    min-height: 105px;
+
+    margin-bottom: 12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffe8f2,
+            #eadcff
+        );
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding:
+        16px 18px;
+
+}
+
+
+.categoria-card.adultos .categoria-texto {
+
+    width: 72%;
+
+}
+
+
+.categoria-card.adultos .categoria-texto h3 {
+
+    font-size: 21px;
+
+    margin-bottom: 5px;
+
+}
+
+
+.categoria-card.adultos .categoria-texto p {
+
+    font-size: 12px;
+
+    line-height: 1.4;
+
+}
+
+
+.categoria-card.adultos .flecha-categoria {
+
+    margin-top: 9px;
+
+}
+
+
+.categoria-card.adultos .categoria-personaje {
+
+    position: absolute;
+
+    right: 14px;
+
+    bottom: 9px;
+
+    font-size: 52px;
+
+}
+
+
+/* ===================================================== */
+/* SELECTOR DE IDIOMA                                   */
+/* ===================================================== */
+
+.selector-idioma {
+
+    margin-top: 12px;
+
+    padding:
+        11px 13px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 12px;
+
+    background:
+        var(--blanco);
+
+    border:
+        1px solid #f1e3f4;
+
+    border-radius:
+        15px;
+
+    box-shadow:
+        var(--sombra);
+
+}
+
+
+.selector-idioma label {
+
+    flex: 0 0 auto;
+
+    color:
+        var(--texto);
+
+    font-size:
+        13px;
+
+    font-weight:
+        600;
+
+}
+
+
+.selector-idioma select {
+
+    flex: 1;
+
+    max-width: 190px;
+
+    min-width: 0;
+
+    border:
+        1px solid #eadcf3;
+
+    outline: none;
+
+    border-radius:
+        12px;
+
+    background:
+        #faf5ff;
+
+    color:
+        #633a91;
+
+    padding:
+        9px 10px;
+
+    font-family:
+        inherit;
+
+    font-size:
+        13px;
+
+}
+
+
+/* ===================================================== */
+/* CATÁLOGO ADULTOS                                     */
+/* ===================================================== */
+
+#pantalla-catalogo .categorias-scroll {
+
+    margin-top: 2px;
+
+}
+
+
+#pantalla-catalogo .categorias-scroll button {
+
+    flex:
+        0 0 auto;
+
+}
+
+
+/* ===================================================== */
+/* TABLET                                               */
+/* ===================================================== */
+
+@media
+(min-width: 700px) {
+
+    .categoria-card.adultos {
+
+        min-height: 125px;
+
+        padding:
+            20px 24px;
+
+    }
+
+
+    .categoria-card.adultos .categoria-texto h3 {
+
+        font-size: 24px;
+
+    }
+
+
+    .categoria-card.adultos .categoria-texto p {
+
+        font-size: 14px;
+
+    }
+
+
+    .categoria-card.adultos .categoria-personaje {
+
+        font-size: 68px;
+
+        right: 28px;
+
+    }
+
+
+    .selector-idioma {
+
+        max-width: 460px;
+
+    }
+
+}
+
+
+/* ===================================================== */
+/* MÓVILES PEQUEÑOS                                     */
+/* ===================================================== */
+
+@media
+(max-width: 380px) {
+
+    .categoria-card.adultos {
+
+        min-height: 100px;
+
+        padding:
+            13px 14px;
+
+    }
+
+
+    .categoria-card.adultos .categoria-texto {
+
+        width: 74%;
+
+    }
+
+
+    .categoria-card.adultos .categoria-texto h3 {
+
+        font-size: 18px;
+
+    }
+
+
+    .categoria-card.adultos .categoria-texto p {
+
+        font-size: 11px;
+
+    }
+
+
+    .categoria-card.adultos .categoria-personaje {
+
+        font-size: 42px;
+
+        right: 8px;
+
+    }
+
+
+    .selector-idioma {
+
+        padding:
+            9px 10px;
+
+    }
+
+
+    .selector-idioma label {
+
+        font-size: 12px;
+
+    }
+
+
+    .selector-idioma select {
+
+        font-size: 12px;
+
+        max-width: 165px;
+
+    }
+
+}
