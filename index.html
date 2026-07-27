@@ -2,6 +2,7 @@
 <html lang="es">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -20,10 +21,12 @@
         rel="stylesheet"
         href="style.css"
     >
+
 </head>
 
 
 <body>
+
 
 <header class="cabecera">
 
@@ -49,6 +52,7 @@
     </div>
 
 </header>
+
 
 
 <main id="app">
@@ -144,7 +148,6 @@
     </button>
 
 
-    <!-- INFANTIL / JUVENIL -->
 
     <div class="categorias-principales">
 
@@ -207,7 +210,6 @@
     </div>
 
 
-    <!-- MI BIBLIOTECA -->
 
     <section class="resumen-biblioteca">
 
@@ -720,6 +722,157 @@
         </button>
 
 
+
+        <!-- ================================================= -->
+        <!-- V1.2 · OPCIONES COMERCIALES -->
+        <!-- ================================================= -->
+
+        <section
+            id="bloque-compra"
+            class="bloque-compra"
+        >
+
+            <div class="cabecera-compra">
+
+                <div>
+
+                    <h3>
+                        También puedes conseguirlo
+                    </h3>
+
+                    <p>
+                        Elige el formato que prefieras
+                    </p>
+
+                </div>
+
+                <span class="icono-tienda">
+                    🛍️
+                </span>
+
+            </div>
+
+
+            <div class="formatos-compra">
+
+
+                <button
+                    id="comprar-fisico"
+                    class="formato-compra"
+                    type="button"
+                    onclick="abrirCompraCasa('fisico')"
+                    disabled
+                >
+
+                    <span class="formato-icono">
+                        📕
+                    </span>
+
+                    <span class="formato-info">
+
+                        <strong>
+                            Libro físico
+                        </strong>
+
+                        <small id="estado-fisico">
+                            Próximamente
+                        </small>
+
+                    </span>
+
+                    <span class="formato-flecha">
+                        ›
+                    </span>
+
+                </button>
+
+
+
+                <button
+                    id="comprar-ebook"
+                    class="formato-compra"
+                    type="button"
+                    onclick="abrirCompraCasa('ebook')"
+                    disabled
+                >
+
+                    <span class="formato-icono">
+                        📱
+                    </span>
+
+                    <span class="formato-info">
+
+                        <strong>
+                            eBook
+                        </strong>
+
+                        <small id="estado-ebook">
+                            Próximamente
+                        </small>
+
+                    </span>
+
+                    <span class="formato-flecha">
+                        ›
+                    </span>
+
+                </button>
+
+
+
+                <button
+                    id="comprar-audiolibro"
+                    class="formato-compra"
+                    type="button"
+                    onclick="abrirCompraCasa('audiolibro')"
+                    disabled
+                >
+
+                    <span class="formato-icono">
+                        🎧
+                    </span>
+
+                    <span class="formato-info">
+
+                        <strong>
+                            Audiolibro
+                        </strong>
+
+                        <small id="estado-audiolibro">
+                            Próximamente
+                        </small>
+
+                    </span>
+
+                    <span class="formato-flecha">
+                        ›
+                    </span>
+
+                </button>
+
+
+            </div>
+
+
+            <p
+                id="mensaje-compra"
+                class="mensaje-compra"
+            >
+                Integración con Casa del Libro en preparación.
+            </p>
+
+
+            <p
+                id="aviso-afiliado"
+                class="aviso-afiliado oculto"
+            >
+                Algunos enlaces de compra pueden ser enlaces de afiliado.
+            </p>
+
+        </section>
+
+
+
         <div class="acciones-biblioteca">
 
             <button
@@ -922,10 +1075,6 @@
 
 
 
-<!-- ===================================================== -->
-<!-- NAVEGACIÓN -->
-<!-- ===================================================== -->
-
 <nav
     id="navegacion-inferior"
     class="navegacion-inferior"
@@ -966,6 +1115,10 @@
 <script src="lector.js"></script>
 <script src="app.js"></script>
 
+<!-- V1.2 -->
+<script src="comercial.js"></script>
+
 
 </body>
+
 </html>
