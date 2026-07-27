@@ -12,69 +12,48 @@ const WORKER_NERE =
 
 
 /* =====================================================
-   ESTADO DE IDIOMA DEL BUSCADOR GENERAL
+   ESTADO DE IDIOMA
 ===================================================== */
 
-window.idiomaBusquedaNere =
-    "todos";
+window.idiomaBusquedaNere = "todos";
 
 
 /* =====================================================
-   CÓDIGOS OPEN LIBRARY
+   IDIOMAS OPEN LIBRARY
 ===================================================== */
 
 const IDIOMAS_API_OPEN_LIBRARY = {
 
     es: "spa",
-
     en: "eng",
-
     fr: "fre",
-
     de: "ger",
-
     it: "ita",
-
     pt: "por"
 
 };
 
 
 /* =====================================================
-   CAMBIAR IDIOMA DEL BUSCADOR GENERAL
+   CAMBIAR IDIOMA BUSCADOR
 ===================================================== */
 
-function cambiarIdiomaBusqueda(
-    idioma
-) {
+function cambiarIdiomaBusqueda(idioma) {
 
     const permitidos = [
-
         "todos",
-
         "es",
-
         "en",
-
         "fr",
-
         "de",
-
         "it",
-
         "pt"
-
     ];
 
 
-    if (
-        !permitidos.includes(
-            idioma
-        )
-    ) {
+    if (!permitidos.includes(idioma)) {
 
-        idioma =
-            "todos";
+        idioma = "todos";
 
     }
 
@@ -112,12 +91,10 @@ async function buscarLibros() {
             "input-busqueda-resultados"
         );
 
-
     const estado =
         document.getElementById(
             "estado-busqueda"
         );
-
 
     const resultados =
         document.getElementById(
@@ -125,10 +102,7 @@ async function buscarLibros() {
         );
 
 
-    if (
-        !input ||
-        !resultados
-    ) {
+    if (!input || !resultados) {
 
         console.error(
             "No encuentro los elementos del buscador."
@@ -152,10 +126,7 @@ async function buscarLibros() {
 
         }
 
-
-        resultados.innerHTML =
-            "";
-
+        resultados.innerHTML = "";
 
         return;
 
@@ -170,8 +141,7 @@ async function buscarLibros() {
     }
 
 
-    resultados.innerHTML =
-        "";
+    resultados.innerHTML = "";
 
 
     try {
@@ -185,13 +155,7 @@ async function buscarLibros() {
         let libros = [];
 
 
-        /* ===============================
-           LIBROS GRATIS
-        =============================== */
-
-        if (
-            filtro === "gratis"
-        ) {
+        if (filtro === "gratis") {
 
             libros =
                 await buscarLibrosGratis(
@@ -200,11 +164,6 @@ async function buscarLibros() {
                 );
 
         }
-
-
-        /* ===============================
-           CATÁLOGO GENERAL
-        =============================== */
 
         else {
 
@@ -267,9 +226,7 @@ async function buscarLibros() {
 
             <div class="estado-vacio">
 
-                <span>
-                    📚
-                </span>
+                <span>📚</span>
 
                 <p>
                     No se ha podido conectar con el catálogo.
@@ -296,33 +253,20 @@ async function buscarOpenLibrarySimple(
     let consulta = "";
 
 
-    /*
-       Creamos una consulta única mediante q=
-       para poder combinar título/autor + idioma.
-    */
-
-    if (
-        filtro === "titulo"
-    ) {
+    if (filtro === "titulo") {
 
         consulta =
             'title:"' +
-            limpiarConsultaOpenLibrary(
-                texto
-            ) +
+            limpiarConsultaOpenLibrary(texto) +
             '"';
 
     }
 
-    else if (
-        filtro === "autor"
-    ) {
+    else if (filtro === "autor") {
 
         consulta =
             'author:"' +
-            limpiarConsultaOpenLibrary(
-                texto
-            ) +
+            limpiarConsultaOpenLibrary(texto) +
             '"';
 
     }
@@ -330,24 +274,20 @@ async function buscarOpenLibrarySimple(
     else {
 
         consulta =
-            texto;
+            limpiarConsultaOpenLibrary(texto);
 
     }
 
 
-    /*
-       FILTRO REAL DE IDIOMA
+    let codigoIdioma = null;
 
-       Ejemplo:
-       language:spa
-    */
 
     if (
         idioma &&
         idioma !== "todos"
     ) {
 
-        const codigoIdioma =
+        codigoIdioma =
             IDIOMAS_API_OPEN_LIBRARY[
                 idioma
             ];
@@ -370,7 +310,7 @@ async function buscarOpenLibrarySimple(
         encodeURIComponent(
             consulta
         ) +
-        "&limit=20";
+        "&limit=50";
 
 
     console.log(
@@ -380,9 +320,7 @@ async function buscarOpenLibrarySimple(
 
 
     const respuesta =
-        await fetch(
-            url
-        );
+        await fetch(url);
 
 
     if (!respuesta.ok) {
@@ -406,14 +344,37 @@ async function buscarOpenLibrarySimple(
         );
 
 
-    /*
-       Ordenamos los resultados para dar
-       prioridad a coincidencias buenas.
-    */
+    /* =================================================
+       FILTRO ESTRICTO POR IDIOMA
+    ================================================= */
 
-    if (
-        filtro === "todo"
-    ) {
+    if (codigoIdioma) {
+
+        libros =
+            libros.filter(
+                function(libro) {
+
+                    return (
+                        Array.isArray(
+                            libro.idiomas
+                        )
+                        &&
+                        libro.idiomas.includes(
+                            codigoIdioma
+                        )
+                    );
+
+                }
+            );
+
+    }
+
+
+    /* =================================================
+       ORDENAR RESULTADOS
+    ================================================= */
+
+    if (filtro === "todo") {
 
         const buscado =
             normalizarTextoAPI(
@@ -422,10 +383,7 @@ async function buscarOpenLibrarySimple(
 
 
         libros.sort(
-            function(
-                a,
-                b
-            ) {
+            function(a, b) {
 
                 return (
                     calcularPuntos(
@@ -464,12 +422,10 @@ function limpiarConsultaOpenLibrary(
     return String(
         texto || ""
     )
-
     .replace(
         /"/g,
         ""
     )
-
     .trim();
 
 }
@@ -486,21 +442,17 @@ function normalizarOpenLibrary(
     const autor =
         libro.author_name &&
         libro.author_name.length
-
             ? libro.author_name[0]
-
             : "Autor desconocido";
 
 
     const portada =
         libro.cover_i
-
             ? (
                 "https://covers.openlibrary.org/b/id/" +
                 libro.cover_i +
                 "-M.jpg"
             )
-
             : "";
 
 
@@ -534,8 +486,11 @@ function normalizarOpenLibrary(
             portada,
 
         idiomas:
-            libro.language ||
-            [],
+            Array.isArray(
+                libro.language
+            )
+                ? libro.language
+                : [],
 
         gratis:
             false,
@@ -563,8 +518,7 @@ function calcularPuntos(
     buscado
 ) {
 
-    let puntos =
-        0;
+    let puntos = 0;
 
 
     const titulo =
@@ -579,12 +533,9 @@ function calcularPuntos(
         );
 
 
-    if (
-        titulo === buscado
-    ) {
+    if (titulo === buscado) {
 
-        puntos +=
-            20;
+        puntos += 20;
 
     }
 
@@ -595,8 +546,7 @@ function calcularPuntos(
         )
     ) {
 
-        puntos +=
-            10;
+        puntos += 10;
 
     }
 
@@ -607,8 +557,7 @@ function calcularPuntos(
         )
     ) {
 
-        puntos +=
-            12;
+        puntos += 12;
 
     }
 
@@ -656,9 +605,7 @@ async function buscarLibrosGratis(
 
 
     const respuesta =
-        await fetch(
-            url
-        );
+        await fetch(url);
 
 
     if (!respuesta.ok) {
@@ -675,15 +622,41 @@ async function buscarLibrosGratis(
         await respuesta.json();
 
 
-    return (
-        datos.results || []
-    )
+    let libros =
+        (datos.results || [])
+        .map(
+            normalizarGutendex
+        );
 
-    .map(
-        normalizarGutendex
-    )
 
-    .slice(
+    /* FILTRO EXTRA DE SEGURIDAD */
+
+    if (
+        idioma &&
+        idioma !== "todos"
+    ) {
+
+        libros =
+            libros.filter(
+                function(libro) {
+
+                    return (
+                        Array.isArray(
+                            libro.idiomas
+                        )
+                        &&
+                        libro.idiomas.includes(
+                            idioma
+                        )
+                    );
+
+                }
+            );
+
+    }
+
+
+    return libros.slice(
         0,
         20
     );
@@ -723,8 +696,7 @@ function normalizarGutendex(
 
 
     const formatos =
-        libro.formats ||
-        {};
+        libro.formats || {};
 
 
     return {
@@ -751,20 +723,16 @@ function normalizarGutendex(
             "",
 
         idiomas:
-            libro.languages ||
-            [],
+            libro.languages || [],
 
         temas:
-            libro.subjects ||
-            [],
+            libro.subjects || [],
 
         estanterias:
-            libro.bookshelves ||
-            [],
+            libro.bookshelves || [],
 
         descargas:
-            libro.download_count ||
-            0,
+            libro.download_count || 0,
 
         formatos:
             formatos,
@@ -836,21 +804,16 @@ function pintarResultadosBusqueda(
     }
 
 
-    contenedor.innerHTML =
-        "";
+    contenedor.innerHTML = "";
 
 
-    if (
-        !libros.length
-    ) {
+    if (!libros.length) {
 
         contenedor.innerHTML = `
 
             <div class="estado-vacio">
 
-                <span>
-                    🔎
-                </span>
+                <span>🔎</span>
 
                 <p>
                     No encontramos resultados.
@@ -900,9 +863,7 @@ function crearTarjetaLibroAPI(
     let portadaHTML;
 
 
-    if (
-        libro.portada
-    ) {
+    if (libro.portada) {
 
         portadaHTML = `
 
@@ -932,55 +893,41 @@ function crearTarjetaLibroAPI(
     tarjeta.innerHTML = `
 
         <div class="tarjeta-libro-portada">
-
             ${portadaHTML}
-
         </div>
 
-
         <h3>
-
             ${escaparHTMLAPI(
                 libro.titulo
             )}
-
         </h3>
 
-
         <p class="autor">
-
             ${escaparHTMLAPI(
                 libro.autor
             )}
-
         </p>
-
 
         ${
             libro.año
-
-            ? `
-                <p class="autor">
-                    ${escaparHTMLAPI(
-                        libro.año
-                    )}
-                </p>
-            `
-
-            : ""
+                ? `
+                    <p class="autor">
+                        ${escaparHTMLAPI(
+                            libro.año
+                        )}
+                    </p>
+                `
+                : ""
         }
-
 
         ${
             libro.gratis
-
-            ? `
-                <span class="etiqueta-gratis">
-                    🟢 Gratis
-                </span>
-            `
-
-            : ""
+                ? `
+                    <span class="etiqueta-gratis">
+                        🟢 Gratis
+                    </span>
+                `
+                : ""
         }
     `;
 
@@ -1024,10 +971,6 @@ async function completarDatosLibro(
     }
 
 
-    /*
-       Gutenberg
-    */
-
     if (
         libro.tipo === "gutenberg" ||
         libro.gutenbergId
@@ -1038,12 +981,7 @@ async function completarDatosLibro(
     }
 
 
-    /*
-       Reseña Open Library
-    */
-
-    let descripcion =
-        "";
+    let descripcion = "";
 
 
     if (
@@ -1061,11 +999,6 @@ async function completarDatosLibro(
     }
 
 
-    /*
-       Comprobamos si también existe
-       en Project Gutenberg.
-    */
-
     const gratis =
         await buscarCoincidenciaGutenberg(
             libro.titulo,
@@ -1073,9 +1006,7 @@ async function completarDatosLibro(
         );
 
 
-    if (
-        gratis
-    ) {
+    if (gratis) {
 
         return {
 
@@ -1135,9 +1066,7 @@ async function obtenerDescripcionOpenLibrary(
             );
 
 
-        if (
-            !respuesta.ok
-        ) {
+        if (!respuesta.ok) {
 
             return "";
 
@@ -1196,11 +1125,6 @@ async function buscarCoincidenciaGutenberg(
 
     try {
 
-        /*
-           Aquí buscamos en todos los idiomas
-           para no perder una posible edición gratuita.
-        */
-
         const resultados =
             await buscarLibrosGratis(
                 titulo,
@@ -1208,9 +1132,7 @@ async function buscarCoincidenciaGutenberg(
             );
 
 
-        if (
-            !resultados.length
-        ) {
+        if (!resultados.length) {
 
             return null;
 
@@ -1231,7 +1153,6 @@ async function buscarCoincidenciaGutenberg(
 
         let mejor =
             null;
-
 
         let mejorPuntos =
             0;
@@ -1260,8 +1181,7 @@ async function buscarCoincidenciaGutenberg(
                     t === tituloBuscado
                 ) {
 
-                    puntos +=
-                        10;
+                    puntos += 10;
 
                 }
 
@@ -1275,8 +1195,7 @@ async function buscarCoincidenciaGutenberg(
                     )
                 ) {
 
-                    puntos +=
-                        6;
+                    puntos += 6;
 
                 }
 
@@ -1302,8 +1221,7 @@ async function buscarCoincidenciaGutenberg(
                                 )
                             ) {
 
-                                puntos +=
-                                    2;
+                                puntos += 2;
 
                             }
 
@@ -1319,7 +1237,6 @@ async function buscarCoincidenciaGutenberg(
                     mejorPuntos =
                         puntos;
 
-
                     mejor =
                         libro;
 
@@ -1331,9 +1248,7 @@ async function buscarCoincidenciaGutenberg(
 
         return (
             mejorPuntos >= 6
-
                 ? mejor
-
                 : null
         );
 
@@ -1409,9 +1324,7 @@ async function descargarLibroTexto(
         );
 
 
-    if (
-        !respuesta.ok
-    ) {
+    if (!respuesta.ok) {
 
         throw new Error(
             "No se ha podido descargar el libro."
@@ -1426,8 +1339,7 @@ async function descargarLibroTexto(
 
     if (
         !contenido ||
-        contenido.length <
-        100
+        contenido.length < 100
     ) {
 
         throw new Error(
@@ -1456,16 +1368,14 @@ async function descargarLibroTexto(
 
 
 /* =====================================================
-   PREPARAR PARA EL LECTOR
+   PREPARAR PARA LECTOR
 ===================================================== */
 
 function prepararContenidoLibro(
     descarga
 ) {
 
-    if (
-        !descarga
-    ) {
+    if (!descarga) {
 
         return "";
 
@@ -1492,7 +1402,7 @@ function prepararContenidoLibro(
 
 
 /* =====================================================
-   TIPO
+   DETECTAR TIPO
 ===================================================== */
 
 function detectarTipoContenido(
@@ -1565,9 +1475,7 @@ function limpiarHTMLLibro(
 
 
     return documento.body
-
         ? documento.body.innerHTML
-
         : html;
 
 }
@@ -1602,9 +1510,7 @@ function textoPlanoAHTML(
         }
     )
 
-    .filter(
-        Boolean
-    )
+    .filter(Boolean)
 
     .map(
         function(bloque) {
@@ -1650,7 +1556,7 @@ function textoPlanoAHTML(
 
 
 /* =====================================================
-   NORMALIZAR
+   NORMALIZAR TEXTO
 ===================================================== */
 
 function normalizarTextoAPI(
@@ -1718,5 +1624,5 @@ function escaparHTMLAPI(
 
 
 console.log(
-    "✅ API Nere + idiomas cargada"
+    "✅ API Nere + filtro estricto de idiomas cargada"
 );
