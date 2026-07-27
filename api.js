@@ -1,7 +1,7 @@
 /* =====================================================
    LA BIBLIOTECA DE NERE
    API.JS
-   Open Library + Project Gutenberg + Idiomas
+   Open Library + Gutenberg + ediciones por idioma
 ===================================================== */
 
 const API_OPEN_LIBRARY = "https://openlibrary.org/search.json";
@@ -10,32 +10,25 @@ const API_GUTENDEX = "https://gutendex.com/books/";
 const WORKER_NERE =
     "https://biblioteca-nere-worker.rjaresarias.workers.dev/";
 
-
-/* =====================================================
-   ESTADO DE IDIOMA
-===================================================== */
-
 window.idiomaBusquedaNere = "todos";
 
 
 /* =====================================================
-   IDIOMAS OPEN LIBRARY
+   IDIOMAS
 ===================================================== */
 
 const IDIOMAS_API_OPEN_LIBRARY = {
-
     es: "spa",
     en: "eng",
     fr: "fre",
     de: "ger",
     it: "ita",
     pt: "por"
-
 };
 
 
 /* =====================================================
-   CAMBIAR IDIOMA BUSCADOR
+   CAMBIAR IDIOMA
 ===================================================== */
 
 function cambiarIdiomaBusqueda(idioma) {
@@ -50,33 +43,20 @@ function cambiarIdiomaBusqueda(idioma) {
         "pt"
     ];
 
-
     if (!permitidos.includes(idioma)) {
-
         idioma = "todos";
-
     }
 
-
-    window.idiomaBusquedaNere =
-        idioma;
-
+    window.idiomaBusquedaNere = idioma;
 
     const input =
         document.getElementById(
             "input-busqueda-resultados"
         );
 
-
-    if (
-        input &&
-        input.value.trim()
-    ) {
-
+    if (input && input.value.trim()) {
         buscarLibros();
-
     }
-
 }
 
 
@@ -101,48 +81,29 @@ async function buscarLibros() {
             "resultados-busqueda"
         );
 
-
     if (!input || !resultados) {
-
-        console.error(
-            "No encuentro los elementos del buscador."
-        );
-
         return;
-
     }
 
-
-    const texto =
-        input.value.trim();
-
+    const texto = input.value.trim();
 
     if (!texto) {
 
         if (estado) {
-
             estado.textContent =
                 "Escribe un título o autor.";
-
         }
 
         resultados.innerHTML = "";
-
         return;
-
     }
-
 
     if (estado) {
-
         estado.textContent =
             "🔎 Buscando...";
-
     }
 
-
     resultados.innerHTML = "";
-
 
     try {
 
@@ -151,9 +112,7 @@ async function buscarLibros() {
                 ? window.estadoApp.filtroBusqueda
                 : "todo";
 
-
         let libros = [];
-
 
         if (filtro === "gratis") {
 
@@ -163,9 +122,7 @@ async function buscarLibros() {
                     window.idiomaBusquedaNere
                 );
 
-        }
-
-        else {
+        } else {
 
             libros =
                 await buscarOpenLibrarySimple(
@@ -173,70 +130,38 @@ async function buscarLibros() {
                     filtro,
                     window.idiomaBusquedaNere
                 );
-
         }
 
+        pintarResultadosBusqueda(libros);
 
-        pintarResultadosBusqueda(
-            libros
-        );
-
-
-        if (!estado) {
-
-            return;
-
-        }
-
-
-        if (!libros.length) {
+        if (estado) {
 
             estado.textContent =
-                "No se encontraron libros.";
-
+                libros.length
+                    ? libros.length +
+                      " resultados encontrados"
+                    : "No se encontraron libros.";
         }
 
-        else {
-
-            estado.textContent =
-                libros.length +
-                " resultados encontrados";
-
-        }
-
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "ERROR BUSCADOR:",
             error
         );
 
-
         if (estado) {
-
             estado.textContent =
                 "❌ No se ha podido realizar la búsqueda.";
-
         }
 
-
         resultados.innerHTML = `
-
             <div class="estado-vacio">
-
                 <span>📚</span>
-
-                <p>
-                    No se ha podido conectar con el catálogo.
-                </p>
-
+                <p>No se ha podido conectar con el catálogo.</p>
             </div>
         `;
-
     }
-
 }
 
 
@@ -246,75 +171,104 @@ async function buscarLibros() {
 
 async function buscarOpenLibrarySimple(
     texto,
-    filtro,
+    filtro = "todo",
     idioma = "todos"
 ) {
 
     let consulta = "";
 
+    const limpio =
+        limpiarConsultaOpenLibrary(
+            texto
+        );
 
     if (filtro === "titulo") {
 
         consulta =
             'title:"' +
-            limpiarConsultaOpenLibrary(texto) +
+            limpio +
             '"';
 
-    }
-
-    else if (filtro === "autor") {
+    } else if (filtro === "autor") {
 
         consulta =
             'author:"' +
-            limpiarConsultaOpenLibrary(texto) +
+            limpio +
             '"';
 
-    }
+    } else {
 
-    else {
-
-        consulta =
-            limpiarConsultaOpenLibrary(texto);
-
+        consulta = limpio;
     }
 
 
-    let codigoIdioma = null;
+    const codigoIdioma =
+        idioma !== "todos"
+            ? IDIOMAS_API_OPEN_LIBRARY[
+                idioma
+            ]
+            : null;
+
+
+    if (codigoIdioma) {
+
+        consulta +=
+            " language:" +
+            codigoIdioma;
+    }
+
+
+    const parametros =
+        new URLSearchParams();
+
+    parametros.set(
+        "q",
+        consulta
+    );
+
+    parametros.set(
+        "limit",
+        "50"
+    );
+
+    parametros.set(
+        "fields",
+        [
+            "key",
+            "title",
+            "author_name",
+            "first_publish_year",
+            "cover_i",
+            "language",
+            "editions",
+            "editions.key",
+            "editions.title",
+            "editions.language",
+            "editions.cover_i",
+            "editions.publish_date"
+        ].join(",")
+    );
 
 
     if (
-        idioma &&
         idioma !== "todos"
     ) {
 
-        codigoIdioma =
-            IDIOMAS_API_OPEN_LIBRARY[
-                idioma
-            ];
-
-
-        if (codigoIdioma) {
-
-            consulta +=
-                " language:" +
-                codigoIdioma;
-
-        }
-
+        parametros.set(
+            "lang",
+            idioma
+        );
     }
 
 
     const url =
         API_OPEN_LIBRARY +
-        "?q=" +
-        encodeURIComponent(
-            consulta
-        ) +
-        "&limit=50";
+        "?" +
+        parametros.toString();
 
 
     console.log(
-        "Buscando en Open Library:",
+        "OPEN LIBRARY:",
         url
     );
 
@@ -329,7 +283,6 @@ async function buscarOpenLibrarySimple(
             "Open Library: " +
             respuesta.status
         );
-
     }
 
 
@@ -340,94 +293,112 @@ async function buscarOpenLibrarySimple(
     let libros =
         (datos.docs || [])
         .map(
-            normalizarOpenLibrary
+            libro =>
+                normalizarOpenLibrary(
+                    libro,
+                    codigoIdioma
+                )
+        )
+        .filter(Boolean);
+
+
+    /*
+       Relevancia propia.
+
+       Evita resultados absurdos como
+       Stephen King al buscar Ken Follett.
+    */
+
+    const buscado =
+        normalizarTextoAPI(
+            texto
         );
 
 
-    /* =================================================
-       FILTRO ESTRICTO POR IDIOMA
-    ================================================= */
+    libros.sort(
+        function(a, b) {
 
-    if (codigoIdioma) {
-
-        libros =
-            libros.filter(
-                function(libro) {
-
-                    return (
-                        Array.isArray(
-                            libro.idiomas
-                        )
-                        &&
-                        libro.idiomas.includes(
-                            codigoIdioma
-                        )
-                    );
-
-                }
+            return (
+                calcularPuntos(
+                    b,
+                    buscado,
+                    filtro
+                )
+                -
+                calcularPuntos(
+                    a,
+                    buscado,
+                    filtro
+                )
             );
-
-    }
-
-
-    /* =================================================
-       ORDENAR RESULTADOS
-    ================================================= */
-
-    if (filtro === "todo") {
-
-        const buscado =
-            normalizarTextoAPI(
-                texto
-            );
+        }
+    );
 
 
-        libros.sort(
-            function(a, b) {
+    /*
+       En búsquedas manuales quitamos resultados
+       totalmente irrelevantes.
+    */
 
-                return (
-                    calcularPuntos(
-                        b,
-                        buscado
-                    )
-                    -
-                    calcularPuntos(
-                        a,
-                        buscado
-                    )
-                );
-
-            }
+    libros =
+        libros.filter(
+            libro =>
+                calcularPuntos(
+                    libro,
+                    buscado,
+                    filtro
+                ) > 0
         );
-
-    }
 
 
     return libros.slice(
         0,
         20
     );
-
 }
 
 
 /* =====================================================
-   LIMPIAR CONSULTA OPEN LIBRARY
+   ELEGIR EDICIÓN EN EL IDIOMA PEDIDO
 ===================================================== */
 
-function limpiarConsultaOpenLibrary(
-    texto
+function obtenerEdicionIdioma(
+    libro,
+    codigoIdioma
 ) {
 
-    return String(
-        texto || ""
-    )
-    .replace(
-        /"/g,
-        ""
-    )
-    .trim();
+    if (!codigoIdioma) {
+        return null;
+    }
 
+
+    const ediciones =
+        libro.editions &&
+        Array.isArray(
+            libro.editions.docs
+        )
+            ? libro.editions.docs
+            : [];
+
+
+    return (
+        ediciones.find(
+            function(edicion) {
+
+                return (
+                    Array.isArray(
+                        edicion.language
+                    )
+                    &&
+                    edicion.language.includes(
+                        codigoIdioma
+                    )
+                );
+            }
+        )
+        ||
+        null
+    );
 }
 
 
@@ -436,8 +407,31 @@ function limpiarConsultaOpenLibrary(
 ===================================================== */
 
 function normalizarOpenLibrary(
-    libro
+    libro,
+    codigoIdioma = null
 ) {
+
+    const edicion =
+        obtenerEdicionIdioma(
+            libro,
+            codigoIdioma
+        );
+
+
+    /*
+       Si se ha pedido un idioma concreto y
+       no tenemos una edición de ese idioma,
+       no mostramos el libro.
+    */
+
+    if (
+        codigoIdioma &&
+        !edicion
+    ) {
+
+        return null;
+    }
+
 
     const autor =
         libro.author_name &&
@@ -446,12 +440,38 @@ function normalizarOpenLibrary(
             : "Autor desconocido";
 
 
+    const titulo =
+        edicion &&
+        edicion.title
+            ? edicion.title
+            : (
+                libro.title ||
+                "Sin título"
+            );
+
+
+    const coverId =
+        edicion &&
+        edicion.cover_i
+            ? edicion.cover_i
+            : libro.cover_i;
+
+
     const portada =
-        libro.cover_i
+        coverId
             ? (
                 "https://covers.openlibrary.org/b/id/" +
-                libro.cover_i +
+                coverId +
                 "-M.jpg"
+            )
+            : "";
+
+
+    const añoEdicion =
+        edicion &&
+        edicion.publish_date
+            ? extraerAnoAPI(
+                edicion.publish_date
             )
             : "";
 
@@ -459,26 +479,36 @@ function normalizarOpenLibrary(
     return {
 
         idInterno:
-            libro.key ||
-            (
-                "ol-" +
-                normalizarTextoAPI(
-                    (libro.title || "") +
-                    autor
-                )
-            ),
+            edicion &&
+            edicion.key
+                ? edicion.key
+                : (
+                    libro.key ||
+                    (
+                        "ol-" +
+                        normalizarTextoAPI(
+                            titulo +
+                            autor
+                        )
+                    )
+                ),
 
         key:
             libro.key || "",
 
+        editionKey:
+            edicion
+                ? edicion.key || ""
+                : "",
+
         titulo:
-            libro.title ||
-            "Sin título",
+            titulo,
 
         autor:
             autor,
 
         año:
+            añoEdicion ||
             libro.first_publish_year ||
             "",
 
@@ -486,11 +516,9 @@ function normalizarOpenLibrary(
             portada,
 
         idiomas:
-            Array.isArray(
-                libro.language
-            )
-                ? libro.language
-                : [],
+            edicion
+                ? edicion.language || []
+                : libro.language || [],
 
         gratis:
             false,
@@ -503,29 +531,46 @@ function normalizarOpenLibrary(
 
         resena:
             ""
-
     };
-
 }
 
 
 /* =====================================================
-   PUNTUACIÓN
+   AÑO
+===================================================== */
+
+function extraerAnoAPI(
+    texto
+) {
+
+    const coincidencia =
+        String(texto || "")
+        .match(
+            /\b(1[0-9]{3}|20[0-9]{2})\b/
+        );
+
+    return coincidencia
+        ? coincidencia[1]
+        : "";
+}
+
+
+/* =====================================================
+   RELEVANCIA
 ===================================================== */
 
 function calcularPuntos(
     libro,
-    buscado
+    buscado,
+    filtro = "todo"
 ) {
 
     let puntos = 0;
-
 
     const titulo =
         normalizarTextoAPI(
             libro.titulo
         );
-
 
     const autor =
         normalizarTextoAPI(
@@ -533,42 +578,94 @@ function calcularPuntos(
         );
 
 
+    if (filtro === "autor") {
+
+        if (autor === buscado) {
+            puntos += 100;
+        }
+
+        if (autor.includes(buscado)) {
+            puntos += 60;
+        }
+
+        return puntos;
+    }
+
+
+    if (filtro === "titulo") {
+
+        if (titulo === buscado) {
+            puntos += 100;
+        }
+
+        if (titulo.includes(buscado)) {
+            puntos += 60;
+        }
+
+        return puntos;
+    }
+
+
     if (titulo === buscado) {
+        puntos += 100;
+    }
 
-        puntos += 20;
+    if (autor === buscado) {
+        puntos += 100;
+    }
 
+    if (titulo.includes(buscado)) {
+        puntos += 50;
+    }
+
+    if (autor.includes(buscado)) {
+        puntos += 70;
     }
 
 
-    if (
-        titulo.includes(
-            buscado
-        )
-    ) {
+    /*
+       También comprobamos palabras individuales.
+    */
 
-        puntos += 10;
+    const palabras =
+        buscado
+        .split(/\s+/)
+        .filter(
+            palabra =>
+                palabra.length > 2
+        );
 
-    }
 
+    palabras.forEach(
+        palabra => {
 
-    if (
-        autor.includes(
-            buscado
-        )
-    ) {
+            if (
+                titulo.includes(
+                    palabra
+                )
+            ) {
 
-        puntos += 12;
+                puntos += 5;
+            }
 
-    }
+            if (
+                autor.includes(
+                    palabra
+                )
+            ) {
+
+                puntos += 8;
+            }
+        }
+    );
 
 
     return puntos;
-
 }
 
 
 /* =====================================================
-   GUTENDEX / GRATIS
+   GUTENDEX
 ===================================================== */
 
 async function buscarLibrosGratis(
@@ -594,14 +691,7 @@ async function buscarLibrosGratis(
             encodeURIComponent(
                 idioma
             );
-
     }
-
-
-    console.log(
-        "Buscando gratis:",
-        url
-    );
 
 
     const respuesta =
@@ -614,7 +704,6 @@ async function buscarLibrosGratis(
             "Gutendex: " +
             respuesta.status
         );
-
     }
 
 
@@ -629,8 +718,6 @@ async function buscarLibrosGratis(
         );
 
 
-    /* FILTRO EXTRA DE SEGURIDAD */
-
     if (
         idioma &&
         idioma !== "todos"
@@ -638,21 +725,15 @@ async function buscarLibrosGratis(
 
         libros =
             libros.filter(
-                function(libro) {
-
-                    return (
-                        Array.isArray(
-                            libro.idiomas
-                        )
-                        &&
-                        libro.idiomas.includes(
-                            idioma
-                        )
-                    );
-
-                }
+                libro =>
+                    Array.isArray(
+                        libro.idiomas
+                    )
+                    &&
+                    libro.idiomas.includes(
+                        idioma
+                    )
             );
-
     }
 
 
@@ -660,7 +741,6 @@ async function buscarLibrosGratis(
         0,
         20
     );
-
 }
 
 
@@ -684,14 +764,9 @@ function normalizarGutendex(
         autor =
             libro.authors
             .map(
-                function(a) {
-
-                    return a.name;
-
-                }
+                a => a.name
             )
             .join(", ");
-
     }
 
 
@@ -750,9 +825,7 @@ function normalizarGutendex(
             crearResenaGutenberg(
                 libro
             )
-
     };
-
 }
 
 
@@ -770,16 +843,13 @@ function crearResenaGutenberg(
     ) {
 
         return libro.summaries[0];
-
     }
 
 
     return (
         (libro.title || "Este libro") +
-        " forma parte del catálogo gratuito " +
-        "de Project Gutenberg."
+        " forma parte del catálogo gratuito de Project Gutenberg."
     );
-
 }
 
 
@@ -798,9 +868,7 @@ function pintarResultadosBusqueda(
 
 
     if (!contenedor) {
-
         return;
-
     }
 
 
@@ -810,35 +878,26 @@ function pintarResultadosBusqueda(
     if (!libros.length) {
 
         contenedor.innerHTML = `
-
             <div class="estado-vacio">
-
                 <span>🔎</span>
-
-                <p>
-                    No encontramos resultados.
-                </p>
-
+                <p>No encontramos resultados.</p>
             </div>
         `;
 
         return;
-
     }
 
 
     libros.forEach(
-        function(libro) {
+        libro => {
 
             contenedor.appendChild(
                 crearTarjetaLibroAPI(
                     libro
                 )
             );
-
         }
     );
-
 }
 
 
@@ -860,34 +919,24 @@ function crearTarjetaLibroAPI(
         "tarjeta-libro";
 
 
-    let portadaHTML;
+    const portadaHTML =
+        libro.portada
 
+            ? `
+                <img
+                    src="${escaparHTMLAPI(
+                        libro.portada
+                    )}"
+                    alt="Portada"
+                    loading="lazy"
+                >
+            `
 
-    if (libro.portada) {
-
-        portadaHTML = `
-
-            <img
-                src="${escaparHTMLAPI(
-                    libro.portada
-                )}"
-                alt="Portada"
-                loading="lazy"
-            >
-        `;
-
-    }
-
-    else {
-
-        portadaHTML = `
-
-            <div class="tarjeta-libro-sin-portada">
-                📚
-            </div>
-        `;
-
-    }
+            : `
+                <div class="tarjeta-libro-sin-portada">
+                    📚
+                </div>
+            `;
 
 
     tarjeta.innerHTML = `
@@ -934,7 +983,7 @@ function crearTarjetaLibroAPI(
 
     tarjeta.addEventListener(
         "click",
-        function() {
+        () => {
 
             if (
                 typeof abrirFichaLibro ===
@@ -944,15 +993,12 @@ function crearTarjetaLibroAPI(
                 abrirFichaLibro(
                     libro
                 );
-
             }
-
         }
     );
 
 
     return tarjeta;
-
 }
 
 
@@ -965,9 +1011,7 @@ async function completarDatosLibro(
 ) {
 
     if (!libro) {
-
         return libro;
-
     }
 
 
@@ -977,7 +1021,6 @@ async function completarDatosLibro(
     ) {
 
         return libro;
-
     }
 
 
@@ -995,7 +1038,6 @@ async function completarDatosLibro(
             await obtenerDescripcionOpenLibrary(
                 libro.key
             );
-
     }
 
 
@@ -1028,9 +1070,7 @@ async function completarDatosLibro(
                 descripcion ||
                 gratis.resena ||
                 libro.resena
-
         };
-
     }
 
 
@@ -1042,9 +1082,7 @@ async function completarDatosLibro(
             descripcion ||
             libro.resena ||
             ""
-
     };
-
 }
 
 
@@ -1067,9 +1105,7 @@ async function obtenerDescripcionOpenLibrary(
 
 
         if (!respuesta.ok) {
-
             return "";
-
         }
 
 
@@ -1083,7 +1119,6 @@ async function obtenerDescripcionOpenLibrary(
         ) {
 
             return datos.description;
-
         }
 
 
@@ -1094,28 +1129,23 @@ async function obtenerDescripcionOpenLibrary(
         ) {
 
             return datos.description.value;
-
         }
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.warn(
             "No hay descripción:",
             error
         );
-
     }
 
 
     return "";
-
 }
 
 
 /* =====================================================
-   BUSCAR EQUIVALENTE GRATUITO
+   BUSCAR GUTENBERG EQUIVALENTE
 ===================================================== */
 
 async function buscarCoincidenciaGutenberg(
@@ -1133,9 +1163,7 @@ async function buscarCoincidenciaGutenberg(
 
 
         if (!resultados.length) {
-
             return null;
-
         }
 
 
@@ -1144,32 +1172,25 @@ async function buscarCoincidenciaGutenberg(
                 titulo
             );
 
-
         const autorBuscado =
             normalizarTextoAPI(
                 autor
             );
 
 
-        let mejor =
-            null;
-
-        let mejorPuntos =
-            0;
+        let mejor = null;
+        let mejorPuntos = 0;
 
 
         resultados.forEach(
-            function(libro) {
+            libro => {
 
-                let puntos =
-                    0;
-
+                let puntos = 0;
 
                 const t =
                     normalizarTextoAPI(
                         libro.titulo
                     );
-
 
                 const a =
                     normalizarTextoAPI(
@@ -1177,43 +1198,33 @@ async function buscarCoincidenciaGutenberg(
                     );
 
 
-                if (
-                    t === tituloBuscado
-                ) {
-
+                if (t === tituloBuscado) {
                     puntos += 10;
-
                 }
 
 
                 if (
                     t.includes(
                         tituloBuscado
-                    ) ||
+                    )
+                    ||
                     tituloBuscado.includes(
                         t
                     )
                 ) {
 
                     puntos += 6;
-
                 }
 
 
                 autorBuscado
                     .split(" ")
                     .filter(
-                        function(parte) {
-
-                            return (
-                                parte.length >
-                                3
-                            );
-
-                        }
+                        parte =>
+                            parte.length > 3
                     )
                     .forEach(
-                        function(parte) {
+                        parte => {
 
                             if (
                                 a.includes(
@@ -1222,9 +1233,7 @@ async function buscarCoincidenciaGutenberg(
                             ) {
 
                                 puntos += 2;
-
                             }
-
                         }
                     );
 
@@ -1239,32 +1248,24 @@ async function buscarCoincidenciaGutenberg(
 
                     mejor =
                         libro;
-
                 }
-
             }
         );
 
 
-        return (
-            mejorPuntos >= 6
-                ? mejor
-                : null
-        );
+        return mejorPuntos >= 6
+            ? mejor
+            : null;
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         return null;
-
     }
-
 }
 
 
 /* =====================================================
-   URL GUTENBERG
+   GUTENBERG LECTOR
 ===================================================== */
 
 function crearURLTextoGutenberg(
@@ -1278,13 +1279,8 @@ function crearURLTextoGutenberg(
         id +
         ".txt"
     );
-
 }
 
-
-/* =====================================================
-   DESCARGA PARA LECTOR
-===================================================== */
 
 async function descargarLibroTexto(
     libro
@@ -1300,7 +1296,6 @@ async function descargarLibroTexto(
         throw new Error(
             "Este libro no tiene versión gratuita."
         );
-
     }
 
 
@@ -1329,7 +1324,6 @@ async function descargarLibroTexto(
         throw new Error(
             "No se ha podido descargar el libro."
         );
-
     }
 
 
@@ -1345,7 +1339,6 @@ async function descargarLibroTexto(
         throw new Error(
             "El libro recibido está vacío."
         );
-
     }
 
 
@@ -1361,14 +1354,12 @@ async function descargarLibroTexto(
 
         urlOriginal:
             urlLibro
-
     };
-
 }
 
 
 /* =====================================================
-   PREPARAR PARA LECTOR
+   PREPARAR LECTOR
 ===================================================== */
 
 function prepararContenidoLibro(
@@ -1376,34 +1367,25 @@ function prepararContenidoLibro(
 ) {
 
     if (!descarga) {
-
         return "";
-
     }
 
 
     if (
-        descarga.tipo ===
-        "html"
+        descarga.tipo === "html"
     ) {
 
         return limpiarHTMLLibro(
             descarga.contenido
         );
-
     }
 
 
     return textoPlanoAHTML(
         descarga.contenido
     );
-
 }
 
-
-/* =====================================================
-   DETECTAR TIPO
-===================================================== */
 
 function detectarTipoContenido(
     contenido
@@ -1421,30 +1403,18 @@ function detectarTipoContenido(
 
 
     if (
-        inicio.includes(
-            "<html"
-        ) ||
-        inicio.includes(
-            "<body"
-        ) ||
-        inicio.includes(
-            "<!doctype"
-        )
+        inicio.includes("<html") ||
+        inicio.includes("<body") ||
+        inicio.includes("<!doctype")
     ) {
 
         return "html";
-
     }
 
 
     return "texto";
-
 }
 
-
-/* =====================================================
-   LIMPIAR HTML
-===================================================== */
 
 function limpiarHTMLLibro(
     html
@@ -1466,163 +1436,124 @@ function limpiarHTMLLibro(
             "script,style,iframe,form"
         )
         .forEach(
-            function(elemento) {
-
-                elemento.remove();
-
-            }
+            elemento =>
+                elemento.remove()
         );
 
 
     return documento.body
         ? documento.body.innerHTML
         : html;
-
 }
 
-
-/* =====================================================
-   TEXTO → HTML
-===================================================== */
 
 function textoPlanoAHTML(
     texto
 ) {
 
-    return String(
-        texto || ""
-    )
+    return String(texto || "")
 
-    .replace(
-        /\r/g,
-        ""
-    )
+        .replace(/\r/g, "")
 
-    .split(
-        /\n\s*\n/
-    )
+        .split(/\n\s*\n/)
 
-    .map(
-        function(bloque) {
+        .map(
+            bloque =>
+                bloque.trim()
+        )
 
-            return bloque.trim();
+        .filter(Boolean)
 
-        }
-    )
+        .map(
+            bloque => {
 
-    .filter(Boolean)
-
-    .map(
-        function(bloque) {
-
-            const seguro =
-                escaparHTMLAPI(
-                    bloque
-                )
-                .replace(
-                    /\n/g,
-                    " "
-                );
+                const seguro =
+                    escaparHTMLAPI(
+                        bloque
+                    )
+                    .replace(
+                        /\n/g,
+                        " "
+                    );
 
 
-            if (
-                bloque.length <
-                100 &&
-                bloque ===
-                bloque.toUpperCase()
-            ) {
+                if (
+                    bloque.length < 100 &&
+                    bloque ===
+                    bloque.toUpperCase()
+                ) {
+
+                    return (
+                        "<h3>" +
+                        seguro +
+                        "</h3>"
+                    );
+                }
+
 
                 return (
-                    "<h3>" +
+                    "<p>" +
                     seguro +
-                    "</h3>"
+                    "</p>"
                 );
-
             }
+        )
 
-
-            return (
-                "<p>" +
-                seguro +
-                "</p>"
-            );
-
-        }
-    )
-
-    .join("");
-
+        .join("");
 }
 
 
 /* =====================================================
-   NORMALIZAR TEXTO
+   UTILIDADES
 ===================================================== */
+
+function limpiarConsultaOpenLibrary(
+    texto
+) {
+
+    return String(texto || "")
+        .replace(/"/g, "")
+        .trim();
+}
+
 
 function normalizarTextoAPI(
     texto
 ) {
 
-    return String(
-        texto || ""
-    )
+    return String(texto || "")
 
-    .normalize(
-        "NFD"
-    )
+        .normalize("NFD")
 
-    .replace(
-        /[\u0300-\u036f]/g,
-        ""
-    )
+        .replace(
+            /[\u0300-\u036f]/g,
+            ""
+        )
 
-    .toLowerCase()
+        .toLowerCase()
 
-    .trim();
-
+        .trim();
 }
 
-
-/* =====================================================
-   ESCAPAR HTML
-===================================================== */
 
 function escaparHTMLAPI(
     texto
 ) {
 
-    return String(
-        texto || ""
-    )
+    return String(texto || "")
 
-    .replace(
-        /&/g,
-        "&amp;"
-    )
+        .replace(/&/g, "&amp;")
 
-    .replace(
-        /</g,
-        "&lt;"
-    )
+        .replace(/</g, "&lt;")
 
-    .replace(
-        />/g,
-        "&gt;"
-    )
+        .replace(/>/g, "&gt;")
 
-    .replace(
-        /"/g,
-        "&quot;"
-    )
+        .replace(/"/g, "&quot;")
 
-    .replace(
-        /'/g,
-        "&#039;"
-    );
-
+        .replace(/'/g, "&#039;");
 }
 
 
 console.log(
-    "✅ API Nere + filtro estricto de idiomas cargada"
+    "✅ API Nere v1.1 · ediciones por idioma cargada"
 );
