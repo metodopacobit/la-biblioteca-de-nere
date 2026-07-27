@@ -1,7 +1,7 @@
 /* ===================================================== */
 /* LA BIBLIOTECA DE NERE                                */
 /* CATALOGO.JS                                          */
-/* Adultos + Infantil + Juvenil + idiomas + gratis       */
+/* Adultos + Infantil + Juvenil + idiomas + gratis      */
 /* ===================================================== */
 
 
@@ -100,8 +100,6 @@ const EDADES_CATALOGO = {
 
 const CATEGORIAS_NERE = {
 
-    /* ================= ADULTOS ================= */
-
     novela: {
 
         nombre: "Novela",
@@ -137,6 +135,7 @@ const CATEGORIAS_NERE = {
 
         juvenil:
             "juvenile historical fiction"
+
     },
 
 
@@ -192,8 +191,6 @@ const CATEGORIAS_NERE = {
             "juvenile classics"
     },
 
-
-    /* ================= INFANTIL/JUVENIL ================= */
 
     aventuras: {
 
@@ -447,8 +444,7 @@ function pintarEdadesCatalogo() {
     }
 
 
-    contenedor.innerHTML =
-        "";
+    contenedor.innerHTML = "";
 
 
     const tipo =
@@ -580,8 +576,7 @@ function pintarCategoriasCatalogo() {
     }
 
 
-    contenedor.innerHTML =
-        "";
+    contenedor.innerHTML = "";
 
 
     const tipo =
@@ -809,7 +804,7 @@ function recargarCatalogoActual() {
 
 
 /* ===================================================== */
-/* BUSCADOR DENTRO DEL CATÁLOGO                         */
+/* BUSCADOR DEL CATÁLOGO                                */
 /* ===================================================== */
 
 async function buscarEnCatalogo() {
@@ -991,10 +986,6 @@ async function cargarSeleccionCatalogo() {
         }
 
 
-        /*
-          RESPALDO GUTENDEX
-        */
-
         if (
             window.estadoCatalogo.soloGratis &&
             libros.length < 6
@@ -1012,10 +1003,6 @@ async function cargarSeleccionCatalogo() {
 
         }
 
-
-        /*
-          RESPALDO OPEN LIBRARY
-        */
 
         if (
             !window.estadoCatalogo.soloGratis &&
@@ -1194,7 +1181,10 @@ async function obtenerRespaldoGratis() {
 
         }
 
-        else if (categoria === "cienciaficcion") {
+        else if (
+            categoria ===
+            "cienciaficcion"
+        ) {
 
             consultas.push(
                 "science fiction"
@@ -1211,7 +1201,6 @@ async function obtenerRespaldoGratis() {
         }
 
     }
-
 
     else if (tipo === "infantil") {
 
@@ -1269,7 +1258,6 @@ async function obtenerRespaldoGratis() {
         }
 
     }
-
 
     else {
 
@@ -1395,22 +1383,26 @@ async function buscarCatalogoGeneral(
         window.estadoCatalogo.idioma;
 
 
+    let codigoIdioma =
+        null;
+
+
     if (
         idioma &&
         idioma !== "todos"
     ) {
 
-        const codigo =
+        codigoIdioma =
             IDIOMAS_OPEN_LIBRARY[
                 idioma
             ];
 
 
-        if (codigo) {
+        if (codigoIdioma) {
 
             consultaFinal +=
                 " language:" +
-                codigo;
+                codigoIdioma;
 
         }
 
@@ -1423,7 +1415,7 @@ async function buscarCatalogoGeneral(
         encodeURIComponent(
             consultaFinal
         ) +
-        "&limit=24";
+        "&limit=50";
 
 
     console.log(
@@ -1452,13 +1444,40 @@ async function buscarCatalogoGeneral(
         await respuesta.json();
 
 
-    return (
-        datos.docs || []
-    )
-    .map(
-        normalizarLibroCatalogoOpenLibrary
-    )
-    .slice(
+    let libros =
+        (datos.docs || [])
+        .map(
+            normalizarLibroCatalogoOpenLibrary
+        );
+
+
+    /* =================================================
+       FILTRO ESTRICTO POR IDIOMA
+    ================================================= */
+
+    if (codigoIdioma) {
+
+        libros =
+            libros.filter(
+                function(libro) {
+
+                    return (
+                        Array.isArray(
+                            libro.idiomas
+                        )
+                        &&
+                        libro.idiomas.includes(
+                            codigoIdioma
+                        )
+                    );
+
+                }
+            );
+
+    }
+
+
+    return libros.slice(
         0,
         20
     );
@@ -1533,7 +1552,11 @@ function normalizarLibroCatalogoOpenLibrary(
             portada,
 
         idiomas:
-            libro.language || [],
+            Array.isArray(
+                libro.language
+            )
+                ? libro.language
+                : [],
 
         gratis:
             false,
@@ -1622,13 +1645,41 @@ async function buscarCatalogoGratis(
         await respuesta.json();
 
 
-    return (
-        datos.results || []
-    )
-    .map(
-        normalizarLibroCatalogoGutendex
-    )
-    .slice(
+    let libros =
+        (datos.results || [])
+        .map(
+            normalizarLibroCatalogoGutendex
+        );
+
+
+    /* FILTRO EXTRA DE SEGURIDAD */
+
+    if (
+        idioma &&
+        idioma !== "todos"
+    ) {
+
+        libros =
+            libros.filter(
+                function(libro) {
+
+                    return (
+                        Array.isArray(
+                            libro.idiomas
+                        )
+                        &&
+                        libro.idiomas.includes(
+                            idioma
+                        )
+                    );
+
+                }
+            );
+
+    }
+
+
+    return libros.slice(
         0,
         24
     );
@@ -1774,8 +1825,7 @@ function aplicarDatosCatalogo(
                 "adultos"
             ) {
 
-                libro.edad =
-                    "";
+                libro.edad = "";
 
             }
 
@@ -1822,8 +1872,7 @@ function pintarLibrosCatalogo(
     }
 
 
-    contenedor.innerHTML =
-        "";
+    contenedor.innerHTML = "";
 
 
     if (
@@ -2209,5 +2258,5 @@ document.addEventListener(
 
 
 console.log(
-    "✅ Catálogo Nere Adultos/Infantil/Juvenil + idiomas + Gratis cargado"
+    "✅ Catálogo Nere + filtro estricto de idiomas cargado"
 );
