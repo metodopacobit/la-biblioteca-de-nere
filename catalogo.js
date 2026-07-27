@@ -1,13 +1,9 @@
 /* ===================================================== */
 /* LA BIBLIOTECA DE NERE                                */
 /* CATALOGO.JS                                          */
-/* Adultos + Infantil + Juvenil + idiomas + gratis      */
+/* Adultos + Infantil + Juvenil + idiomas               */
 /* ===================================================== */
 
-
-/* ===================================================== */
-/* ESTADO DEL CATÁLOGO                                  */
-/* ===================================================== */
 
 window.estadoCatalogo = {
 
@@ -20,35 +16,6 @@ window.estadoCatalogo = {
     soloGratis: false,
 
     idioma: "todos"
-
-};
-
-
-/* ===================================================== */
-/* CONFIGURACIÓN                                        */
-/* ===================================================== */
-
-const CATALOGO_OPEN_LIBRARY =
-    "https://openlibrary.org/search.json";
-
-
-const CATALOGO_GUTENDEX =
-    "https://gutendex.com/books/";
-
-
-/* ===================================================== */
-/* IDIOMAS                                              */
-/* ===================================================== */
-
-const IDIOMAS_OPEN_LIBRARY = {
-
-    es: "spa",
-    en: "eng",
-    fr: "fre",
-    de: "ger",
-    it: "ita",
-    pt: "por"
-
 };
 
 
@@ -74,7 +41,6 @@ const EDADES_CATALOGO = {
             clave: "9-11",
             texto: "9-11 años"
         }
-
     ],
 
     juvenil: [
@@ -88,9 +54,7 @@ const EDADES_CATALOGO = {
             clave: "15-17",
             texto: "15-17 años"
         }
-
     ]
-
 };
 
 
@@ -104,23 +68,15 @@ const CATEGORIAS_NERE = {
 
         nombre: "Novela",
         icono: "📖",
-
-        adultos:
-            "fiction novels"
-
+        adultos: "novel fiction"
     },
-
 
     thriller: {
 
         nombre: "Thriller",
         icono: "🔪",
-
-        adultos:
-            "thriller suspense"
-
+        adultos: "thriller suspense"
     },
-
 
     historia: {
 
@@ -135,20 +91,14 @@ const CATEGORIAS_NERE = {
 
         juvenil:
             "juvenile historical fiction"
-
     },
-
 
     romantica: {
 
         nombre: "Romántica",
         icono: "💕",
-
-        adultos:
-            "romance fiction"
-
+        adultos: "romance fiction"
     },
-
 
     fantasia: {
 
@@ -165,16 +115,12 @@ const CATEGORIAS_NERE = {
             "juvenile fantasy"
     },
 
-
     cienciaficcion: {
 
         nombre: "Ciencia ficción",
         icono: "🚀",
-
-        adultos:
-            "science fiction"
+        adultos: "science fiction"
     },
-
 
     clasicos: {
 
@@ -191,7 +137,6 @@ const CATEGORIAS_NERE = {
             "juvenile classics"
     },
 
-
     aventuras: {
 
         nombre: "Aventuras",
@@ -203,7 +148,6 @@ const CATEGORIAS_NERE = {
         juvenil:
             "juvenile adventure"
     },
-
 
     misterio: {
 
@@ -217,7 +161,6 @@ const CATEGORIAS_NERE = {
             "juvenile mystery"
     },
 
-
     animales: {
 
         nombre: "Animales",
@@ -229,13 +172,8 @@ const CATEGORIAS_NERE = {
         juvenil:
             "juvenile animals"
     }
-
 };
 
-
-/* ===================================================== */
-/* CATEGORÍAS SEGÚN TIPO                                */
-/* ===================================================== */
 
 const CATEGORIAS_POR_TIPO = {
 
@@ -266,7 +204,6 @@ const CATEGORIAS_POR_TIPO = {
         "historia",
         "clasicos"
     ]
-
 };
 
 
@@ -274,16 +211,20 @@ const CATEGORIAS_POR_TIPO = {
 /* ABRIR CATÁLOGO                                       */
 /* ===================================================== */
 
-function abrirCatalogo(tipo) {
+function abrirCatalogo(
+    tipo
+) {
 
     if (
-        tipo !== "adultos" &&
-        tipo !== "infantil" &&
-        tipo !== "juvenil"
+        ![
+            "adultos",
+            "infantil",
+            "juvenil"
+        ].includes(tipo)
     ) {
 
-        tipo = "adultos";
-
+        tipo =
+            "adultos";
     }
 
 
@@ -291,7 +232,9 @@ function abrirCatalogo(tipo) {
         tipo;
 
 
-    if (tipo === "adultos") {
+    if (
+        tipo === "adultos"
+    ) {
 
         window.estadoCatalogo.edad =
             "";
@@ -299,9 +242,9 @@ function abrirCatalogo(tipo) {
         window.estadoCatalogo.categoria =
             "novela";
 
-    }
-
-    else if (tipo === "infantil") {
+    } else if (
+        tipo === "infantil"
+    ) {
 
         window.estadoCatalogo.edad =
             "6-8";
@@ -309,22 +252,18 @@ function abrirCatalogo(tipo) {
         window.estadoCatalogo.categoria =
             "aventuras";
 
-    }
-
-    else {
+    } else {
 
         window.estadoCatalogo.edad =
             "12-14";
 
         window.estadoCatalogo.categoria =
             "aventuras";
-
     }
 
 
     window.estadoCatalogo.soloGratis =
         false;
-
 
     window.estadoCatalogo.idioma =
         "todos";
@@ -338,27 +277,16 @@ function abrirCatalogo(tipo) {
 
     if (titulo) {
 
-        if (tipo === "adultos") {
+        titulo.textContent =
+            tipo === "adultos"
 
-            titulo.textContent =
-                "📚 Adultos";
+                ? "📚 Adultos"
 
-        }
+                : tipo === "infantil"
 
-        else if (tipo === "infantil") {
+                ? "🧒 Infantil"
 
-            titulo.textContent =
-                "🧒 Infantil";
-
-        }
-
-        else {
-
-            titulo.textContent =
-                "🧑 Juvenil";
-
-        }
-
+                : "🧑 Juvenil";
     }
 
 
@@ -369,9 +297,7 @@ function abrirCatalogo(tipo) {
 
 
     if (buscador) {
-
         buscador.value = "";
-
     }
 
 
@@ -382,24 +308,18 @@ function abrirCatalogo(tipo) {
 
 
     if (gratis) {
-
-        gratis.checked =
-            false;
-
+        gratis.checked = false;
     }
 
 
-    const selectorIdioma =
+    const idioma =
         document.getElementById(
             "idioma-catalogo"
         );
 
 
-    if (selectorIdioma) {
-
-        selectorIdioma.value =
-            "todos";
-
+    if (idioma) {
+        idioma.value = "todos";
     }
 
 
@@ -408,20 +328,12 @@ function abrirCatalogo(tipo) {
     pintarCategoriasCatalogo();
 
 
-    if (
-        typeof mostrarPantalla ===
-        "function"
-    ) {
-
-        mostrarPantalla(
-            "pantalla-catalogo"
-        );
-
-    }
+    mostrarPantalla(
+        "pantalla-catalogo"
+    );
 
 
     cargarSeleccionCatalogo();
-
 }
 
 
@@ -438,26 +350,26 @@ function pintarEdadesCatalogo() {
 
 
     if (!contenedor) {
-
         return;
-
     }
 
 
-    contenedor.innerHTML = "";
+    contenedor.innerHTML =
+        "";
 
 
     const tipo =
         window.estadoCatalogo.tipo;
 
 
-    if (tipo === "adultos") {
+    if (
+        tipo === "adultos"
+    ) {
 
         contenedor.style.display =
             "none";
 
         return;
-
     }
 
 
@@ -466,11 +378,13 @@ function pintarEdadesCatalogo() {
 
 
     const edades =
-        EDADES_CATALOGO[tipo] || [];
+        EDADES_CATALOGO[
+            tipo
+        ] || [];
 
 
     edades.forEach(
-        function(edad) {
+        edad => {
 
             const boton =
                 document.createElement(
@@ -482,42 +396,28 @@ function pintarEdadesCatalogo() {
                 edad.texto;
 
 
-            if (
+            boton.classList.toggle(
+                "activo",
                 edad.clave ===
                 window.estadoCatalogo.edad
-            ) {
-
-                boton.classList.add(
-                    "activo"
-                );
-
-            }
+            );
 
 
             boton.onclick =
-                function() {
-
+                () =>
                     filtrarEdad(
                         edad.clave,
                         boton
                     );
 
-                };
-
 
             contenedor.appendChild(
                 boton
             );
-
         }
     );
-
 }
 
-
-/* ===================================================== */
-/* CAMBIAR EDAD                                         */
-/* ===================================================== */
 
 function filtrarEdad(
     edad,
@@ -533,32 +433,26 @@ function filtrarEdad(
             "#filtros-edad button"
         )
         .forEach(
-            function(elemento) {
-
+            elemento =>
                 elemento.classList.remove(
                     "activo"
-                );
-
-            }
+                )
         );
 
 
-    if (boton) {
-
-        boton.classList.add(
+    boton
+        ?.classList
+        .add(
             "activo"
         );
 
-    }
-
 
     recargarCatalogoActual();
-
 }
 
 
 /* ===================================================== */
-/* PINTAR CATEGORÍAS                                    */
+/* CATEGORÍAS                                           */
 /* ===================================================== */
 
 function pintarCategoriasCatalogo() {
@@ -570,35 +464,27 @@ function pintarCategoriasCatalogo() {
 
 
     if (!contenedor) {
-
         return;
-
     }
 
 
-    contenedor.innerHTML = "";
-
-
-    const tipo =
-        window.estadoCatalogo.tipo;
+    contenedor.innerHTML =
+        "";
 
 
     const categorias =
-        CATEGORIAS_POR_TIPO[tipo] || [];
+        CATEGORIAS_POR_TIPO[
+            window.estadoCatalogo.tipo
+        ] || [];
 
 
     categorias.forEach(
-        function(clave) {
+        clave => {
 
             const config =
-                CATEGORIAS_NERE[clave];
-
-
-            if (!config) {
-
-                return;
-
-            }
+                CATEGORIAS_NERE[
+                    clave
+                ];
 
 
             const boton =
@@ -607,14 +493,10 @@ function pintarCategoriasCatalogo() {
                 );
 
 
-            boton.dataset.categoria =
-                clave;
-
-
             boton.innerHTML = `
 
                 <span>
-                    ${config.icono || "📚"}
+                    ${config.icono}
                 </span>
 
                 ${escaparCatalogo(
@@ -623,58 +505,33 @@ function pintarCategoriasCatalogo() {
             `;
 
 
-            if (
+            boton.classList.toggle(
+                "activo",
                 clave ===
                 window.estadoCatalogo.categoria
-            ) {
-
-                boton.classList.add(
-                    "activo"
-                );
-
-            }
+            );
 
 
             boton.onclick =
-                function() {
-
+                () =>
                     filtrarCategoria(
                         clave,
                         boton
                     );
 
-                };
-
 
             contenedor.appendChild(
                 boton
             );
-
         }
     );
-
 }
 
-
-/* ===================================================== */
-/* CAMBIAR CATEGORÍA                                    */
-/* ===================================================== */
 
 function filtrarCategoria(
     categoria,
     boton
 ) {
-
-    if (
-        !CATEGORIAS_NERE[
-            categoria
-        ]
-    ) {
-
-        return;
-
-    }
-
 
     window.estadoCatalogo.categoria =
         categoria;
@@ -685,32 +542,26 @@ function filtrarCategoria(
             "#categorias-catalogo button"
         )
         .forEach(
-            function(elemento) {
-
+            elemento =>
                 elemento.classList.remove(
                     "activo"
-                );
-
-            }
+                )
         );
 
 
-    if (boton) {
-
-        boton.classList.add(
+    boton
+        ?.classList
+        .add(
             "activo"
         );
 
-    }
-
 
     recargarCatalogoActual();
-
 }
 
 
 /* ===================================================== */
-/* IDIOMA CATÁLOGO                                      */
+/* IDIOMA                                               */
 /* ===================================================== */
 
 function cambiarIdiomaCatalogo(
@@ -728,29 +579,18 @@ function cambiarIdiomaCatalogo(
     ];
 
 
-    if (
-        !permitidos.includes(
-            idioma
-        )
-    ) {
-
-        idioma =
-            "todos";
-
-    }
-
-
     window.estadoCatalogo.idioma =
-        idioma;
+        permitidos.includes(idioma)
+            ? idioma
+            : "todos";
 
 
     recargarCatalogoActual();
-
 }
 
 
 /* ===================================================== */
-/* CAMBIO SOLO GRATIS                                   */
+/* GRATIS                                               */
 /* ===================================================== */
 
 function actualizarCatalogo() {
@@ -769,42 +609,37 @@ function actualizarCatalogo() {
 
 
     recargarCatalogoActual();
-
 }
 
 
 /* ===================================================== */
-/* RECARGAR ESTADO ACTUAL                               */
+/* RECARGAR                                             */
 /* ===================================================== */
 
 function recargarCatalogoActual() {
 
-    const buscador =
+    const input =
         document.getElementById(
             "input-busqueda-catalogo"
         );
 
 
     if (
-        buscador &&
-        buscador.value.trim()
+        input &&
+        input.value.trim()
     ) {
 
         buscarEnCatalogo();
 
-    }
-
-    else {
+    } else {
 
         cargarSeleccionCatalogo();
-
     }
-
 }
 
 
 /* ===================================================== */
-/* BUSCADOR DEL CATÁLOGO                                */
+/* BUSCADOR MANUAL                                      */
 /* ===================================================== */
 
 async function buscarEnCatalogo() {
@@ -826,7 +661,6 @@ async function buscarEnCatalogo() {
         cargarSeleccionCatalogo();
 
         return;
-
     }
 
 
@@ -848,20 +682,25 @@ async function buscarEnCatalogo() {
         ) {
 
             libros =
-                await buscarCatalogoGratis(
+                await buscarLibrosGratis(
                     consulta,
-                    true
+                    window.estadoCatalogo.idioma
                 );
 
-        }
+        } else {
 
-        else {
+            /*
+               Usamos el buscador general nuevo,
+               que ya selecciona la edición
+               correcta según el idioma.
+            */
 
             libros =
-                await buscarCatalogoGeneral(
-                    consulta
+                await buscarOpenLibrarySimple(
+                    consulta,
+                    "todo",
+                    window.estadoCatalogo.idioma
                 );
-
         }
 
 
@@ -875,26 +714,17 @@ async function buscarEnCatalogo() {
         );
 
 
-        if (libros.length) {
+        ponerEstadoCatalogo(
 
-            ponerEstadoCatalogo(
-                libros.length +
-                " resultados encontrados"
-            );
+            libros.length
 
-        }
+                ? libros.length +
+                  " resultados encontrados"
 
-        else {
+                : "No se encontraron libros."
+        );
 
-            ponerEstadoCatalogo(
-                "No se encontraron libros."
-            );
-
-        }
-
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "ERROR BUSCADOR CATÁLOGO:",
@@ -905,14 +735,12 @@ async function buscarEnCatalogo() {
         ponerEstadoCatalogo(
             "❌ No se ha podido realizar la búsqueda."
         );
-
     }
-
 }
 
 
 /* ===================================================== */
-/* SELECCIÓN AUTOMÁTICA                                 */
+/* RECOMENDACIONES                                      */
 /* ===================================================== */
 
 async function cargarSeleccionCatalogo() {
@@ -927,38 +755,18 @@ async function cargarSeleccionCatalogo() {
 
     try {
 
-        const categoria =
-            window.estadoCatalogo
-                .categoria;
-
-
         const configuracion =
             CATEGORIAS_NERE[
-                categoria
+                window.estadoCatalogo.categoria
             ];
 
 
-        if (!configuracion) {
-
-            throw new Error(
-                "Categoría no encontrada."
-            );
-
-        }
-
-
-        let consulta =
+        const consulta =
             configuracion[
                 window.estadoCatalogo.tipo
-            ];
-
-
-        if (!consulta) {
-
-            consulta =
-                configuracion.nombre;
-
-        }
+            ]
+            ||
+            configuracion.nombre;
 
 
         let libros = [];
@@ -969,58 +777,18 @@ async function cargarSeleccionCatalogo() {
         ) {
 
             libros =
-                await buscarCatalogoGratis(
-                    consulta,
-                    false
-                );
-
-        }
-
-        else {
-
-            libros =
-                await buscarCatalogoGeneral(
+                await buscarCatalogoGratisTema(
                     consulta
                 );
 
-        }
-
-
-        if (
-            window.estadoCatalogo.soloGratis &&
-            libros.length < 6
-        ) {
-
-            const respaldo =
-                await obtenerRespaldoGratis();
-
+        } else {
 
             libros =
-                combinarCatalogo(
-                    libros,
-                    respaldo
+                await buscarOpenLibrarySimple(
+                    consulta,
+                    "todo",
+                    window.estadoCatalogo.idioma
                 );
-
-        }
-
-
-        if (
-            !window.estadoCatalogo.soloGratis &&
-            libros.length < 6
-        ) {
-
-            const respaldo =
-                await buscarCatalogoGeneral(
-                    configuracion.nombre
-                );
-
-
-            libros =
-                combinarCatalogo(
-                    libros,
-                    respaldo
-                );
-
         }
 
 
@@ -1038,9 +806,7 @@ async function cargarSeleccionCatalogo() {
             libros
         );
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "ERROR CARGANDO CATÁLOGO:",
@@ -1051,550 +817,21 @@ async function cargarSeleccionCatalogo() {
         ponerEstadoCatalogo(
             "❌ No se ha podido cargar esta selección."
         );
-
     }
-
 }
 
 
 /* ===================================================== */
-/* MENSAJE SEGÚN SECCIÓN                                */
+/* GUTENBERG POR TEMA                                   */
 /* ===================================================== */
 
-function ponerMensajeCatalogo(
-    libros
-) {
-
-    if (!libros.length) {
-
-        ponerEstadoCatalogo(
-            "No encontramos libros para esta selección."
-        );
-
-        return;
-
-    }
-
-
-    const tipo =
-        window.estadoCatalogo.tipo;
-
-
-    const gratis =
-        window.estadoCatalogo.soloGratis;
-
-
-    if (tipo === "adultos") {
-
-        ponerEstadoCatalogo(
-            gratis
-                ? "🟢 Libros para adultos gratuitos"
-                : "📚 Libros para adultos recomendados"
-        );
-
-    }
-
-    else if (tipo === "infantil") {
-
-        ponerEstadoCatalogo(
-            gratis
-                ? "🟢 Libros infantiles gratuitos"
-                : "🧒 Libros infantiles recomendados"
-        );
-
-    }
-
-    else {
-
-        ponerEstadoCatalogo(
-            gratis
-                ? "🟢 Libros juveniles gratuitos"
-                : "🧑 Libros juveniles recomendados"
-        );
-
-    }
-
-}
-
-
-/* ===================================================== */
-/* RESPALDO GRATIS                                      */
-/* ===================================================== */
-
-async function obtenerRespaldoGratis() {
-
-    const tipo =
-        window.estadoCatalogo.tipo;
-
-
-    const categoria =
-        window.estadoCatalogo.categoria;
-
-
-    const consultas = [];
-
-
-    if (tipo === "adultos") {
-
-        consultas.push(
-            "fiction"
-        );
-
-
-        if (categoria === "novela") {
-
-            consultas.push(
-                "novels"
-            );
-
-        }
-
-        else if (categoria === "thriller") {
-
-            consultas.push(
-                "mystery"
-            );
-
-        }
-
-        else if (categoria === "historia") {
-
-            consultas.push(
-                "historical fiction"
-            );
-
-        }
-
-        else if (categoria === "romantica") {
-
-            consultas.push(
-                "romance"
-            );
-
-        }
-
-        else if (categoria === "fantasia") {
-
-            consultas.push(
-                "fantasy fiction"
-            );
-
-        }
-
-        else if (
-            categoria ===
-            "cienciaficcion"
-        ) {
-
-            consultas.push(
-                "science fiction"
-            );
-
-        }
-
-        else if (categoria === "clasicos") {
-
-            consultas.push(
-                "classic literature"
-            );
-
-        }
-
-    }
-
-    else if (tipo === "infantil") {
-
-        consultas.push(
-            "children"
-        );
-
-
-        if (categoria === "aventuras") {
-
-            consultas.push(
-                "adventure"
-            );
-
-        }
-
-        else if (categoria === "fantasia") {
-
-            consultas.push(
-                "fairy tales"
-            );
-
-        }
-
-        else if (categoria === "misterio") {
-
-            consultas.push(
-                "mystery"
-            );
-
-        }
-
-        else if (categoria === "animales") {
-
-            consultas.push(
-                "animals"
-            );
-
-        }
-
-        else if (categoria === "historia") {
-
-            consultas.push(
-                "history"
-            );
-
-        }
-
-        else if (categoria === "clasicos") {
-
-            consultas.push(
-                "children literature"
-            );
-
-        }
-
-    }
-
-    else {
-
-        consultas.push(
-            "juvenile fiction"
-        );
-
-
-        if (categoria === "aventuras") {
-
-            consultas.push(
-                "adventure stories"
-            );
-
-        }
-
-        else if (categoria === "fantasia") {
-
-            consultas.push(
-                "fantasy fiction"
-            );
-
-        }
-
-        else if (categoria === "misterio") {
-
-            consultas.push(
-                "detective mystery stories"
-            );
-
-        }
-
-        else if (categoria === "animales") {
-
-            consultas.push(
-                "animals fiction"
-            );
-
-        }
-
-        else if (categoria === "historia") {
-
-            consultas.push(
-                "historical fiction"
-            );
-
-        }
-
-        else if (categoria === "clasicos") {
-
-            consultas.push(
-                "juvenile literature"
-            );
-
-        }
-
-    }
-
-
-    let resultado = [];
-
-
-    for (
-        const consulta of consultas
-    ) {
-
-        try {
-
-            const libros =
-                await buscarCatalogoGratis(
-                    consulta,
-                    false
-                );
-
-
-            resultado =
-                combinarCatalogo(
-                    resultado,
-                    libros
-                );
-
-
-            if (
-                resultado.length >= 18
-            ) {
-
-                break;
-
-            }
-
-        }
-
-        catch (error) {
-
-            console.warn(
-                "Fallo consulta respaldo:",
-                consulta
-            );
-
-        }
-
-    }
-
-
-    return resultado;
-
-}
-
-
-/* ===================================================== */
-/* OPEN LIBRARY                                         */
-/* ===================================================== */
-
-async function buscarCatalogoGeneral(
+async function buscarCatalogoGratisTema(
     consulta
 ) {
 
-    let consultaFinal =
-        consulta;
-
-
-    const idioma =
-        window.estadoCatalogo.idioma;
-
-
-    let codigoIdioma =
-        null;
-
-
-    if (
-        idioma &&
-        idioma !== "todos"
-    ) {
-
-        codigoIdioma =
-            IDIOMAS_OPEN_LIBRARY[
-                idioma
-            ];
-
-
-        if (codigoIdioma) {
-
-            consultaFinal +=
-                " language:" +
-                codigoIdioma;
-
-        }
-
-    }
-
-
-    const url =
-        CATALOGO_OPEN_LIBRARY +
-        "?q=" +
-        encodeURIComponent(
-            consultaFinal
-        ) +
-        "&limit=50";
-
-
-    console.log(
-        "CATÁLOGO OPEN LIBRARY:",
-        url
-    );
-
-
-    const respuesta =
-        await fetch(
-            url
-        );
-
-
-    if (!respuesta.ok) {
-
-        throw new Error(
-            "Open Library catálogo: " +
-            respuesta.status
-        );
-
-    }
-
-
-    const datos =
-        await respuesta.json();
-
-
-    let libros =
-        (datos.docs || [])
-        .map(
-            normalizarLibroCatalogoOpenLibrary
-        );
-
-
-    /* =================================================
-       FILTRO ESTRICTO POR IDIOMA
-    ================================================= */
-
-    if (codigoIdioma) {
-
-        libros =
-            libros.filter(
-                function(libro) {
-
-                    return (
-                        Array.isArray(
-                            libro.idiomas
-                        )
-                        &&
-                        libro.idiomas.includes(
-                            codigoIdioma
-                        )
-                    );
-
-                }
-            );
-
-    }
-
-
-    return libros.slice(
-        0,
-        20
-    );
-
-}
-
-
-/* ===================================================== */
-/* NORMALIZAR OPEN LIBRARY                              */
-/* ===================================================== */
-
-function normalizarLibroCatalogoOpenLibrary(
-    libro
-) {
-
-    let autor =
-        "Autor desconocido";
-
-
-    if (
-        libro.author_name &&
-        libro.author_name.length
-    ) {
-
-        autor =
-            libro.author_name[0];
-
-    }
-
-
-    let portada = "";
-
-
-    if (libro.cover_i) {
-
-        portada =
-            "https://covers.openlibrary.org/b/id/" +
-            libro.cover_i +
-            "-M.jpg";
-
-    }
-
-
-    return {
-
-        idInterno:
-            libro.key ||
-            (
-                "catalogo-" +
-                normalizarTextoCatalogo(
-                    (libro.title || "") +
-                    "-" +
-                    autor
-                )
-            ),
-
-        key:
-            libro.key || "",
-
-        titulo:
-            libro.title ||
-            "Sin título",
-
-        autor:
-            autor,
-
-        año:
-            libro.first_publish_year ||
-            "",
-
-        portada:
-            portada,
-
-        idiomas:
-            Array.isArray(
-                libro.language
-            )
-                ? libro.language
-                : [],
-
-        gratis:
-            false,
-
-        tipo:
-            "openlibrary",
-
-        fuente:
-            "Open Library",
-
-        resena:
-            ""
-
-    };
-
-}
-
-
-/* ===================================================== */
-/* GUTENDEX                                             */
-/* ===================================================== */
-
-async function buscarCatalogoGratis(
-    consulta,
-    esBusquedaManual = false
-) {
-
-    const parametro =
-        esBusquedaManual
-            ? "search"
-            : "topic";
-
-
     let url =
-        CATALOGO_GUTENDEX +
-        "?" +
-        parametro +
-        "=" +
+        API_GUTENDEX +
+        "?topic=" +
         encodeURIComponent(
             consulta
         ) +
@@ -1615,20 +852,11 @@ async function buscarCatalogoGratis(
             encodeURIComponent(
                 idioma
             );
-
     }
 
 
-    console.log(
-        "CATÁLOGO GRATIS:",
-        url
-    );
-
-
     const respuesta =
-        await fetch(
-            url
-        );
+        await fetch(url);
 
 
     if (!respuesta.ok) {
@@ -1637,7 +865,6 @@ async function buscarCatalogoGratis(
             "Gutendex catálogo: " +
             respuesta.status
         );
-
     }
 
 
@@ -1648,11 +875,9 @@ async function buscarCatalogoGratis(
     let libros =
         (datos.results || [])
         .map(
-            normalizarLibroCatalogoGutendex
+            normalizarGutendex
         );
 
-
-    /* FILTRO EXTRA DE SEGURIDAD */
 
     if (
         idioma &&
@@ -1661,21 +886,11 @@ async function buscarCatalogoGratis(
 
         libros =
             libros.filter(
-                function(libro) {
-
-                    return (
-                        Array.isArray(
-                            libro.idiomas
-                        )
-                        &&
-                        libro.idiomas.includes(
-                            idioma
-                        )
-                    );
-
-                }
+                libro =>
+                    libro.idiomas.includes(
+                        idioma
+                    )
             );
-
     }
 
 
@@ -1683,176 +898,108 @@ async function buscarCatalogoGratis(
         0,
         24
     );
-
 }
 
 
 /* ===================================================== */
-/* NORMALIZAR GUTENDEX                                  */
-/* ===================================================== */
-
-function normalizarLibroCatalogoGutendex(
-    libro
-) {
-
-    let autor =
-        "Autor desconocido";
-
-
-    if (
-        libro.authors &&
-        libro.authors.length
-    ) {
-
-        autor =
-            libro.authors
-            .map(
-                function(item) {
-
-                    return item.name;
-
-                }
-            )
-            .join(", ");
-
-    }
-
-
-    const formatos =
-        libro.formats || {};
-
-
-    let resumen = "";
-
-
-    if (
-        Array.isArray(
-            libro.summaries
-        ) &&
-        libro.summaries.length
-    ) {
-
-        resumen =
-            libro.summaries[0];
-
-    }
-
-
-    return {
-
-        idInterno:
-            "gutenberg-" +
-            libro.id,
-
-        id:
-            libro.id,
-
-        gutenbergId:
-            libro.id,
-
-        titulo:
-            libro.title ||
-            "Sin título",
-
-        autor:
-            autor,
-
-        portada:
-            formatos["image/jpeg"] ||
-            "",
-
-        formatos:
-            formatos,
-
-        temas:
-            libro.subjects ||
-            [],
-
-        estanterias:
-            libro.bookshelves ||
-            [],
-
-        idiomas:
-            libro.languages ||
-            [],
-
-        descargas:
-            libro.download_count ||
-            0,
-
-        gratis:
-            true,
-
-        tipo:
-            "gutenberg",
-
-        fuente:
-            "Project Gutenberg",
-
-        resena:
-            resumen ||
-            (
-                (libro.title || "Este libro") +
-                " está disponible gratuitamente en Project Gutenberg."
-            )
-
-    };
-
-}
-
-
-/* ===================================================== */
-/* EDAD Y CATEGORÍA                                     */
+/* INFORMACIÓN EXTRA                                    */
 /* ===================================================== */
 
 function aplicarDatosCatalogo(
     libros
 ) {
 
-    const nombreCategoria =
+    const categoria =
         CATEGORIAS_NERE[
             window.estadoCatalogo.categoria
-        ]?.nombre
-        ||
-        "";
+        ];
 
 
     libros.forEach(
-        function(libro) {
-
-            if (
-                window.estadoCatalogo.tipo ===
-                "adultos"
-            ) {
-
-                libro.edad = "";
-
-            }
-
-            else {
-
-                libro.edad =
-                    window.estadoCatalogo.edad +
-                    " años";
-
-            }
-
+        libro => {
 
             libro.categoria =
-                nombreCategoria;
+                categoria
+                    ? categoria.nombre
+                    : "";
 
 
             libro.seccion =
                 window.estadoCatalogo.tipo;
 
+
+            libro.edad =
+                window.estadoCatalogo.tipo ===
+                "adultos"
+
+                    ? ""
+
+                    : (
+                        window.estadoCatalogo.edad +
+                        " años"
+                    );
         }
     );
-
 }
 
 
 /* ===================================================== */
-/* PINTAR                                               */
+/* MENSAJE                                              */
+/* ===================================================== */
+
+function ponerMensajeCatalogo(
+    libros
+) {
+
+    if (!libros.length) {
+
+        ponerEstadoCatalogo(
+            "No encontramos libros para esta selección."
+        );
+
+        return;
+    }
+
+
+    const tipo =
+        window.estadoCatalogo.tipo;
+
+
+    const gratis =
+        window.estadoCatalogo.soloGratis;
+
+
+    if (tipo === "adultos") {
+
+        ponerEstadoCatalogo(
+            gratis
+                ? "🟢 Libros para adultos gratuitos"
+                : "📚 Libros para adultos recomendados"
+        );
+
+    } else if (
+        tipo === "infantil"
+    ) {
+
+        ponerEstadoCatalogo(
+            gratis
+                ? "🟢 Libros infantiles gratuitos"
+                : "🧒 Libros infantiles recomendados"
+        );
+
+    } else {
+
+        ponerEstadoCatalogo(
+            gratis
+                ? "🟢 Libros juveniles gratuitos"
+                : "🧑 Libros juveniles recomendados"
+        );
+    }
+}
+
+
+/* ===================================================== */
+/* PINTAR LIBROS                                        */
 /* ===================================================== */
 
 function pintarLibrosCatalogo(
@@ -1866,27 +1013,21 @@ function pintarLibrosCatalogo(
 
 
     if (!contenedor) {
-
         return;
-
     }
 
 
-    contenedor.innerHTML = "";
+    contenedor.innerHTML =
+        "";
 
 
-    if (
-        !libros ||
-        !libros.length
-    ) {
+    if (!libros.length) {
 
         contenedor.innerHTML = `
 
             <div class="estado-vacio">
 
-                <span>
-                    📚
-                </span>
+                <span>📚</span>
 
                 <p>
                     No encontramos libros para esta selección.
@@ -1896,199 +1037,24 @@ function pintarLibrosCatalogo(
         `;
 
         return;
-
     }
 
 
     libros.forEach(
-        function(libro) {
+        libro => {
 
-            if (
-                typeof crearTarjetaLibroAPI ===
-                "function"
-            ) {
-
-                contenedor.appendChild(
-                    crearTarjetaLibroAPI(
-                        libro
-                    )
-                );
-
-            }
-
-            else {
-
-                contenedor.appendChild(
-                    crearTarjetaCatalogoFallback(
-                        libro
-                    )
-                );
-
-            }
-
-        }
-    );
-
-}
-
-
-/* ===================================================== */
-/* TARJETA FALLBACK                                     */
-/* ===================================================== */
-
-function crearTarjetaCatalogoFallback(
-    libro
-) {
-
-    const tarjeta =
-        document.createElement(
-            "article"
-        );
-
-
-    tarjeta.className =
-        "tarjeta-libro";
-
-
-    tarjeta.innerHTML = `
-
-        <div class="tarjeta-libro-portada">
-
-            ${
-                libro.portada
-
-                ? `
-                    <img
-                        src="${escaparCatalogo(
-                            libro.portada
-                        )}"
-                        alt=""
-                    >
-                `
-
-                : `
-                    <div class="tarjeta-libro-sin-portada">
-                        📚
-                    </div>
-                `
-            }
-
-        </div>
-
-
-        <h3>
-            ${escaparCatalogo(
-                libro.titulo
-            )}
-        </h3>
-
-
-        <p class="autor">
-            ${escaparCatalogo(
-                libro.autor
-            )}
-        </p>
-
-
-        ${
-            libro.gratis
-
-                ? `
-                    <span class="etiqueta-gratis">
-                        🟢 Gratis
-                    </span>
-                `
-
-                : ""
-        }
-    `;
-
-
-    tarjeta.onclick =
-        function() {
-
-            if (
-                typeof abrirFichaLibro ===
-                "function"
-            ) {
-
-                abrirFichaLibro(
+            contenedor.appendChild(
+                crearTarjetaLibroAPI(
                     libro
-                );
-
-            }
-
-        };
-
-
-    return tarjeta;
-
-}
-
-
-/* ===================================================== */
-/* COMBINAR SIN DUPLICADOS                              */
-/* ===================================================== */
-
-function combinarCatalogo(
-    lista1,
-    lista2
-) {
-
-    const resultado = [];
-
-    const usados =
-        new Set();
-
-
-    [
-        ...lista1,
-        ...lista2
-    ]
-    .forEach(
-        function(libro) {
-
-            const id =
-                libro.gutenbergId ||
-                libro.key ||
-                libro.idInterno ||
-                (
-                    libro.titulo +
-                    libro.autor
-                );
-
-
-            if (
-                usados.has(
-                    String(id)
                 )
-            ) {
-
-                return;
-
-            }
-
-
-            usados.add(
-                String(id)
             );
-
-
-            resultado.push(
-                libro
-            );
-
         }
     );
-
-
-    return resultado;
-
 }
 
 
 /* ===================================================== */
-/* ESTADO                                               */
+/* ESTADOS                                              */
 /* ===================================================== */
 
 function ponerEstadoCatalogo(
@@ -2105,15 +1071,9 @@ function ponerEstadoCatalogo(
 
         estado.textContent =
             mensaje;
-
     }
-
 }
 
-
-/* ===================================================== */
-/* CARGANDO                                             */
-/* ===================================================== */
 
 function limpiarCatalogo() {
 
@@ -2129,53 +1089,13 @@ function limpiarCatalogo() {
 
             <div class="estado-vacio">
 
-                <span>
-                    📚
-                </span>
+                <span>📚</span>
 
-                <p>
-                    Cargando...
-                </p>
+                <p>Cargando...</p>
 
             </div>
         `;
-
     }
-
-}
-
-
-/* ===================================================== */
-/* NORMALIZAR TEXTO                                     */
-/* ===================================================== */
-
-function normalizarTextoCatalogo(
-    texto
-) {
-
-    return String(
-        texto || ""
-    )
-
-    .normalize("NFD")
-
-    .replace(
-        /[\u0300-\u036f]/g,
-        ""
-    )
-
-    .toLowerCase()
-
-    .replace(
-        /[^a-z0-9]+/g,
-        "-"
-    )
-
-    .replace(
-        /^-+|-+$/g,
-        ""
-    );
-
 }
 
 
@@ -2187,40 +1107,22 @@ function escaparCatalogo(
     texto
 ) {
 
-    return String(
-        texto || ""
-    )
+    return String(texto || "")
 
-    .replace(
-        /&/g,
-        "&amp;"
-    )
+        .replace(/&/g, "&amp;")
 
-    .replace(
-        /</g,
-        "&lt;"
-    )
+        .replace(/</g, "&lt;")
 
-    .replace(
-        />/g,
-        "&gt;"
-    )
+        .replace(/>/g, "&gt;")
 
-    .replace(
-        /"/g,
-        "&quot;"
-    )
+        .replace(/"/g, "&quot;")
 
-    .replace(
-        /'/g,
-        "&#039;"
-    );
-
+        .replace(/'/g, "&#039;");
 }
 
 
 /* ===================================================== */
-/* ENTER EN BUSCADOR                                    */
+/* ENTER                                                */
 /* ===================================================== */
 
 document.addEventListener(
@@ -2245,18 +1147,14 @@ document.addEventListener(
                     ) {
 
                         buscarEnCatalogo();
-
                     }
-
                 }
             );
-
         }
-
     }
 );
 
 
 console.log(
-    "✅ Catálogo Nere + filtro estricto de idiomas cargado"
+    "✅ Catálogo Nere v1.1 · ediciones por idioma cargado"
 );
