@@ -117,6 +117,38 @@
     </div>
 
 
+    <!-- ADULTOS -->
+
+    <button
+        class="categoria-card adultos adultos-horizontal"
+        onclick="abrirCatalogo('adultos')"
+    >
+
+        <div class="categoria-texto">
+
+            <h3>
+                Adultos
+            </h3>
+
+            <p>
+                Novela, thriller, histórica, romántica, fantasía y mucho más
+            </p>
+
+            <span class="flecha-categoria">
+                →
+            </span>
+
+        </div>
+
+        <div class="categoria-personaje adultos-icono">
+            👩📚
+        </div>
+
+    </button>
+
+
+    <!-- INFANTIL / JUVENIL -->
+
     <div class="categorias-principales">
 
 
@@ -176,47 +208,6 @@
         </button>
 
     </div>
-
-
-    <!-- CONTINUAR LEYENDO -->
-
-    <section id="seccion-continuar">
-
-        <div class="titulo-seccion titulo-con-enlace">
-
-            <h2>
-                Continúa leyendo
-            </h2>
-
-            <button
-                onclick="abrirBiblioteca('leyendo')"
-            >
-                Ver todo
-            </button>
-
-        </div>
-
-
-        <div
-            id="lista-continuar"
-            class="libros-horizontal"
-        >
-
-            <div class="estado-vacio">
-
-                <span>
-                    📖
-                </span>
-
-                <p>
-                    Los libros que empieces aparecerán aquí.
-                </p>
-
-            </div>
-
-        </div>
-
-    </section>
 
 
     <!-- MI BIBLIOTECA -->
@@ -400,6 +391,52 @@
 
         </div>
 
+
+        <!-- IDIOMA BUSCADOR GENERAL -->
+
+        <div class="selector-idioma">
+
+            <label for="idioma-busqueda">
+                🌍 Idioma
+            </label>
+
+            <select
+                id="idioma-busqueda"
+                onchange="cambiarIdiomaBusqueda(this.value)"
+            >
+
+                <option value="todos">
+                    Todos los idiomas
+                </option>
+
+                <option value="es">
+                    🇪🇸 Español
+                </option>
+
+                <option value="en">
+                    🇬🇧 Inglés
+                </option>
+
+                <option value="fr">
+                    🇫🇷 Francés
+                </option>
+
+                <option value="de">
+                    🇩🇪 Alemán
+                </option>
+
+                <option value="it">
+                    🇮🇹 Italiano
+                </option>
+
+                <option value="pt">
+                    🇵🇹 Portugués
+                </option>
+
+            </select>
+
+        </div>
+
     </div>
 
 
@@ -421,7 +458,7 @@
 
 
 <!-- ===================================================== -->
-<!-- CATÁLOGO INFANTIL / JUVENIL -->
+<!-- CATÁLOGO ADULTOS / INFANTIL / JUVENIL -->
 <!-- ===================================================== -->
 
 <section
@@ -439,7 +476,7 @@
         </button>
 
         <h2 id="titulo-catalogo">
-            Infantil
+            Adultos
         </h2>
 
     </div>
@@ -471,10 +508,57 @@
 
         </div>
 
+
+        <!-- IDIOMA CATÁLOGO -->
+
+        <div class="selector-idioma">
+
+            <label for="idioma-catalogo">
+                🌍 Idioma
+            </label>
+
+            <select
+                id="idioma-catalogo"
+                onchange="cambiarIdiomaCatalogo(this.value)"
+            >
+
+                <option value="todos">
+                    Todos los idiomas
+                </option>
+
+                <option value="es">
+                    🇪🇸 Español
+                </option>
+
+                <option value="en">
+                    🇬🇧 Inglés
+                </option>
+
+                <option value="fr">
+                    🇫🇷 Francés
+                </option>
+
+                <option value="de">
+                    🇩🇪 Alemán
+                </option>
+
+                <option value="it">
+                    🇮🇹 Italiano
+                </option>
+
+                <option value="pt">
+                    🇵🇹 Portugués
+                </option>
+
+            </select>
+
+        </div>
+
     </div>
 
 
     <!-- EDADES -->
+    <!-- SOLO SE MOSTRARÁ EN INFANTIL / JUVENIL -->
 
     <div
         id="filtros-edad"
@@ -485,7 +569,10 @@
 
     <!-- CATEGORÍAS -->
 
-    <div class="categorias-scroll">
+    <div
+        id="categorias-catalogo"
+        class="categorias-scroll"
+    >
 
         <button
             onclick="filtrarCategoria('aventuras', this)"
@@ -968,7 +1055,7 @@
 
 
     <button
-        onclick="abrirCatalogo('infantil')"
+        onclick="abrirCatalogo('adultos')"
     >
 
         <span>
