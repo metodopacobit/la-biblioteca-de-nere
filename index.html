@@ -76,8 +76,6 @@
     </div>
 
 
-    <!-- BUSCADOR PRINCIPAL -->
-
     <div class="buscador-principal">
 
         <div class="buscador-caja">
@@ -106,8 +104,6 @@
     </div>
 
 
-    <!-- EXPLORAR -->
-
     <div class="titulo-seccion">
 
         <h2>
@@ -131,7 +127,8 @@
             </h3>
 
             <p>
-                Novela, thriller, histórica, romántica, fantasía y mucho más
+                Novela, thriller, histórica, romántica,
+                fantasía y mucho más
             </p>
 
             <span class="flecha-categoria">
@@ -231,9 +228,7 @@
                 onclick="abrirBiblioteca('quiero')"
             >
 
-                <span>
-                    💗
-                </span>
+                <span>💗</span>
 
                 <div>
 
@@ -255,9 +250,7 @@
                 onclick="abrirBiblioteca('leyendo')"
             >
 
-                <span>
-                    📖
-                </span>
+                <span>📖</span>
 
                 <div>
 
@@ -279,9 +272,7 @@
                 onclick="abrirBiblioteca('leidos')"
             >
 
-                <span>
-                    ✓
-                </span>
+                <span>✓</span>
 
                 <div>
 
@@ -392,8 +383,6 @@
         </div>
 
 
-        <!-- IDIOMA BUSCADOR GENERAL -->
-
         <div class="selector-idioma">
 
             <label for="idioma-busqueda">
@@ -405,11 +394,7 @@
                 onchange="cambiarIdiomaBusqueda(this.value)"
             >
 
-                <option value="todos">
-                    Todos los idiomas
-                </option>
-
-                <option value="es">
+                <option value="es" selected>
                     🇪🇸 Español
                 </option>
 
@@ -431,6 +416,10 @@
 
                 <option value="pt">
                     🇵🇹 Portugués
+                </option>
+
+                <option value="todos">
+                    🌍 Todos los idiomas
                 </option>
 
             </select>
@@ -458,7 +447,7 @@
 
 
 <!-- ===================================================== -->
-<!-- CATÁLOGO ADULTOS / INFANTIL / JUVENIL -->
+<!-- CATÁLOGO -->
 <!-- ===================================================== -->
 
 <section
@@ -481,8 +470,6 @@
 
     </div>
 
-
-    <!-- BUSCADOR DENTRO DEL CATÁLOGO -->
 
     <div class="buscador-principal">
 
@@ -509,8 +496,6 @@
         </div>
 
 
-        <!-- IDIOMA CATÁLOGO -->
-
         <div class="selector-idioma">
 
             <label for="idioma-catalogo">
@@ -522,11 +507,7 @@
                 onchange="cambiarIdiomaCatalogo(this.value)"
             >
 
-                <option value="todos">
-                    Todos los idiomas
-                </option>
-
-                <option value="es">
+                <option value="es" selected>
                     🇪🇸 Español
                 </option>
 
@@ -550,15 +531,16 @@
                     🇵🇹 Portugués
                 </option>
 
+                <option value="todos">
+                    🌍 Todos los idiomas
+                </option>
+
             </select>
 
         </div>
 
     </div>
 
-
-    <!-- EDADES -->
-    <!-- SOLO SE MOSTRARÁ EN INFANTIL / JUVENIL -->
 
     <div
         id="filtros-edad"
@@ -567,60 +549,10 @@
     </div>
 
 
-    <!-- CATEGORÍAS -->
-
     <div
         id="categorias-catalogo"
         class="categorias-scroll"
     >
-
-        <button
-            onclick="filtrarCategoria('aventuras', this)"
-        >
-            <span>⭐</span>
-            Aventuras
-        </button>
-
-
-        <button
-            onclick="filtrarCategoria('fantasia', this)"
-        >
-            <span>🪄</span>
-            Fantasía
-        </button>
-
-
-        <button
-            onclick="filtrarCategoria('misterio', this)"
-        >
-            <span>🔎</span>
-            Misterio
-        </button>
-
-
-        <button
-            onclick="filtrarCategoria('animales', this)"
-        >
-            <span>🐾</span>
-            Animales
-        </button>
-
-
-        <button
-            onclick="filtrarCategoria('historia', this)"
-        >
-            <span>🏰</span>
-            Historia
-        </button>
-
-
-        <button
-            onclick="filtrarCategoria('clasicos', this)"
-        >
-            <span>📘</span>
-            Clásicos
-        </button>
-
     </div>
 
 
@@ -663,7 +595,7 @@
 
 
 <!-- ===================================================== -->
-<!-- FICHA DEL LIBRO -->
+<!-- FICHA -->
 <!-- ===================================================== -->
 
 <section
@@ -696,7 +628,6 @@
 
 
     <article class="ficha-libro">
-
 
         <div class="ficha-superior">
 
@@ -795,35 +726,21 @@
                 onclick="guardarEstadoLibro('quiero')"
             >
                 ♡
-
-                <span>
-                    Quiero leer
-                </span>
-
+                <span>Quiero leer</span>
             </button>
-
 
             <button
                 onclick="guardarEstadoLibro('leyendo')"
             >
                 📖
-
-                <span>
-                    Leyendo
-                </span>
-
+                <span>Leyendo</span>
             </button>
-
 
             <button
                 onclick="guardarEstadoLibro('leidos')"
             >
                 ✓
-
-                <span>
-                    Leído
-                </span>
-
+                <span>Leído</span>
             </button>
 
         </div>
@@ -856,8 +773,7 @@
                 Libro
             </strong>
 
-            <small id="lector-autor">
-            </small>
+            <small id="lector-autor"></small>
 
         </div>
 
@@ -874,29 +790,17 @@
         class="controles-lector"
     >
 
-        <button onclick="cambiarTamanoTexto(-1)">
-            A−
-        </button>
+        <button onclick="cambiarTamanoTexto(-1)">A−</button>
 
-        <button onclick="cambiarTamanoTexto(1)">
-            A+
-        </button>
+        <button onclick="cambiarTamanoTexto(1)">A+</button>
 
-        <button onclick="cambiarTemaLector('claro')">
-            ☀️
-        </button>
+        <button onclick="cambiarTemaLector('claro')">☀️</button>
 
-        <button onclick="cambiarTemaLector('sepia')">
-            📜
-        </button>
+        <button onclick="cambiarTemaLector('sepia')">📜</button>
 
-        <button onclick="cambiarTemaLector('oscuro')">
-            🌙
-        </button>
+        <button onclick="cambiarTemaLector('oscuro')">🌙</button>
 
-        <button onclick="subirInicioLector()">
-            ↑ Inicio
-        </button>
+        <button onclick="subirInicioLector()">↑ Inicio</button>
 
     </div>
 
@@ -955,7 +859,7 @@
 
 
 <!-- ===================================================== -->
-<!-- MI BIBLIOTECA -->
+<!-- BIBLIOTECA -->
 <!-- ===================================================== -->
 
 <section
@@ -1019,7 +923,7 @@
 
 
 <!-- ===================================================== -->
-<!-- NAVEGACIÓN INFERIOR -->
+<!-- NAVEGACIÓN -->
 <!-- ===================================================== -->
 
 <nav
@@ -1031,69 +935,35 @@
         class="nav-activo"
         onclick="mostrarPantalla('pantalla-inicio')"
     >
-
-        <span>
-            🏠
-        </span>
-
+        <span>🏠</span>
         Inicio
-
     </button>
 
 
-    <button
-        onclick="abrirBuscar()"
-    >
-
-        <span>
-            ⌕
-        </span>
-
+    <button onclick="abrirBuscar()">
+        <span>⌕</span>
         Buscar
-
     </button>
 
 
-    <button
-        onclick="abrirCatalogo('adultos')"
-    >
-
-        <span>
-            ✨
-        </span>
-
+    <button onclick="abrirCatalogo('adultos')">
+        <span>✨</span>
         Explorar
-
     </button>
 
 
-    <button
-        onclick="abrirBiblioteca('quiero')"
-    >
-
-        <span>
-            📖
-        </span>
-
+    <button onclick="abrirBiblioteca('quiero')">
+        <span>📖</span>
         Biblioteca
-
     </button>
 
 </nav>
 
 
 
-<!-- ===================================================== -->
-<!-- JAVASCRIPT -->
-<!-- ORDEN IMPORTANTE -->
-<!-- ===================================================== -->
-
 <script src="api.js"></script>
-
 <script src="catalogo.js"></script>
-
 <script src="lector.js"></script>
-
 <script src="app.js"></script>
 
 
