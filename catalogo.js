@@ -1,7 +1,7 @@
 /* ===================================================== */
 /* LA BIBLIOTECA DE NERE                                */
 /* CATALOGO.JS                                          */
-/* Infantil + Juvenil + gratis + buscador propio        */
+/* Adultos + Infantil + Juvenil + idiomas + gratis       */
 /* ===================================================== */
 
 
@@ -11,13 +11,15 @@
 
 window.estadoCatalogo = {
 
-    tipo: "infantil",
+    tipo: "adultos",
 
-    edad: "6-8",
+    edad: "",
 
-    categoria: "aventuras",
+    categoria: "novela",
 
-    soloGratis: false
+    soloGratis: false,
+
+    idioma: "todos"
 
 };
 
@@ -32,6 +34,22 @@ const CATALOGO_OPEN_LIBRARY =
 
 const CATALOGO_GUTENDEX =
     "https://gutendex.com/books/";
+
+
+/* ===================================================== */
+/* IDIOMAS                                              */
+/* ===================================================== */
+
+const IDIOMAS_OPEN_LIBRARY = {
+
+    es: "spa",
+    en: "eng",
+    fr: "fre",
+    de: "ger",
+    it: "ita",
+    pt: "por"
+
+};
 
 
 /* ===================================================== */
@@ -82,23 +100,64 @@ const EDADES_CATALOGO = {
 
 const CATEGORIAS_NERE = {
 
-    aventuras: {
+    /* ================= ADULTOS ================= */
 
-        nombre:
-            "Aventuras",
+    novela: {
+
+        nombre: "Novela",
+        icono: "📖",
+
+        adultos:
+            "fiction novels"
+
+    },
+
+
+    thriller: {
+
+        nombre: "Thriller",
+        icono: "🔪",
+
+        adultos:
+            "thriller suspense"
+
+    },
+
+
+    historia: {
+
+        nombre: "Histórica",
+        icono: "🏰",
+
+        adultos:
+            "historical fiction",
 
         infantil:
-            "children adventure",
+            "children historical fiction",
 
         juvenil:
-            "juvenile adventure"
+            "juvenile historical fiction"
+    },
+
+
+    romantica: {
+
+        nombre: "Romántica",
+        icono: "💕",
+
+        adultos:
+            "romance fiction"
+
     },
 
 
     fantasia: {
 
-        nombre:
-            "Fantasía",
+        nombre: "Fantasía",
+        icono: "🪄",
+
+        adultos:
+            "fantasy fiction",
 
         infantil:
             "children fantasy",
@@ -108,10 +167,51 @@ const CATEGORIAS_NERE = {
     },
 
 
+    cienciaficcion: {
+
+        nombre: "Ciencia ficción",
+        icono: "🚀",
+
+        adultos:
+            "science fiction"
+    },
+
+
+    clasicos: {
+
+        nombre: "Clásicos",
+        icono: "📘",
+
+        adultos:
+            "classic literature",
+
+        infantil:
+            "children classics",
+
+        juvenil:
+            "juvenile classics"
+    },
+
+
+    /* ================= INFANTIL/JUVENIL ================= */
+
+    aventuras: {
+
+        nombre: "Aventuras",
+        icono: "⭐",
+
+        infantil:
+            "children adventure",
+
+        juvenil:
+            "juvenile adventure"
+    },
+
+
     misterio: {
 
-        nombre:
-            "Misterio",
+        nombre: "Misterio",
+        icono: "🔎",
 
         infantil:
             "children mystery",
@@ -123,41 +223,52 @@ const CATEGORIAS_NERE = {
 
     animales: {
 
-        nombre:
-            "Animales",
+        nombre: "Animales",
+        icono: "🐾",
 
         infantil:
             "children animals",
 
         juvenil:
             "juvenile animals"
-    },
-
-
-    historia: {
-
-        nombre:
-            "Historia",
-
-        infantil:
-            "children historical fiction",
-
-        juvenil:
-            "juvenile historical fiction"
-    },
-
-
-    clasicos: {
-
-        nombre:
-            "Clásicos",
-
-        infantil:
-            "children classics",
-
-        juvenil:
-            "juvenile classics"
     }
+
+};
+
+
+/* ===================================================== */
+/* CATEGORÍAS SEGÚN TIPO                                */
+/* ===================================================== */
+
+const CATEGORIAS_POR_TIPO = {
+
+    adultos: [
+        "novela",
+        "thriller",
+        "historia",
+        "romantica",
+        "fantasia",
+        "cienciaficcion",
+        "clasicos"
+    ],
+
+    infantil: [
+        "aventuras",
+        "fantasia",
+        "misterio",
+        "animales",
+        "historia",
+        "clasicos"
+    ],
+
+    juvenil: [
+        "aventuras",
+        "fantasia",
+        "misterio",
+        "animales",
+        "historia",
+        "clasicos"
+    ]
 
 };
 
@@ -169,12 +280,12 @@ const CATEGORIAS_NERE = {
 function abrirCatalogo(tipo) {
 
     if (
+        tipo !== "adultos" &&
         tipo !== "infantil" &&
         tipo !== "juvenil"
     ) {
 
-        tipo =
-            "infantil";
+        tipo = "adultos";
 
     }
 
@@ -183,18 +294,43 @@ function abrirCatalogo(tipo) {
         tipo;
 
 
-    window.estadoCatalogo.edad =
-        tipo === "infantil"
-            ? "6-8"
-            : "12-14";
+    if (tipo === "adultos") {
 
+        window.estadoCatalogo.edad =
+            "";
 
-    window.estadoCatalogo.categoria =
-        "aventuras";
+        window.estadoCatalogo.categoria =
+            "novela";
+
+    }
+
+    else if (tipo === "infantil") {
+
+        window.estadoCatalogo.edad =
+            "6-8";
+
+        window.estadoCatalogo.categoria =
+            "aventuras";
+
+    }
+
+    else {
+
+        window.estadoCatalogo.edad =
+            "12-14";
+
+        window.estadoCatalogo.categoria =
+            "aventuras";
+
+    }
 
 
     window.estadoCatalogo.soloGratis =
         false;
+
+
+    window.estadoCatalogo.idioma =
+        "todos";
 
 
     const titulo =
@@ -205,10 +341,26 @@ function abrirCatalogo(tipo) {
 
     if (titulo) {
 
-        titulo.textContent =
-            tipo === "infantil"
-                ? "🧒 Infantil"
-                : "🧑 Juvenil";
+        if (tipo === "adultos") {
+
+            titulo.textContent =
+                "📚 Adultos";
+
+        }
+
+        else if (tipo === "infantil") {
+
+            titulo.textContent =
+                "🧒 Infantil";
+
+        }
+
+        else {
+
+            titulo.textContent =
+                "🧑 Juvenil";
+
+        }
 
     }
 
@@ -221,8 +373,7 @@ function abrirCatalogo(tipo) {
 
     if (buscador) {
 
-        buscador.value =
-            "";
+        buscador.value = "";
 
     }
 
@@ -241,11 +392,23 @@ function abrirCatalogo(tipo) {
     }
 
 
+    const selectorIdioma =
+        document.getElementById(
+            "idioma-catalogo"
+        );
+
+
+    if (selectorIdioma) {
+
+        selectorIdioma.value =
+            "todos";
+
+    }
+
+
     pintarEdadesCatalogo();
 
-    seleccionarCategoriaVisual(
-        "aventuras"
-    );
+    pintarCategoriasCatalogo();
 
 
     if (
@@ -288,10 +451,26 @@ function pintarEdadesCatalogo() {
         "";
 
 
+    const tipo =
+        window.estadoCatalogo.tipo;
+
+
+    if (tipo === "adultos") {
+
+        contenedor.style.display =
+            "none";
+
+        return;
+
+    }
+
+
+    contenedor.style.display =
+        "";
+
+
     const edades =
-        EDADES_CATALOGO[
-            window.estadoCatalogo.tipo
-        ];
+        EDADES_CATALOGO[tipo] || [];
 
 
     edades.forEach(
@@ -377,32 +556,113 @@ function filtrarEdad(
     }
 
 
-    const input =
-        document.getElementById(
-            "input-busqueda-catalogo"
-        );
-
-
-    if (
-        input &&
-        input.value.trim()
-    ) {
-
-        buscarEnCatalogo();
-
-    }
-
-    else {
-
-        cargarSeleccionCatalogo();
-
-    }
+    recargarCatalogoActual();
 
 }
 
 
 /* ===================================================== */
-/* CATEGORÍAS                                           */
+/* PINTAR CATEGORÍAS                                    */
+/* ===================================================== */
+
+function pintarCategoriasCatalogo() {
+
+    const contenedor =
+        document.getElementById(
+            "categorias-catalogo"
+        );
+
+
+    if (!contenedor) {
+
+        return;
+
+    }
+
+
+    contenedor.innerHTML =
+        "";
+
+
+    const tipo =
+        window.estadoCatalogo.tipo;
+
+
+    const categorias =
+        CATEGORIAS_POR_TIPO[tipo] || [];
+
+
+    categorias.forEach(
+        function(clave) {
+
+            const config =
+                CATEGORIAS_NERE[clave];
+
+
+            if (!config) {
+
+                return;
+
+            }
+
+
+            const boton =
+                document.createElement(
+                    "button"
+                );
+
+
+            boton.dataset.categoria =
+                clave;
+
+
+            boton.innerHTML = `
+
+                <span>
+                    ${config.icono || "📚"}
+                </span>
+
+                ${escaparCatalogo(
+                    config.nombre
+                )}
+            `;
+
+
+            if (
+                clave ===
+                window.estadoCatalogo.categoria
+            ) {
+
+                boton.classList.add(
+                    "activo"
+                );
+
+            }
+
+
+            boton.onclick =
+                function() {
+
+                    filtrarCategoria(
+                        clave,
+                        boton
+                    );
+
+                };
+
+
+            contenedor.appendChild(
+                boton
+            );
+
+        }
+    );
+
+}
+
+
+/* ===================================================== */
+/* CAMBIAR CATEGORÍA                                    */
 /* ===================================================== */
 
 function filtrarCategoria(
@@ -427,7 +687,7 @@ function filtrarCategoria(
 
     document
         .querySelectorAll(
-            ".categorias-scroll button"
+            "#categorias-catalogo button"
         )
         .forEach(
             function(elemento) {
@@ -449,87 +709,47 @@ function filtrarCategoria(
     }
 
 
-    const input =
-        document.getElementById(
-            "input-busqueda-catalogo"
-        );
-
-
-    if (
-        input &&
-        input.value.trim()
-    ) {
-
-        buscarEnCatalogo();
-
-    }
-
-    else {
-
-        cargarSeleccionCatalogo();
-
-    }
+    recargarCatalogoActual();
 
 }
 
 
 /* ===================================================== */
-/* MARCAR CATEGORÍA                                     */
+/* IDIOMA CATÁLOGO                                      */
 /* ===================================================== */
 
-function seleccionarCategoriaVisual(
-    categoria
+function cambiarIdiomaCatalogo(
+    idioma
 ) {
 
-    const orden = {
-
-        aventuras: 0,
-
-        fantasia: 1,
-
-        misterio: 2,
-
-        animales: 3,
-
-        historia: 4,
-
-        clasicos: 5
-
-    };
-
-
-    const botones =
-        document.querySelectorAll(
-            ".categorias-scroll button"
-        );
-
-
-    botones.forEach(
-        function(boton) {
-
-            boton.classList.remove(
-                "activo"
-            );
-
-        }
-    );
-
-
-    const indice =
-        orden[categoria];
+    const permitidos = [
+        "todos",
+        "es",
+        "en",
+        "fr",
+        "de",
+        "it",
+        "pt"
+    ];
 
 
     if (
-        indice !== undefined &&
-        botones[indice]
+        !permitidos.includes(
+            idioma
+        )
     ) {
 
-        botones[indice]
-            .classList.add(
-                "activo"
-            );
+        idioma =
+            "todos";
 
     }
+
+
+    window.estadoCatalogo.idioma =
+        idioma;
+
+
+    recargarCatalogoActual();
 
 }
 
@@ -552,6 +772,17 @@ function actualizarCatalogo() {
             checkbox.checked
         );
 
+
+    recargarCatalogoActual();
+
+}
+
+
+/* ===================================================== */
+/* RECARGAR ESTADO ACTUAL                               */
+/* ===================================================== */
+
+function recargarCatalogoActual() {
 
     const buscador =
         document.getElementById(
@@ -616,18 +847,6 @@ async function buscarEnCatalogo() {
 
         let libros = [];
 
-
-        /*
-          IMPORTANTE:
-
-          Cuando el usuario escribe un título
-          o autor usamos SEARCH en Gutendex.
-
-          Ejemplo:
-          Tom Sawyer
-          Peter Pan
-          Alice
-        */
 
         if (
             window.estadoCatalogo.soloGratis
@@ -724,22 +943,31 @@ async function cargarSeleccionCatalogo() {
             ];
 
 
-        const consulta =
+        if (!configuracion) {
+
+            throw new Error(
+                "Categoría no encontrada."
+            );
+
+        }
+
+
+        let consulta =
             configuracion[
                 window.estadoCatalogo.tipo
             ];
 
 
+        if (!consulta) {
+
+            consulta =
+                configuracion.nombre;
+
+        }
+
+
         let libros = [];
 
-
-        /*
-          PARA CATEGORÍAS GRATIS:
-
-          usamos TOPIC, no SEARCH.
-
-          Esto es lo que corrige Juvenil.
-        */
 
         if (
             window.estadoCatalogo.soloGratis
@@ -764,13 +992,7 @@ async function cargarSeleccionCatalogo() {
 
 
         /*
-          RESPALDO PARA GUTENBERG
-
-          Algunos temas juveniles están
-          etiquetados de forma inconsistente.
-
-          Si obtenemos pocos resultados,
-          probamos consultas más amplias.
+          RESPALDO GUTENDEX
         */
 
         if (
@@ -792,7 +1014,7 @@ async function cargarSeleccionCatalogo() {
 
 
         /*
-          RESPALDO PARA OPEN LIBRARY
+          RESPALDO OPEN LIBRARY
         */
 
         if (
@@ -825,35 +1047,9 @@ async function cargarSeleccionCatalogo() {
         );
 
 
-        if (libros.length) {
-
-            ponerEstadoCatalogo(
-
-                window.estadoCatalogo.tipo ===
-                "infantil"
-
-                    ? (
-                        window.estadoCatalogo.soloGratis
-                            ? "🟢 Libros infantiles gratuitos"
-                            : "🧒 Libros infantiles recomendados"
-                    )
-
-                    : (
-                        window.estadoCatalogo.soloGratis
-                            ? "🟢 Libros juveniles gratuitos"
-                            : "🧑 Libros juveniles recomendados"
-                    )
-            );
-
-        }
-
-        else {
-
-            ponerEstadoCatalogo(
-                "No encontramos libros para esta selección."
-            );
-
-        }
+        ponerMensajeCatalogo(
+            libros
+        );
 
     }
 
@@ -867,6 +1063,66 @@ async function cargarSeleccionCatalogo() {
 
         ponerEstadoCatalogo(
             "❌ No se ha podido cargar esta selección."
+        );
+
+    }
+
+}
+
+
+/* ===================================================== */
+/* MENSAJE SEGÚN SECCIÓN                                */
+/* ===================================================== */
+
+function ponerMensajeCatalogo(
+    libros
+) {
+
+    if (!libros.length) {
+
+        ponerEstadoCatalogo(
+            "No encontramos libros para esta selección."
+        );
+
+        return;
+
+    }
+
+
+    const tipo =
+        window.estadoCatalogo.tipo;
+
+
+    const gratis =
+        window.estadoCatalogo.soloGratis;
+
+
+    if (tipo === "adultos") {
+
+        ponerEstadoCatalogo(
+            gratis
+                ? "🟢 Libros para adultos gratuitos"
+                : "📚 Libros para adultos recomendados"
+        );
+
+    }
+
+    else if (tipo === "infantil") {
+
+        ponerEstadoCatalogo(
+            gratis
+                ? "🟢 Libros infantiles gratuitos"
+                : "🧒 Libros infantiles recomendados"
+        );
+
+    }
+
+    else {
+
+        ponerEstadoCatalogo(
+            gratis
+                ? "🟢 Libros juveniles gratuitos"
+                : "🧑 Libros juveniles recomendados"
         );
 
     }
@@ -891,38 +1147,22 @@ async function obtenerRespaldoGratis() {
     const consultas = [];
 
 
-    if (tipo === "infantil") {
+    if (tipo === "adultos") {
 
         consultas.push(
-            "children"
+            "fiction"
         );
 
 
-        if (
-            categoria === "aventuras"
-        ) {
+        if (categoria === "novela") {
 
             consultas.push(
-                "adventure"
+                "novels"
             );
 
         }
 
-
-        else if (
-            categoria === "fantasia"
-        ) {
-
-            consultas.push(
-                "fairy tales"
-            );
-
-        }
-
-
-        else if (
-            categoria === "misterio"
-        ) {
+        else if (categoria === "thriller") {
 
             consultas.push(
                 "mystery"
@@ -930,10 +1170,81 @@ async function obtenerRespaldoGratis() {
 
         }
 
+        else if (categoria === "historia") {
 
-        else if (
-            categoria === "animales"
-        ) {
+            consultas.push(
+                "historical fiction"
+            );
+
+        }
+
+        else if (categoria === "romantica") {
+
+            consultas.push(
+                "romance"
+            );
+
+        }
+
+        else if (categoria === "fantasia") {
+
+            consultas.push(
+                "fantasy fiction"
+            );
+
+        }
+
+        else if (categoria === "cienciaficcion") {
+
+            consultas.push(
+                "science fiction"
+            );
+
+        }
+
+        else if (categoria === "clasicos") {
+
+            consultas.push(
+                "classic literature"
+            );
+
+        }
+
+    }
+
+
+    else if (tipo === "infantil") {
+
+        consultas.push(
+            "children"
+        );
+
+
+        if (categoria === "aventuras") {
+
+            consultas.push(
+                "adventure"
+            );
+
+        }
+
+        else if (categoria === "fantasia") {
+
+            consultas.push(
+                "fairy tales"
+            );
+
+        }
+
+        else if (categoria === "misterio") {
+
+            consultas.push(
+                "mystery"
+            );
+
+        }
+
+        else if (categoria === "animales") {
 
             consultas.push(
                 "animals"
@@ -941,10 +1252,7 @@ async function obtenerRespaldoGratis() {
 
         }
 
-
-        else if (
-            categoria === "historia"
-        ) {
+        else if (categoria === "historia") {
 
             consultas.push(
                 "history"
@@ -952,10 +1260,7 @@ async function obtenerRespaldoGratis() {
 
         }
 
-
-        else if (
-            categoria === "clasicos"
-        ) {
+        else if (categoria === "clasicos") {
 
             consultas.push(
                 "children literature"
@@ -965,21 +1270,15 @@ async function obtenerRespaldoGratis() {
 
     }
 
-    else {
 
-        /*
-          Gutenberg no siempre usa "young adult".
-          "juvenile fiction" funciona mejor.
-        */
+    else {
 
         consultas.push(
             "juvenile fiction"
         );
 
 
-        if (
-            categoria === "aventuras"
-        ) {
+        if (categoria === "aventuras") {
 
             consultas.push(
                 "adventure stories"
@@ -987,10 +1286,7 @@ async function obtenerRespaldoGratis() {
 
         }
 
-
-        else if (
-            categoria === "fantasia"
-        ) {
+        else if (categoria === "fantasia") {
 
             consultas.push(
                 "fantasy fiction"
@@ -998,10 +1294,7 @@ async function obtenerRespaldoGratis() {
 
         }
 
-
-        else if (
-            categoria === "misterio"
-        ) {
+        else if (categoria === "misterio") {
 
             consultas.push(
                 "detective mystery stories"
@@ -1009,10 +1302,7 @@ async function obtenerRespaldoGratis() {
 
         }
 
-
-        else if (
-            categoria === "animales"
-        ) {
+        else if (categoria === "animales") {
 
             consultas.push(
                 "animals fiction"
@@ -1020,10 +1310,7 @@ async function obtenerRespaldoGratis() {
 
         }
 
-
-        else if (
-            categoria === "historia"
-        ) {
+        else if (categoria === "historia") {
 
             consultas.push(
                 "historical fiction"
@@ -1031,10 +1318,7 @@ async function obtenerRespaldoGratis() {
 
         }
 
-
-        else if (
-            categoria === "clasicos"
-        ) {
+        else if (categoria === "clasicos") {
 
             consultas.push(
                 "juvenile literature"
@@ -1103,11 +1387,41 @@ async function buscarCatalogoGeneral(
     consulta
 ) {
 
+    let consultaFinal =
+        consulta;
+
+
+    const idioma =
+        window.estadoCatalogo.idioma;
+
+
+    if (
+        idioma &&
+        idioma !== "todos"
+    ) {
+
+        const codigo =
+            IDIOMAS_OPEN_LIBRARY[
+                idioma
+            ];
+
+
+        if (codigo) {
+
+            consultaFinal +=
+                " language:" +
+                codigo;
+
+        }
+
+    }
+
+
     const url =
         CATALOGO_OPEN_LIBRARY +
         "?q=" +
         encodeURIComponent(
-            consulta
+            consultaFinal
         ) +
         "&limit=24";
 
@@ -1218,6 +1532,9 @@ function normalizarLibroCatalogoOpenLibrary(
         portada:
             portada,
 
+        idiomas:
+            libro.language || [],
+
         gratis:
             false,
 
@@ -1244,21 +1561,13 @@ async function buscarCatalogoGratis(
     esBusquedaManual = false
 ) {
 
-    /*
-      BÚSQUEDA MANUAL:
-      ?search=Tom Sawyer
-
-      CATEGORÍAS:
-      ?topic=juvenile adventure
-    */
-
     const parametro =
         esBusquedaManual
             ? "search"
             : "topic";
 
 
-    const url =
+    let url =
         CATALOGO_GUTENDEX +
         "?" +
         parametro +
@@ -1267,6 +1576,24 @@ async function buscarCatalogoGratis(
             consulta
         ) +
         "&sort=popular";
+
+
+    const idioma =
+        window.estadoCatalogo.idioma;
+
+
+    if (
+        idioma &&
+        idioma !== "todos"
+    ) {
+
+        url +=
+            "&languages=" +
+            encodeURIComponent(
+                idioma
+            );
+
+    }
 
 
     console.log(
@@ -1442,13 +1769,31 @@ function aplicarDatosCatalogo(
     libros.forEach(
         function(libro) {
 
-            libro.edad =
-                window.estadoCatalogo.edad +
-                " años";
+            if (
+                window.estadoCatalogo.tipo ===
+                "adultos"
+            ) {
+
+                libro.edad =
+                    "";
+
+            }
+
+            else {
+
+                libro.edad =
+                    window.estadoCatalogo.edad +
+                    " años";
+
+            }
 
 
             libro.categoria =
                 nombreCategoria;
+
+
+            libro.seccion =
+                window.estadoCatalogo.tipo;
 
         }
     );
@@ -1864,5 +2209,5 @@ document.addEventListener(
 
 
 console.log(
-    "✅ Catálogo Nere Infantil/Juvenil + Gratis cargado"
+    "✅ Catálogo Nere Adultos/Infantil/Juvenil + idiomas + Gratis cargado"
 );
