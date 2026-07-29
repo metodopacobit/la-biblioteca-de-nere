@@ -1,7 +1,7 @@
 /* ===================================================== */
 /* LA BIBLIOTECA DE NERE                                */
-/* CATALOGO.JS · v1.2                                   */
-/* Catálogo estable + control infantil por edad          */
+/* CATALOGO.JS · v1.3                                   */
+/* Catálogo de menores revisado + control por edad        */
 /* ===================================================== */
 
 
@@ -658,6 +658,440 @@ const CODIGOS_IDIOMA_CATALOGO_NERE = {
     ]
 
 };
+
+
+/* ===================================================== */
+/* LIBROS GRATUITOS AUTORIZADOS PARA MENORES             */
+/* ===================================================== */
+
+/*
+   Esta lista es deliberadamente cerrada.
+
+   En Infantil y Juvenil no basta con que una API
+   marque un libro como "juvenile": debe aparecer
+   aquí con idioma, edad y categorías revisados.
+*/
+
+const CATALOGO_MENORES_GRATUITO_AUTORIZADO_NERE = [
+
+    {
+        id: 36558,
+        idioma: "es",
+        tipos: [
+            "infantil"
+        ],
+        edades: [
+            "6-8"
+        ],
+        categorias: [
+            "aventuras",
+            "fantasia",
+            "animales",
+            "clasicos"
+        ]
+    },
+
+    {
+        id: 11047,
+        idioma: "es",
+        tipos: [
+            "infantil"
+        ],
+        edades: [
+            "6-8"
+        ],
+        categorias: [
+            "aventuras",
+            "animales",
+            "clasicos"
+        ]
+    },
+
+    {
+        id: 64058,
+        idioma: "es",
+        tipos: [
+            "infantil"
+        ],
+        edades: [
+            "6-8",
+            "9-11"
+        ],
+        categorias: [
+            "animales",
+            "fantasia",
+            "clasicos"
+        ]
+    },
+
+    {
+        id: 55206,
+        idioma: "es",
+        tipos: [
+            "infantil"
+        ],
+        edades: [
+            "6-8",
+            "9-11"
+        ],
+        categorias: [
+            "animales",
+            "fantasia",
+            "clasicos"
+        ]
+    },
+
+    {
+        id: 21143,
+        idioma: "es",
+        tipos: [
+            "infantil"
+        ],
+        edades: [
+            "6-8",
+            "9-11"
+        ],
+        categorias: [
+            "animales",
+            "fantasia",
+            "clasicos"
+        ]
+    },
+
+    {
+        id: 20029,
+        idioma: "es",
+        tipos: [
+            "infantil"
+        ],
+        edades: [
+            "6-8",
+            "9-11"
+        ],
+        categorias: [
+            "animales",
+            "fantasia",
+            "clasicos"
+        ]
+    },
+
+    {
+        id: 21144,
+        idioma: "es",
+        tipos: [
+            "infantil"
+        ],
+        edades: [
+            "6-8",
+            "9-11"
+        ],
+        categorias: [
+            "animales",
+            "fantasia",
+            "clasicos"
+        ]
+    },
+
+    {
+        id: 55215,
+        idioma: "es",
+        tipos: [
+            "infantil",
+            "juvenil"
+        ],
+        edades: [
+            "9-11",
+            "12-14"
+        ],
+        categorias: [
+            "aventuras",
+            "fantasia",
+            "historia",
+            "clasicos"
+        ]
+    },
+
+    {
+        id: 69552,
+        idioma: "es",
+        tipos: [
+            "infantil",
+            "juvenil"
+        ],
+        edades: [
+            "9-11",
+            "12-14"
+        ],
+        categorias: [
+            "aventuras",
+            "animales",
+            "clasicos"
+        ]
+    },
+
+    {
+        id: 39209,
+        idioma: "es",
+        tipos: [
+            "infantil",
+            "juvenil"
+        ],
+        edades: [
+            "9-11",
+            "12-14"
+        ],
+        categorias: [
+            "animales",
+            "clasicos"
+        ]
+    },
+
+    {
+        id: 19898,
+        idioma: "es",
+        tipos: [
+            "infantil",
+            "juvenil"
+        ],
+        edades: [
+            "9-11",
+            "12-14"
+        ],
+        categorias: [
+            "aventuras",
+            "historia",
+            "clasicos"
+        ]
+    },
+
+    {
+        id: 63424,
+        idioma: "es",
+        tipos: [
+            "infantil",
+            "juvenil"
+        ],
+        edades: [
+            "9-11",
+            "12-14"
+        ],
+        categorias: [
+            "aventuras",
+            "fantasia",
+            "historia",
+            "clasicos"
+        ]
+    },
+
+    {
+        id: 69164,
+        idioma: "es",
+        tipos: [
+            "infantil",
+            "juvenil"
+        ],
+        edades: [
+            "9-11",
+            "12-14"
+        ],
+        categorias: [
+            "fantasia",
+            "historia",
+            "clasicos"
+        ]
+    },
+
+    {
+        id: 73486,
+        idioma: "es",
+        tipos: [
+            "infantil",
+            "juvenil"
+        ],
+        edades: [
+            "9-11",
+            "12-14",
+            "15-17"
+        ],
+        categorias: [
+            "historia",
+            "clasicos"
+        ]
+    },
+
+    {
+        id: 14838,
+        idioma: "en",
+        tipos: [
+            "infantil"
+        ],
+        edades: [
+            "3-5",
+            "6-8"
+        ],
+        categorias: [
+            "aventuras",
+            "animales",
+            "clasicos"
+        ]
+    },
+
+    {
+        id: 11757,
+        idioma: "en",
+        tipos: [
+            "infantil"
+        ],
+        edades: [
+            "6-8",
+            "9-11"
+        ],
+        categorias: [
+            "fantasia",
+            "animales",
+            "clasicos"
+        ]
+    },
+
+    {
+        id: 11,
+        idioma: "en",
+        tipos: [
+            "infantil"
+        ],
+        edades: [
+            "9-11"
+        ],
+        categorias: [
+            "aventuras",
+            "fantasia",
+            "clasicos"
+        ]
+    },
+
+    {
+        id: 55,
+        idioma: "en",
+        tipos: [
+            "infantil"
+        ],
+        edades: [
+            "9-11"
+        ],
+        categorias: [
+            "aventuras",
+            "fantasia",
+            "clasicos"
+        ]
+    },
+
+    {
+        id: 236,
+        idioma: "en",
+        tipos: [
+            "infantil",
+            "juvenil"
+        ],
+        edades: [
+            "9-11",
+            "12-14"
+        ],
+        categorias: [
+            "aventuras",
+            "animales",
+            "clasicos"
+        ]
+    },
+
+    {
+        id: 16,
+        idioma: "en",
+        tipos: [
+            "infantil",
+            "juvenil"
+        ],
+        edades: [
+            "9-11",
+            "12-14"
+        ],
+        categorias: [
+            "aventuras",
+            "fantasia",
+            "clasicos"
+        ]
+    },
+
+    {
+        id: 17396,
+        idioma: "en",
+        tipos: [
+            "infantil",
+            "juvenil"
+        ],
+        edades: [
+            "9-11",
+            "12-14"
+        ],
+        categorias: [
+            "aventuras",
+            "misterio",
+            "clasicos"
+        ]
+    },
+
+    {
+        id: 120,
+        idioma: "en",
+        tipos: [
+            "juvenil"
+        ],
+        edades: [
+            "12-14",
+            "15-17"
+        ],
+        categorias: [
+            "aventuras",
+            "misterio",
+            "clasicos"
+        ]
+    },
+
+    {
+        id: 45,
+        idioma: "en",
+        tipos: [
+            "juvenil"
+        ],
+        edades: [
+            "12-14",
+            "15-17"
+        ],
+        categorias: [
+            "historia",
+            "clasicos"
+        ]
+    },
+
+    {
+        id: 514,
+        idioma: "en",
+        tipos: [
+            "juvenil"
+        ],
+        edades: [
+            "12-14",
+            "15-17"
+        ],
+        categorias: [
+            "historia",
+            "clasicos"
+        ]
+    }
+
+];
+
+
+const CACHE_MENORES_GRATIS_NERE = {};
 
 
 /* ===================================================== */
@@ -1451,6 +1885,61 @@ async function obtenerGratisCategoria() {
         window.estadoCatalogo.idioma;
 
 
+    const categoria =
+        window.estadoCatalogo.categoria;
+
+
+    const tipo =
+        window.estadoCatalogo.tipo;
+
+
+    const edad =
+        window.estadoCatalogo.edad;
+
+
+    /*
+       Los menores se cargan únicamente por sus
+       identificadores revisados. Así una etiqueta
+       externa incorrecta no puede introducir títulos.
+    */
+
+    if (
+        tipo === "infantil"
+        ||
+        tipo === "juvenil"
+    ) {
+
+        const autorizados =
+            await cargarCatalogoMenoresGratis(
+                idioma
+            );
+
+
+        return autorizados
+            .filter(
+                libro =>
+                    libroAutorizadoParaMenoresGratis(
+                        libro,
+                        tipo,
+                        edad,
+                        categoria,
+                        idioma
+                    )
+            )
+            .sort(
+                (a, b) =>
+                    (b.descargas || 0)
+                    -
+                    (a.descargas || 0)
+            )
+            .slice(
+                0,
+                20
+            );
+
+    }
+
+
     const todos =
         await cargarPoolGutenberg(
             idioma
@@ -1462,18 +1951,6 @@ async function obtenerGratisCategoria() {
         return [];
 
     }
-
-
-    const categoria =
-        window.estadoCatalogo.categoria;
-
-
-    const tipo =
-        window.estadoCatalogo.tipo;
-
-
-    const edad =
-        window.estadoCatalogo.edad;
 
 
     /*
@@ -1630,6 +2107,226 @@ async function obtenerGratisCategoria() {
 
 
     return seleccion;
+
+}
+
+
+/* ===================================================== */
+/* CARGAR CATÁLOGO GRATUITO REVISADO                     */
+/* ===================================================== */
+
+async function cargarCatalogoMenoresGratis(
+    idioma
+) {
+
+    const clave =
+        idioma ||
+        "todos";
+
+
+    if (
+        CACHE_MENORES_GRATIS_NERE[
+            clave
+        ]
+    ) {
+
+        return CACHE_MENORES_GRATIS_NERE[
+            clave
+        ];
+
+    }
+
+
+    const fichas =
+        CATALOGO_MENORES_GRATUITO_AUTORIZADO_NERE
+        .filter(
+            ficha =>
+                idioma === "todos"
+                ||
+                ficha.idioma === idioma
+        );
+
+
+    const ids =
+        [
+            ...new Set(
+                fichas.map(
+                    ficha =>
+                        ficha.id
+                )
+            )
+        ];
+
+
+    if (!ids.length) {
+
+        CACHE_MENORES_GRATIS_NERE[
+            clave
+        ] = [];
+
+        return [];
+
+    }
+
+
+    const url =
+        GUTENDEX_CATALOGO +
+        "?ids=" +
+        ids.join(",");
+
+
+    const respuesta =
+        await fetch(
+            url
+        );
+
+
+    if (!respuesta.ok) {
+
+        throw new Error(
+            "Gutendex: " +
+            respuesta.status
+        );
+
+    }
+
+
+    const datos =
+        await respuesta.json();
+
+
+    const libros =
+        (datos.results || [])
+        .map(
+            normalizarGutendex
+        )
+        .filter(
+            libro =>
+                libroTieneIdiomaCatalogo(
+                    libro,
+                    idioma
+                )
+        );
+
+
+    CACHE_MENORES_GRATIS_NERE[
+        clave
+    ] = libros;
+
+
+    return libros;
+
+}
+
+
+/* ===================================================== */
+/* COMPROBAR AUTORIZACIÓN DE UN LIBRO GRATUITO           */
+/* ===================================================== */
+
+function obtenerFichaMenorGratis(
+    libro
+) {
+
+    const id =
+        Number(
+            libro &&
+            (
+                libro.gutenbergId
+                ||
+                libro.id
+            )
+        );
+
+
+    if (!Number.isInteger(id)) {
+
+        return null;
+
+    }
+
+
+    return (
+        CATALOGO_MENORES_GRATUITO_AUTORIZADO_NERE
+        .find(
+            ficha =>
+                ficha.id === id
+        )
+        ||
+        null
+    );
+
+}
+
+
+function libroAutorizadoParaMenoresGratis(
+    libro,
+    tipo,
+    edad = "",
+    categoria = "",
+    idioma = "todos"
+) {
+
+    const ficha =
+        obtenerFichaMenorGratis(
+            libro
+        );
+
+
+    if (!ficha) {
+
+        return false;
+
+    }
+
+
+    if (
+        idioma !== "todos"
+        &&
+        ficha.idioma !== idioma
+    ) {
+
+        return false;
+
+    }
+
+
+    if (
+        tipo &&
+        !ficha.tipos.includes(
+            tipo
+        )
+    ) {
+
+        return false;
+
+    }
+
+
+    if (
+        edad &&
+        !ficha.edades.includes(
+            edad
+        )
+    ) {
+
+        return false;
+
+    }
+
+
+    if (
+        categoria &&
+        !ficha.categorias.includes(
+            categoria
+        )
+    ) {
+
+        return false;
+
+    }
+
+
+    return true;
 
 }
 
@@ -2016,6 +2713,28 @@ function libroCompatibleConSeccion(
         );
 
 
+    if (
+        libro &&
+        libro.gratis
+        &&
+        (
+            tipo === "infantil"
+            ||
+            tipo === "juvenil"
+        )
+    ) {
+
+        return libroAutorizadoParaMenoresGratis(
+            libro,
+            tipo,
+            edad,
+            "",
+            window.estadoCatalogo.idioma
+        );
+
+    }
+
+
     const tieneContenidoAdulto =
         contieneAlguna(
             texto,
@@ -2228,6 +2947,34 @@ function prepararLibrosCatalogo(
             )
     )
     .filter(
+        libro => {
+
+            if (
+                !window.estadoCatalogo.soloGratis
+                ||
+                (
+                    tipo !== "infantil"
+                    &&
+                    tipo !== "juvenil"
+                )
+            ) {
+
+                return true;
+
+            }
+
+
+            return libroAutorizadoParaMenoresGratis(
+                libro,
+                tipo,
+                edad,
+                window.estadoCatalogo.categoria,
+                idioma
+            );
+
+        }
+    )
+    .filter(
         libro =>
             libroCompatibleConSeccion(
                 libro,
@@ -2285,12 +3032,36 @@ function libroTieneIdiomaCatalogo(
             : [];
 
 
-    return permitidos.some(
+    const coincideCodigo =
+        permitidos.some(
         codigo =>
             idiomasLibro.includes(
                 codigo
             )
     );
+
+
+    if (!coincideCodigo) {
+
+        return false;
+
+    }
+
+
+    if (
+        typeof tituloCompatibleConIdiomaNere ===
+        "function"
+    ) {
+
+        return tituloCompatibleConIdiomaNere(
+            libro.titulo,
+            idioma
+        );
+
+    }
+
+
+    return true;
 
 }
 
@@ -2810,5 +3581,5 @@ document.addEventListener(
 
 
 console.log(
-    "✅ Catálogo Nere v1.2 · Filtros de edad y contenido activos"
+    "✅ Catálogo Nere v1.3 · Menores revisados e idioma verificado"
 );

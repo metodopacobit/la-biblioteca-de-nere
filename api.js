@@ -1,6 +1,6 @@
 /* =====================================================
    LA BIBLIOTECA DE NERE
-   API.JS · v1.2
+   API.JS · v1.3
    Open Library + Gutenberg + idiomas
 ===================================================== */
 
@@ -32,6 +32,74 @@ const IDIOMAS_API_OPEN_LIBRARY = {
     pt: "por"
 
 };
+
+
+/* =====================================================
+   COMPROBACIÓN CONSERVADORA DEL TÍTULO
+===================================================== */
+
+const MARCADORES_TITULO_EXTRANJERO_NERE = {
+
+    es: [
+        /\b(the|and|with|from|book|novel|stories|tales|adventures|volume|edition|selected|complete|english)\b/i,
+        /\b(syd[aä]n|kirja|nuorisolle|kertomuksia|satuja)\b/i,
+        /\b(och|sagor|ber[aä]ttelser|ungdom)\b/i,
+        /\b(der|das|und|geschichte|m[aä]rchen|erz[aä]hlungen)\b/i,
+        /\b(les|contes|histoires|jeunesse)\b/i,
+        /\b(racconti|storie|ragazzi|fanciulli)\b/i,
+        /\b(contos|crian[cç]as|inf[aâ]ncia)\b/i
+    ]
+
+};
+
+
+function tituloCompatibleConIdiomaNere(
+    titulo,
+    idioma
+) {
+
+    if (
+        !idioma ||
+        idioma === "todos"
+    ) {
+
+        return true;
+
+    }
+
+
+    const limpio =
+        String(
+            titulo || ""
+        )
+        .replace(
+            /\s+/g,
+            " "
+        )
+        .trim();
+
+
+    if (!limpio) {
+
+        return false;
+
+    }
+
+
+    const marcadores =
+        MARCADORES_TITULO_EXTRANJERO_NERE[
+            idioma
+        ] || [];
+
+
+    return !marcadores.some(
+        patron =>
+            patron.test(
+                limpio
+            )
+    );
+
+}
 
 
 /* =====================================================
@@ -412,7 +480,15 @@ async function buscarOpenLibrarySimple(
                 )
         )
 
-        .filter(Boolean);
+        .filter(Boolean)
+
+        .filter(
+            libro =>
+                tituloCompatibleConIdiomaNere(
+                    libro.titulo,
+                    idioma
+                )
+        );
 
 
     /*
@@ -1017,6 +1093,16 @@ async function buscarLibrosGratis(
             );
 
     }
+
+
+    libros =
+        libros.filter(
+            libro =>
+                tituloCompatibleConIdiomaNere(
+                    libro.titulo,
+                    idioma
+                )
+        );
 
 
     libros =
@@ -1967,5 +2053,5 @@ function escaparHTMLAPI(
 
 
 console.log(
-    "✅ API Nere v1.2 · Idioma estricto y duplicados corregidos"
+    "✅ API Nere v1.3 · Idioma verificado y duplicados corregidos"
 );
