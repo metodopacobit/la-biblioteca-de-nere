@@ -1,6 +1,6 @@
 /* =====================================================
    LA BIBLIOTECA DE NERE
-   API.JS · v1.1
+   API.JS · v1.2
    Open Library + Gutenberg + idiomas
 ===================================================== */
 
@@ -238,7 +238,8 @@ async function buscarOpenLibrarySimple(
     texto,
     filtro = "todo",
     idioma = "es",
-    exigirRelevancia = true
+    exigirRelevancia = true,
+    limite = 20
 ) {
 
     const limpio =
@@ -314,7 +315,15 @@ async function buscarOpenLibrarySimple(
 
     parametros.set(
         "limit",
-        "50"
+        String(
+            Math.max(
+                50,
+                Math.min(
+                    Number(limite) || 20,
+                    100
+                )
+            )
+        )
     );
 
 
@@ -331,6 +340,8 @@ async function buscarOpenLibrarySimple(
             "first_publish_year",
             "cover_i",
             "language",
+            "subject",
+            "subject_key",
             "editions",
             "editions.key",
             "editions.title",
@@ -457,9 +468,18 @@ async function buscarOpenLibrarySimple(
     }
 
 
+    libros =
+        eliminarLibrosDuplicadosAPI(
+            libros
+        );
+
+
     return libros.slice(
         0,
-        20
+        Math.max(
+            1,
+            Number(limite) || 20
+        )
     );
 
 }
@@ -486,38 +506,29 @@ function normalizarOpenLibrary(
 
 
     /*
-       Open Library devuelve actualmente
-       la edición de mayor relevancia.
-
-       Con language:spa + lang=es debería
-       corresponder a una edición española.
+       No damos por válida la primera edición.
+       Buscamos expresamente una edición en el
+       idioma elegido para no mezclar títulos.
     */
 
-    let edicion =
-        ediciones.length
-            ? ediciones[0]
-            : null;
+    const edicion =
+        codigoIdioma
 
+            ? (
+                ediciones.find(
+                    candidata =>
+                        edicionIncluyeIdiomaAPI(
+                            candidata,
+                            codigoIdioma
+                        )
+                ) || null
+            )
 
-    /*
-       Seguridad adicional.
-    */
-
-    if (
-        codigoIdioma &&
-        edicion &&
-        Array.isArray(
-            edicion.language
-        ) &&
-        !edicion.language.includes(
-            codigoIdioma
-        )
-    ) {
-
-        edicion =
-            null;
-
-    }
+            : (
+                ediciones.length
+                    ? ediciones[0]
+                    : null
+            );
 
 
     /*
@@ -621,6 +632,19 @@ function normalizarOpenLibrary(
                 ? edicion.language || []
                 : libro.language || [],
 
+        temas:
+            [
+                ...(Array.isArray(libro.subject)
+                    ? libro.subject
+                    : []),
+                ...(Array.isArray(libro.subject_key)
+                    ? libro.subject_key
+                    : [])
+            ],
+
+        estanterias:
+            [],
+
         gratis:
             false,
 
@@ -634,6 +658,120 @@ function normalizarOpenLibrary(
             ""
 
     };
+
+}
+
+
+/* =====================================================
+   IDIOMA DE EDICIÓN
+===================================================== */
+
+function edicionIncluyeIdiomaAPI(
+    edicion,
+    codigoIdioma
+) {
+
+    if (
+        !edicion ||
+        !Array.isArray(
+            edicion.language
+        )
+    ) {
+
+        return false;
+
+    }
+
+
+    return edicion.language
+        .map(
+            codigo =>
+                String(codigo)
+                .toLowerCase()
+                .trim()
+        )
+        .includes(
+            String(codigoIdioma)
+            .toLowerCase()
+            .trim()
+        );
+
+}
+
+
+/* =====================================================
+   ELIMINAR DUPLICADOS
+===================================================== */
+
+function eliminarLibrosDuplicadosAPI(
+    libros
+) {
+
+    const resultado =
+        [];
+
+
+    const usados =
+        new Set();
+
+
+    (libros || []).forEach(
+        function(libro) {
+
+            if (!libro) {
+
+                return;
+
+            }
+
+
+            const clave =
+                [
+                    normalizarTextoAPI(
+                        libro.titulo
+                    )
+                    .replace(
+                        /[^a-z0-9]+/g,
+                        " "
+                    )
+                    .trim(),
+
+                    normalizarTextoAPI(
+                        libro.autor
+                    )
+                    .replace(
+                        /[^a-z0-9]+/g,
+                        " "
+                    )
+                    .trim()
+                ]
+                .join("|");
+
+
+            if (
+                usados.has(
+                    clave
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            usados.add(
+                clave
+            );
+
+            resultado.push(
+                libro
+            );
+
+        }
+    );
+
+
+    return resultado;
 
 }
 
@@ -807,7 +945,8 @@ function calcularPuntosBusqueda(
 
 async function buscarLibrosGratis(
     texto,
-    idioma = "es"
+    idioma = "es",
+    limite = 20
 ) {
 
     let url =
@@ -880,9 +1019,18 @@ async function buscarLibrosGratis(
     }
 
 
+    libros =
+        eliminarLibrosDuplicadosAPI(
+            libros
+        );
+
+
     return libros.slice(
         0,
-        20
+        Math.max(
+            1,
+            Number(limite) || 20
+        )
     );
 
 }
@@ -1819,5 +1967,5 @@ function escaparHTMLAPI(
 
 
 console.log(
-    "✅ API Nere v1.1 · Español predeterminado cargada"
+    "✅ API Nere v1.2 · Idioma estricto y duplicados corregidos"
 );

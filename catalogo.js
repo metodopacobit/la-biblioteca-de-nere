@@ -1,7 +1,7 @@
 /* ===================================================== */
 /* LA BIBLIOTECA DE NERE                                */
-/* CATALOGO.JS · v1.1.2                                 */
-/* Catálogo estable + Gutenberg cacheado                 */
+/* CATALOGO.JS · v1.2                                   */
+/* Catálogo estable + control infantil por edad          */
 /* ===================================================== */
 
 
@@ -428,6 +428,233 @@ const PALABRAS_CATEGORIA_GRATIS = {
         "fable",
         "fables"
 
+    ]
+
+};
+
+
+/* ===================================================== */
+/* CONTROL DE CONTENIDO POR SECCIÓN Y EDAD               */
+/* ===================================================== */
+
+const MARCADORES_INFANTILES_NERE = [
+
+    "children",
+    "children's",
+    "child readers",
+    "juvenile fiction",
+    "juvenile literature",
+    "juvenile stories",
+    "picture book",
+    "picture books",
+    "fairy tales",
+    "fables",
+    "nursery",
+    "young readers",
+    "cuentos infantiles",
+    "literatura infantil",
+    "libros infantiles",
+    "libros ilustrados",
+    "primeros lectores"
+
+];
+
+
+const MARCADORES_JUVENILES_NERE = [
+
+    "young adult",
+    "young adults",
+    "teen",
+    "teenage",
+    "teenagers",
+    "adolescent",
+    "adolescents",
+    "juvenile fiction",
+    "juvenile literature",
+    "coming of age",
+    "high school",
+    "middle grade",
+    "literatura juvenil",
+    "novela juvenil"
+
+];
+
+
+const MARCADORES_EDAD_NERE = {
+
+    "3-5": [
+
+        "picture book",
+        "picture books",
+        "pictorial works",
+        "preschool",
+        "pre-school",
+        "nursery",
+        "bedtime stories",
+        "read-aloud",
+        "alphabet",
+        "counting",
+        "fairy tales",
+        "fables",
+        "children's poetry",
+        "libros ilustrados",
+        "preescolar",
+        "cuentos para dormir",
+        "primeros lectores"
+
+    ],
+
+
+    "6-8": [
+
+        "beginning readers",
+        "early readers",
+        "young readers",
+        "children's stories",
+        "juvenile fiction",
+        "juvenile literature",
+        "fairy tales",
+        "fables",
+        "animals",
+        "adventure",
+        "school",
+        "chapter books",
+        "primeros lectores",
+        "literatura infantil",
+        "cuentos infantiles"
+
+    ],
+
+
+    "9-11": [
+
+        "middle grade",
+        "juvenile fiction",
+        "juvenile literature",
+        "children's stories",
+        "adventure",
+        "fantasy",
+        "mystery",
+        "detective",
+        "history",
+        "school",
+        "friendship",
+        "literatura infantil",
+        "cuentos infantiles"
+
+    ],
+
+
+    "12-14": [
+
+        "middle grade",
+        "young readers",
+        "juvenile fiction",
+        "juvenile literature",
+        "adventure",
+        "fantasy",
+        "mystery",
+        "school",
+        "friendship",
+        "coming of age",
+        "literatura juvenil",
+        "novela juvenil"
+
+    ],
+
+
+    "15-17": [
+
+        "young adult",
+        "young adults",
+        "teen",
+        "teenage",
+        "teenagers",
+        "adolescent",
+        "adolescents",
+        "high school",
+        "coming of age",
+        "juvenile fiction",
+        "literatura juvenil",
+        "novela juvenil"
+
+    ]
+
+};
+
+
+const MARCADORES_CONTENIDO_ADULTO_NERE = [
+
+    "erotic",
+    "erotica",
+    "pornograph",
+    "sexual abuse",
+    "sexual violence",
+    "rape",
+    "prostitution",
+    "serial killer",
+    "serial murder",
+    "suicide",
+    "torture",
+    "domestic violence",
+    "drug addiction",
+    "alcoholism",
+    "capital punishment"
+
+];
+
+
+const TITULOS_BLOQUEADOS_INFANTIL_NERE = [
+
+    "crime and punishment",
+    "crimen y castigo",
+    "crime et chatiment",
+    "verbrechen und strafe",
+    "delitto e castigo",
+    "crime e castigo",
+    "the scarlet letter",
+    "la letra escarlata",
+    "cuentos de amor",
+    "insolacion",
+    "morrina",
+    "don quijote",
+    "don quixote"
+
+];
+
+
+const CODIGOS_IDIOMA_CATALOGO_NERE = {
+
+    es: [
+        "es",
+        "spa"
+    ],
+
+    en: [
+        "en",
+        "eng"
+    ],
+
+    fr: [
+        "fr",
+        "fre",
+        "fra"
+    ],
+
+    de: [
+        "de",
+        "ger",
+        "deu"
+    ],
+
+    it: [
+        "it",
+        "ita"
+    ],
+
+    pt: [
+        "pt",
+        "por"
     ]
 
 };
@@ -997,7 +1224,8 @@ async function buscarEnCatalogo() {
             libros =
                 await buscarLibrosGratis(
                     consulta,
-                    window.estadoCatalogo.idioma
+                    window.estadoCatalogo.idioma,
+                    60
                 );
 
         }
@@ -1009,7 +1237,8 @@ async function buscarEnCatalogo() {
                     consulta,
                     "todo",
                     window.estadoCatalogo.idioma,
-                    true
+                    true,
+                    60
                 );
 
         }
@@ -1028,6 +1257,12 @@ async function buscarEnCatalogo() {
             return;
 
         }
+
+
+        libros =
+            prepararLibrosCatalogo(
+                libros
+            );
 
 
         aplicarDatosCatalogo(
@@ -1049,7 +1284,7 @@ async function buscarEnCatalogo() {
                     " resultados encontrados"
                 )
 
-                : "No se encontraron libros."
+                : "No encontramos un libro adecuado para esta edad y sección."
 
         );
 
@@ -1135,7 +1370,8 @@ async function cargarSeleccionCatalogo() {
                     consulta,
                     "todo",
                     window.estadoCatalogo.idioma,
-                    false
+                    false,
+                    60
                 );
 
         }
@@ -1154,6 +1390,12 @@ async function cargarSeleccionCatalogo() {
             return;
 
         }
+
+
+        libros =
+            prepararLibrosCatalogo(
+                libros
+            );
 
 
         aplicarDatosCatalogo(
@@ -1230,13 +1472,35 @@ async function obtenerGratisCategoria() {
         window.estadoCatalogo.tipo;
 
 
+    const edad =
+        window.estadoCatalogo.edad;
+
+
+    /*
+       Primero se excluye todo libro que no tenga
+       señales claras de pertenecer a la sección.
+       En Infantil y Juvenil nunca se completa con
+       obras populares sin clasificar.
+    */
+
+    const compatibles =
+        todos.filter(
+            libro =>
+                libroCompatibleConSeccion(
+                    libro,
+                    tipo,
+                    edad
+                )
+        );
+
+
     /*
        Calculamos puntuación local.
        Ya no dependemos de topic= de Gutenberg.
     */
 
     const puntuados =
-        todos
+        compatibles
         .map(
             function(libro) {
 
@@ -1248,7 +1512,8 @@ async function obtenerGratisCategoria() {
                         puntuarLibroGratis(
                             libro,
                             categoria,
-                            tipo
+                            tipo,
+                            edad
                         )
 
                 };
@@ -1307,11 +1572,9 @@ async function obtenerGratisCategoria() {
 
        Si una categoría concreta no tiene
        suficientes libros bien etiquetados,
-       completamos con libros españoles del
-       tipo más compatible.
-
-       Nunca dejamos una sección vacía
-       simplemente por falta de metadatos.
+       completamos únicamente con libros que
+       ya han superado el control de sección
+       y edad.
     */
 
     if (
@@ -1321,13 +1584,6 @@ async function obtenerGratisCategoria() {
 
         const respaldo =
             puntuados
-            .filter(
-                resultado =>
-                    libroCompatibleConSeccion(
-                        resultado.libro,
-                        tipo
-                    )
-            )
             .map(
                 resultado =>
                     resultado.libro
@@ -1348,22 +1604,22 @@ async function obtenerGratisCategoria() {
 
 
     /*
-       Último respaldo.
-
-       Si Gutenberg no tiene metadatos suficientes
-       para esa categoría, mostramos los libros
-       españoles más populares en vez de cero.
+       En Adultos sí podemos usar los títulos
+       populares como último respaldo. En las
+       secciones de menores preferimos mostrar
+       menos resultados antes que mezclar contenido.
     */
 
     if (
-        seleccion.length <
-        6
+        tipo === "adultos"
+        &&
+        seleccion.length < 6
     ) {
 
         seleccion =
             combinarSinDuplicados(
                 seleccion,
-                todos
+                compatibles
             )
             .slice(
                 0,
@@ -1597,7 +1853,8 @@ async function descargarPoolGutenberg(
 function puntuarLibroGratis(
     libro,
     categoria,
-    tipo
+    tipo,
+    edad
 ) {
 
     const texto =
@@ -1630,6 +1887,29 @@ function puntuarLibroGratis(
                     palabra.includes(" ")
                         ? 5
                         : 3;
+
+            }
+
+        }
+    );
+
+
+    const marcadoresEdad =
+        MARCADORES_EDAD_NERE[
+            edad
+        ] || [];
+
+
+    marcadoresEdad.forEach(
+        function(marcador) {
+
+            if (
+                texto.includes(
+                    marcador
+                )
+            ) {
+
+                puntos += 4;
 
             }
 
@@ -1726,7 +2006,8 @@ function puntuarLibroGratis(
 
 function libroCompatibleConSeccion(
     libro,
-    tipo
+    tipo,
+    edad = ""
 ) {
 
     const texto =
@@ -1735,21 +2016,123 @@ function libroCompatibleConSeccion(
         );
 
 
+    const tieneContenidoAdulto =
+        contieneAlguna(
+            texto,
+            MARCADORES_CONTENIDO_ADULTO_NERE
+        );
+
+
     if (
         tipo === "infantil"
     ) {
 
-        return contieneAlguna(
-            texto,
-            [
-                "children",
-                "child",
-                "juvenile",
-                "fairy",
-                "fable",
-                "adventure"
-            ]
-        );
+        if (
+            tieneContenidoAdulto
+            ||
+            tituloBloqueadoParaInfantil(
+                libro
+            )
+        ) {
+
+            return false;
+
+        }
+
+
+        const esInfantil =
+            contieneAlguna(
+                texto,
+                MARCADORES_INFANTILES_NERE
+            );
+
+
+        if (!esInfantil) {
+
+            return false;
+
+        }
+
+
+        const marcadoresEdad =
+            MARCADORES_EDAD_NERE[
+                edad
+            ] || [];
+
+
+        if (
+            edad === "3-5"
+        ) {
+
+            return (
+                contieneAlguna(
+                    texto,
+                    marcadoresEdad
+                )
+                &&
+                !contieneAlguna(
+                    texto,
+                    [
+                        "young adult",
+                        "teen",
+                        "middle grade",
+                        "chapter books"
+                    ]
+                )
+            );
+
+        }
+
+
+        if (
+            edad === "6-8"
+        ) {
+
+            return (
+                contieneAlguna(
+                    texto,
+                    marcadoresEdad
+                )
+                &&
+                !contieneAlguna(
+                    texto,
+                    [
+                        "young adult",
+                        "teenage",
+                        "high school"
+                    ]
+                )
+            );
+
+        }
+
+
+        if (
+            edad === "9-11"
+        ) {
+
+            return (
+                contieneAlguna(
+                    texto,
+                    marcadoresEdad
+                )
+                &&
+                !contieneAlguna(
+                    texto,
+                    [
+                        "preschool",
+                        "pre-school",
+                        "nursery rhymes",
+                        "alphabet books",
+                        "counting books"
+                    ]
+                )
+            );
+
+        }
+
+
+        return esInfantil;
 
     }
 
@@ -1758,15 +2141,42 @@ function libroCompatibleConSeccion(
         tipo === "juvenil"
     ) {
 
-        return contieneAlguna(
-            texto,
-            [
-                "juvenile",
-                "adventure",
-                "fantasy",
-                "mystery",
-                "young"
-            ]
+        if (
+            tieneContenidoAdulto
+        ) {
+
+            return false;
+
+        }
+
+
+        const esJuvenil =
+            contieneAlguna(
+                texto,
+                MARCADORES_JUVENILES_NERE
+            );
+
+
+        if (!esJuvenil) {
+
+            return false;
+
+        }
+
+
+        const marcadoresEdad =
+            MARCADORES_EDAD_NERE[
+                edad
+            ] || [];
+
+
+        return (
+            !marcadoresEdad.length
+            ||
+            contieneAlguna(
+                texto,
+                marcadoresEdad
+            )
         );
 
     }
@@ -1776,8 +2186,135 @@ function libroCompatibleConSeccion(
         texto,
         [
             "picture books",
-            "nursery"
+            "nursery",
+            "preschool",
+            "pre-school",
+            "children's picture books"
         ]
+    );
+
+}
+
+
+/* ===================================================== */
+/* PREPARAR RESULTADOS DEL CATÁLOGO                      */
+/* ===================================================== */
+
+function prepararLibrosCatalogo(
+    libros
+) {
+
+    const tipo =
+        window.estadoCatalogo.tipo;
+
+
+    const edad =
+        window.estadoCatalogo.edad;
+
+
+    const idioma =
+        window.estadoCatalogo.idioma;
+
+
+    return combinarSinDuplicados(
+        [],
+        libros || []
+    )
+    .filter(
+        libro =>
+            libroTieneIdiomaCatalogo(
+                libro,
+                idioma
+            )
+    )
+    .filter(
+        libro =>
+            libroCompatibleConSeccion(
+                libro,
+                tipo,
+                edad
+            )
+    )
+    .slice(
+        0,
+        20
+    );
+
+}
+
+
+/* ===================================================== */
+/* IDIOMA EXACTO                                        */
+/* ===================================================== */
+
+function libroTieneIdiomaCatalogo(
+    libro,
+    idioma
+) {
+
+    if (
+        !idioma ||
+        idioma === "todos"
+    ) {
+
+        return true;
+
+    }
+
+
+    const permitidos =
+        CODIGOS_IDIOMA_CATALOGO_NERE[
+            idioma
+        ] || [
+            idioma
+        ];
+
+
+    const idiomasLibro =
+        Array.isArray(
+            libro.idiomas
+        )
+
+            ? libro.idiomas.map(
+                codigo =>
+                    String(codigo)
+                    .toLowerCase()
+                    .trim()
+            )
+
+            : [];
+
+
+    return permitidos.some(
+        codigo =>
+            idiomasLibro.includes(
+                codigo
+            )
+    );
+
+}
+
+
+/* ===================================================== */
+/* TÍTULOS NO INFANTILES                                */
+/* ===================================================== */
+
+function tituloBloqueadoParaInfantil(
+    libro
+) {
+
+    const titulo =
+        normalizarTextoCatalogo(
+            libro &&
+            libro.titulo
+        );
+
+
+    return TITULOS_BLOQUEADOS_INFANTIL_NERE.some(
+        bloqueado =>
+            titulo.includes(
+                bloqueado
+            )
     );
 
 }
@@ -1791,22 +2328,35 @@ function obtenerTextoClasificacion(
     libro
 ) {
 
-    return [
+    return normalizarTextoCatalogo(
+        [
 
-        libro.titulo ||
-        "",
+            libro.titulo ||
+            "",
 
-        libro.autor ||
-        "",
+            libro.autor ||
+            "",
 
-        ...(libro.temas || []),
+            ...(libro.temas || []),
 
-        ...(libro.estanterias || [])
+            ...(libro.estanterias || [])
 
-    ]
+        ]
 
-    .join(" ")
+        .join(" ")
+    );
 
+
+}
+
+
+function normalizarTextoCatalogo(
+    texto
+) {
+
+    return String(
+        texto || ""
+    )
     .normalize(
         "NFD"
     )
@@ -1816,7 +2366,8 @@ function obtenerTextoClasificacion(
         ""
     )
 
-    .toLowerCase();
+    .toLowerCase()
+    .trim();
 
 }
 
@@ -1865,15 +2416,26 @@ function combinarSinDuplicados(
         function(libro) {
 
             const id =
-                String(
-                    libro.gutenbergId ||
-                    libro.key ||
-                    libro.idInterno ||
-                    (
-                        libro.titulo +
+                [
+                    normalizarTextoCatalogo(
+                        libro.titulo
+                    )
+                    .replace(
+                        /[^a-z0-9]+/g,
+                        " "
+                    )
+                    .trim(),
+
+                    normalizarTextoCatalogo(
                         libro.autor
                     )
-                );
+                    .replace(
+                        /[^a-z0-9]+/g,
+                        " "
+                    )
+                    .trim()
+                ]
+                .join("|");
 
 
             if (
@@ -1958,7 +2520,7 @@ function ponerMensajeCatalogo(
     ) {
 
         ponerEstadoCatalogo(
-            "No encontramos libros para esta selección."
+            "No encontramos libros adecuados para esta edad y sección."
         );
 
         return;
@@ -2078,7 +2640,7 @@ function pintarLibrosCatalogo(
                 </span>
 
                 <p>
-                    No encontramos libros para esta selección.
+                    No encontramos libros adecuados para esta edad y sección.
                 </p>
 
             </div>
@@ -2248,5 +2810,5 @@ document.addEventListener(
 
 
 console.log(
-    "✅ Catálogo Nere v1.1.2 · Gutenberg estable cargado"
+    "✅ Catálogo Nere v1.2 · Filtros de edad y contenido activos"
 );
