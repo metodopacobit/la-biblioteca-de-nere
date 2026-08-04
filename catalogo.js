@@ -1,7 +1,7 @@
 /* ===================================================== */
 /* LA BIBLIOTECA DE NERE                                */
-/* CATALOGO.JS · v1.3                                   */
-/* Catálogo de menores revisado + control por edad        */
+/* CATALOGO.JS · v1.4                                   */
+/* Catálogo seguro para todos los libros de menores      */
 /* ===================================================== */
 
 
@@ -1092,6 +1092,88 @@ const CATALOGO_MENORES_GRATUITO_AUTORIZADO_NERE = [
 
 
 const CACHE_MENORES_GRATIS_NERE = {};
+
+
+/* ===================================================== */
+/* CATÁLOGO GENERAL AUTORIZADO PARA MENORES              */
+/* ===================================================== */
+
+/*
+   Open Library mezcla ediciones y metadatos de calidad
+   desigual. Para Infantil y Juvenil solo se muestran
+   títulos revisados también cuando "Solo gratis" está
+   desactivado. Las coincidencias se hacen sobre el título
+   normalizado de la edición en el idioma seleccionado.
+*/
+
+const CATALOGO_MENORES_GENERAL_AUTORIZADO_NERE = [
+    { titulos: ["el monstruo de colores"], idioma: "es", tipos: ["infantil"], edades: ["3-5"], categorias: ["fantasia"] },
+    { titulos: ["a que sabe la luna"], idioma: "es", tipos: ["infantil"], edades: ["3-5"], categorias: ["aventuras", "animales", "fantasia"] },
+    { titulos: ["la pequena oruga glotona"], idioma: "es", tipos: ["infantil"], edades: ["3-5"], categorias: ["animales"] },
+    { titulos: ["elmer"], idioma: "es", tipos: ["infantil"], edades: ["3-5", "6-8"], categorias: ["aventuras", "animales"] },
+    { titulos: ["orejas de mariposa"], idioma: "es", tipos: ["infantil"], edades: ["3-5", "6-8"], categorias: ["fantasia"] },
+    { titulos: ["raton perez"], idioma: "es", tipos: ["infantil"], edades: ["6-8"], categorias: ["aventuras", "fantasia", "animales", "clasicos"] },
+    { titulos: ["isadora moon"], idioma: "es", tipos: ["infantil"], edades: ["6-8", "9-11"], categorias: ["aventuras", "fantasia"] },
+    { titulos: ["anna kadabra"], idioma: "es", tipos: ["infantil"], edades: ["6-8", "9-11"], categorias: ["aventuras", "fantasia", "misterio"] },
+    { titulos: ["geronimo stilton"], idioma: "es", tipos: ["infantil"], edades: ["6-8", "9-11"], categorias: ["aventuras", "misterio", "animales"] },
+    { titulos: ["superpatata"], idioma: "es", tipos: ["infantil"], edades: ["6-8", "9-11"], categorias: ["aventuras", "fantasia"] },
+    { titulos: ["los futbolisimos"], idioma: "es", tipos: ["infantil"], edades: ["9-11"], categorias: ["aventuras", "misterio"] },
+    { titulos: ["matilda"], idioma: "es", tipos: ["infantil"], edades: ["9-11"], categorias: ["aventuras", "fantasia", "clasicos"] },
+    { titulos: ["charlie y la fabrica de chocolate"], idioma: "es", tipos: ["infantil"], edades: ["9-11"], categorias: ["aventuras", "fantasia", "clasicos"] },
+    { titulos: ["alicia en el pais de las maravillas"], idioma: "es", tipos: ["infantil"], edades: ["9-11"], categorias: ["aventuras", "fantasia", "clasicos"] },
+    { titulos: ["el maravilloso mago de oz", "el mago de oz"], idioma: "es", tipos: ["infantil"], edades: ["9-11"], categorias: ["aventuras", "fantasia", "clasicos"] },
+    { titulos: ["el libro de la selva", "el libro de las tierras virgenes"], idioma: "es", tipos: ["infantil"], edades: ["9-11"], categorias: ["aventuras", "animales", "clasicos"] },
+    { titulos: ["harry potter"], idioma: "es", tipos: ["infantil", "juvenil"], edades: ["9-11", "12-14"], categorias: ["aventuras", "fantasia", "misterio"] },
+    { titulos: ["percy jackson"], idioma: "es", tipos: ["juvenil"], edades: ["12-14", "15-17"], categorias: ["aventuras", "fantasia", "misterio"] },
+    { titulos: ["el hobbit"], idioma: "es", tipos: ["juvenil"], edades: ["12-14", "15-17"], categorias: ["aventuras", "fantasia", "clasicos"] },
+    { titulos: ["la historia interminable"], idioma: "es", tipos: ["juvenil"], edades: ["12-14", "15-17"], categorias: ["aventuras", "fantasia", "clasicos"] },
+    { titulos: ["robinson crusoe"], idioma: "es", tipos: ["juvenil"], edades: ["12-14", "15-17"], categorias: ["aventuras", "clasicos"] },
+    { titulos: ["la isla del tesoro"], idioma: "es", tipos: ["juvenil"], edades: ["12-14", "15-17"], categorias: ["aventuras", "clasicos"] },
+    { titulos: ["los juegos del hambre"], idioma: "es", tipos: ["juvenil"], edades: ["15-17"], categorias: ["aventuras", "fantasia"] },
+    { titulos: ["divergente"], idioma: "es", tipos: ["juvenil"], edades: ["15-17"], categorias: ["aventuras", "fantasia"] },
+    { titulos: ["el corredor del laberinto"], idioma: "es", tipos: ["juvenil"], edades: ["15-17"], categorias: ["aventuras", "misterio"] }
+];
+
+
+function obtenerFichaMenorGeneral(libro, idioma) {
+    const titulo = normalizarTextoCatalogo(libro && libro.titulo);
+
+    if (!titulo) {
+        return null;
+    }
+
+    return CATALOGO_MENORES_GENERAL_AUTORIZADO_NERE.find(
+        ficha =>
+            (idioma === "todos" || ficha.idioma === idioma)
+            && ficha.titulos.some(
+                autorizado =>
+                    titulo === autorizado
+                    || titulo.startsWith(autorizado + ":")
+                    || titulo.startsWith(autorizado + " ")
+            )
+    ) || null;
+}
+
+
+function libroAutorizadoParaMenoresGeneral(
+    libro,
+    tipo,
+    edad = "",
+    categoria = "",
+    idioma = "todos"
+) {
+    const ficha = obtenerFichaMenorGeneral(libro, idioma);
+
+    if (!ficha) {
+        return false;
+    }
+
+    return (
+        (!tipo || ficha.tipos.includes(tipo))
+        && (!edad || ficha.edades.includes(edad))
+        && (!categoria || ficha.categorias.includes(categoria))
+    );
+}
 
 
 /* ===================================================== */
@@ -2711,6 +2793,23 @@ function libroCompatibleConSeccion(
         obtenerTextoClasificacion(
             libro
         );
+
+
+    if (
+        libro
+        && !libro.gratis
+        && (tipo === "infantil" || tipo === "juvenil")
+    ) {
+
+        return libroAutorizadoParaMenoresGeneral(
+            libro,
+            tipo,
+            edad,
+            window.estadoCatalogo.categoria,
+            window.estadoCatalogo.idioma
+        );
+
+    }
 
 
     if (
