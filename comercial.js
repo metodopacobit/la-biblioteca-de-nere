@@ -1,21 +1,18 @@
 /* =====================================================
    LA BIBLIOTECA DE NERE
-   COMERCIAL.JS · v1.2
-   Casa del Libro
+   COMERCIAL.JS · v1.5
+   Casa del Libro · Awin
 ===================================================== */
 
 
-/*
-   En esta primera fase todavía no tenemos
-   acceso a los enlaces reales de Casa del Libro.
+const AWIN_ANUNCIANTE_CASA_NERE =
+    "21491";
 
-   Cuando Awin apruebe la cuenta, este módulo
-   será el encargado de gestionar:
+const AWIN_AFILIADO_NERE =
+    "3007163";
 
-   - Libro físico
-   - eBook
-   - Audiolibro
-*/
+const BUSCADOR_CASA_NERE =
+    "https://www.casadellibro.com/busqueda-generica?busqueda=";
 
 
 window.estadoComercialNere = {
@@ -52,18 +49,15 @@ function actualizarOpcionesCompra(
         null;
 
 
-    /*
-       En el futuro las ofertas llegarán
-       desde Casa del Libro / Awin.
-    */
-
     const ofertas =
         libro &&
         libro.comercial
 
             ? libro.comercial
 
-            : {};
+            : crearOfertasBusquedaCasa(
+                libro
+            );
 
 
     window.estadoComercialNere.ofertas = {
@@ -113,6 +107,162 @@ function actualizarOpcionesCompra(
 
 
 /* =====================================================
+   BÚSQUEDAS AFILIADAS
+===================================================== */
+
+function crearOfertasBusquedaCasa(
+    libro
+) {
+
+    if (
+        !libro ||
+        !String(
+            libro.titulo ||
+            libro.title ||
+            ""
+        ).trim()
+    ) {
+
+        return {};
+
+    }
+
+
+    return {
+
+        fisico:
+            crearOfertaBusquedaCasa(
+                libro,
+                "fisico"
+            ),
+
+        ebook:
+            crearOfertaBusquedaCasa(
+                libro,
+                "ebook"
+            ),
+
+        audiolibro:
+            crearOfertaBusquedaCasa(
+                libro,
+                "audiolibro"
+            )
+
+    };
+
+}
+
+
+function crearOfertaBusquedaCasa(
+    libro,
+    tipo
+) {
+
+    const titulo =
+        String(
+            libro.titulo ||
+            libro.title ||
+            ""
+        )
+        .replace(
+            /\s+/g,
+            " "
+        )
+        .trim();
+
+
+    const autorOriginal =
+        String(
+            libro.autor ||
+            libro.author ||
+            ""
+        )
+        .replace(
+            /\s+/g,
+            " "
+        )
+        .trim();
+
+
+    const autor =
+        autorOriginal &&
+        !/autor desconocido/i.test(
+            autorOriginal
+        )
+
+            ? autorOriginal
+
+            : "";
+
+
+    const formato = {
+
+        fisico:
+            "",
+
+        ebook:
+            "ebook",
+
+        audiolibro:
+            "audiolibro"
+
+    }[
+        tipo
+    ] || "";
+
+
+    const consulta =
+        [
+            titulo,
+            autor,
+            formato
+        ]
+        .filter(Boolean)
+        .join(" ");
+
+
+    const destino =
+        BUSCADOR_CASA_NERE +
+        encodeURIComponent(
+            consulta
+        );
+
+
+    const urlAfiliada =
+        "https://www.awin1.com/cread.php" +
+        "?awinmid=" +
+        AWIN_ANUNCIANTE_CASA_NERE +
+        "&awinaffid=" +
+        AWIN_AFILIADO_NERE +
+        "&ued=" +
+        encodeURIComponent(
+            destino
+        );
+
+
+    return {
+
+        url:
+            urlAfiliada,
+
+        precio:
+            "",
+
+        disponible:
+            true,
+
+        tienda:
+            "Casa del Libro",
+
+        esBusqueda:
+            true
+
+    };
+
+}
+
+
+/* =====================================================
    NORMALIZAR OFERTA
 ===================================================== */
 
@@ -155,7 +305,12 @@ function normalizarOfertaComercial(
 
         tienda:
             oferta.tienda ||
-            "Casa del Libro"
+            "Casa del Libro",
+
+        esBusqueda:
+            Boolean(
+                oferta.esBusqueda
+            )
 
     };
 
@@ -226,6 +381,15 @@ function actualizarBotonCompra(
 
         }
 
+        else if (
+            oferta.esBusqueda
+        ) {
+
+            texto.textContent =
+                "Buscar · Casa del Libro";
+
+        }
+
         else {
 
             texto.textContent =
@@ -290,9 +454,9 @@ function actualizarMensajeComercial() {
         mensaje.textContent =
             hayOferta
 
-                ? "Opciones disponibles en Casa del Libro."
+                ? "Consulta el precio y la disponibilidad en Casa del Libro."
 
-                : "Integración con Casa del Libro en preparación.";
+                : "No se ha podido preparar la búsqueda en Casa del Libro.";
 
     }
 
@@ -439,5 +603,5 @@ document.addEventListener(
 
 
 console.log(
-    "✅ Comercial Nere v1.2 preparado"
+    "✅ Comercial Nere v1.5 · Awin activo"
 );
