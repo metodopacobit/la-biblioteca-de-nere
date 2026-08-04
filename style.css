@@ -3103,15 +3103,6 @@ button:active {
 }
 
 
-.aviso-afiliado {
-    margin: 7px 2px 0;
-    text-align: center;
-    color: #a397a8;
-    font-size: 10px;
-    line-height: 1.4;
-}
-
-
 @media (min-width: 700px) {
 
     .formatos-compra {
