@@ -1,7 +1,7 @@
 /* =====================================================
    LA BIBLIOTECA DE NERE
-   API.JS · v1.4
-   Open Library + Gutenberg + idiomas
+   API.JS · v1.6
+   Gutenberg gratis + Casa del Libro
 ===================================================== */
 
 const API_OPEN_LIBRARY =
@@ -219,8 +219,22 @@ async function buscarLibros() {
 
 
         if (
-            filtro === "gratis"
+            window.modoBusquedaNere === "casa"
         ) {
+
+            libros =
+                await buscarLibrosCasaNere(
+                    texto,
+                    {
+                        campo: filtro,
+                        idioma: window.idiomaBusquedaNere,
+                        limite: 24
+                    }
+                );
+
+        }
+
+        else {
 
             libros =
                 await buscarLibrosGratis(
@@ -229,19 +243,6 @@ async function buscarLibros() {
                 );
 
         }
-
-        else {
-
-            libros =
-                await buscarOpenLibrarySimple(
-                    texto,
-                    filtro,
-                    window.idiomaBusquedaNere,
-                    true
-                );
-
-        }
-
 
         pintarResultadosBusqueda(
             libros
@@ -258,7 +259,11 @@ async function buscarLibros() {
                         " resultados encontrados"
                     )
 
-                    : "No se encontraron libros.";
+                    : (
+                        window.modoBusquedaNere === "casa"
+                            ? "No encontramos una coincidencia exacta."
+                            : "No se encontraron libros gratuitos."
+                    );
 
         }
 
@@ -275,7 +280,9 @@ async function buscarLibros() {
         if (estado) {
 
             estado.textContent =
-                "❌ No se ha podido realizar la búsqueda.";
+                window.modoBusquedaNere === "casa"
+                    ? "❌ No se ha podido abrir el catálogo de Casa del Libro."
+                    : "❌ No se ha podido realizar la búsqueda gratuita.";
 
         }
 
@@ -1265,6 +1272,20 @@ function pintarResultadosBusqueda(
 
     if (!libros.length) {
 
+        if (
+            window.modoBusquedaNere === "casa"
+            && typeof pintarBusquedaDirectaCasaNere === "function"
+        ) {
+
+            pintarBusquedaDirectaCasaNere(
+                contenedor,
+                consultaCasaActualNere
+            );
+
+            return;
+
+        }
+
         contenedor.innerHTML = `
 
             <div class="estado-vacio">
@@ -1379,6 +1400,30 @@ function crearTarjetaLibroAPI(
 
                 : ""
         }
+
+        ${
+            libro.tiendaCasa
+
+                ? `
+                    <span class="etiqueta-casa">
+                        🛍️ Casa del Libro
+                    </span>
+                `
+
+                : ""
+        }
+
+        ${
+            libro.precioDesde
+
+                ? `
+                    <p class="precio-casa">
+                        ${escaparHTMLAPI(libro.precioDesde)}
+                    </p>
+                `
+
+                : ""
+        }
     `;
 
 
@@ -1415,6 +1460,16 @@ async function completarDatosLibro(
 ) {
 
     if (!libro) {
+
+        return libro;
+
+    }
+
+
+    if (
+        libro.tipo === "casa"
+        || libro.tiendaCasa
+    ) {
 
         return libro;
 
@@ -2053,5 +2108,5 @@ function escaparHTMLAPI(
 
 
 console.log(
-    "✅ API Nere v1.3 · Idioma verificado y duplicados corregidos"
+    "✅ API Nere v1.6 · Gutenberg + Casa del Libro"
 );

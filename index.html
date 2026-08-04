@@ -105,6 +105,26 @@
 
         </div>
 
+        <div class="selector-modo-nere" aria-label="Tipo de búsqueda">
+            <button
+                type="button"
+                class="modo-nere activo"
+                data-modo-nere="gratis"
+                onclick="cambiarModoBusquedaNere('gratis')"
+            >
+                📖 Leer gratis
+            </button>
+
+            <button
+                type="button"
+                class="modo-nere"
+                data-modo-nere="casa"
+                onclick="cambiarModoBusquedaNere('casa')"
+            >
+                🛒 Comprar en Casa del Libro
+            </button>
+        </div>
+
     </div>
 
 
@@ -347,6 +367,26 @@
 
         </div>
 
+        <div class="selector-modo-nere" aria-label="Tipo de búsqueda">
+            <button
+                type="button"
+                class="modo-nere activo"
+                data-modo-nere="gratis"
+                onclick="cambiarModoBusquedaNere('gratis')"
+            >
+                📖 Leer gratis
+            </button>
+
+            <button
+                type="button"
+                class="modo-nere"
+                data-modo-nere="casa"
+                onclick="cambiarModoBusquedaNere('casa')"
+            >
+                🛒 Comprar en Casa del Libro
+            </button>
+        </div>
+
 
         <div class="filtros-busqueda">
 
@@ -372,14 +412,6 @@
                 onclick="cambiarFiltroBusqueda('autor', this)"
             >
                 Autor
-            </button>
-
-            <button
-                class="filtro"
-                data-filtro="gratis"
-                onclick="cambiarFiltroBusqueda('gratis', this)"
-            >
-                🟢 Gratis
             </button>
 
         </div>
@@ -558,24 +590,24 @@
     </div>
 
 
-    <div class="solo-gratis">
+    <div class="selector-modo-nere selector-modo-catalogo" aria-label="Tipo de catálogo">
+        <button
+            type="button"
+            class="modo-nere activo"
+            data-modo-nere="gratis"
+            onclick="cambiarModoBusquedaNere('gratis')"
+        >
+            📖 Leer gratis
+        </button>
 
-        <span>
-            Solo libros gratis
-        </span>
-
-        <label class="switch">
-
-            <input
-                id="solo-gratis"
-                type="checkbox"
-                onchange="actualizarCatalogo()"
-            >
-
-            <span class="slider"></span>
-
-        </label>
-
+        <button
+            type="button"
+            class="modo-nere"
+            data-modo-nere="casa"
+            onclick="cambiarModoBusquedaNere('casa')"
+        >
+            🛒 Casa del Libro
+        </button>
     </div>
 
 
@@ -1102,13 +1134,12 @@
 
 
 
-<script src="api.js?v=1.4"></script>
-<script src="catalogo.js?v=1.4"></script>
-<script src="lector.js"></script>
-<script src="app.js"></script>
-
-<!-- V1.5 · CASA DEL LIBRO / AWIN -->
-<script src="comercial.js?v=1.5"></script>
+<script src="casa.js?v=1.6"></script>
+<script src="api.js?v=1.6"></script>
+<script src="catalogo.js?v=1.6"></script>
+<script src="lector.js?v=1.6"></script>
+<script src="app.js?v=1.6"></script>
+<script src="comercial.js?v=1.6"></script>
 
 
 </body>
