@@ -1,6 +1,6 @@
 /* =====================================================
    LA BIBLIOTECA DE NERE
-   COMERCIAL.JS · v1.5
+   COMERCIAL.JS · v1.6
    Casa del Libro · Awin
 ===================================================== */
 
@@ -575,5 +575,5 @@ document.addEventListener(
 
 
 console.log(
-    "✅ Comercial Nere v1.5 · Awin activo"
+    "✅ Comercial Nere v1.6 · Awin activo"
 );

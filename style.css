@@ -39,6 +39,81 @@
 
 
 /* ===================================================== */
+/* V1.6 · LEER GRATIS / CASA DEL LIBRO                  */
+/* ===================================================== */
+
+.selector-modo-nere {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
+    margin-top: 12px;
+    padding: 5px;
+    border: 1px solid #eadcf0;
+    border-radius: 16px;
+    background: #f7f0f9;
+}
+
+.selector-modo-catalogo {
+    margin: 18px 0 8px;
+}
+
+.modo-nere {
+    min-height: 44px;
+    padding: 9px 12px;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    color: #65596b;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.modo-nere.activo {
+    background: #ffffff;
+    color: #7a2c82;
+    box-shadow: 0 3px 12px rgba(87, 43, 96, 0.13);
+}
+
+.etiqueta-casa {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    margin-top: 8px;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: #f1e6f5;
+    color: #6c2878;
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.precio-casa {
+    margin: 8px 0 0;
+    color: #4c2154;
+    font-size: 0.92rem;
+    font-weight: 800;
+}
+
+.estado-vacio-casa {
+    grid-column: 1 / -1;
+}
+
+.boton-busqueda-casa {
+    width: min(100%, 420px);
+    margin-top: 10px;
+}
+
+@media (max-width: 520px) {
+    .modo-nere {
+        padding: 9px 7px;
+        font-size: 0.84rem;
+    }
+}
+
+
+/* ===================================================== */
 /* RESET                                                */
 /* ===================================================== */
 

@@ -1,7 +1,7 @@
 /* ===================================================== */
 /* LA BIBLIOTECA DE NERE                                */
-/* CATALOGO.JS · v1.4                                   */
-/* Catálogo seguro para todos los libros de menores      */
+/* CATALOGO.JS · v1.6                                   */
+/* Gutenberg gratis + Casa del Libro                    */
 /* ===================================================== */
 
 
@@ -17,7 +17,7 @@ window.estadoCatalogo = {
 
     categoria: "novela",
 
-    soloGratis: false,
+    soloGratis: true,
 
     idioma: "es"
 
@@ -1205,7 +1205,7 @@ function abrirCatalogo(tipo) {
 
 
     window.estadoCatalogo.soloGratis =
-        false;
+        window.modoBusquedaNere !== "casa";
 
 
     if (
@@ -1640,18 +1640,8 @@ function cambiarIdiomaCatalogo(
 /* ===================================================== */
 
 function actualizarCatalogo() {
-
-    const checkbox =
-        document.getElementById(
-            "solo-gratis"
-        );
-
-
     window.estadoCatalogo.soloGratis =
-        Boolean(
-            checkbox &&
-            checkbox.checked
-        );
+        window.modoBusquedaNere !== "casa";
 
 
     recargarCatalogoActual();
@@ -1749,12 +1739,16 @@ async function buscarEnCatalogo() {
         else {
 
             libros =
-                await buscarOpenLibrarySimple(
+                await buscarLibrosCasaNere(
                     consulta,
-                    "todo",
-                    window.estadoCatalogo.idioma,
-                    true,
-                    60
+                    {
+                        campo: "todo",
+                        idioma: window.estadoCatalogo.idioma,
+                        limite: 24,
+                        seccion: window.estadoCatalogo.tipo,
+                        edad: window.estadoCatalogo.edad,
+                        categoria: window.estadoCatalogo.categoria
+                    }
                 );
 
         }
@@ -1800,7 +1794,11 @@ async function buscarEnCatalogo() {
                     " resultados encontrados"
                 )
 
-                : "No encontramos un libro adecuado para esta edad y sección."
+                : (
+                    window.estadoCatalogo.soloGratis
+                        ? "No encontramos un libro gratuito adecuado para esta edad y sección."
+                        : "No encontramos una coincidencia exacta en Casa del Libro."
+                )
 
         );
 
@@ -1825,7 +1823,9 @@ async function buscarEnCatalogo() {
 
 
         ponerEstadoCatalogo(
-            "❌ No se ha podido realizar la búsqueda."
+            window.estadoCatalogo.soloGratis
+                ? "❌ No se ha podido realizar la búsqueda gratuita."
+                : "❌ No se ha podido abrir el catálogo de Casa del Libro."
         );
 
     }
@@ -1866,28 +1866,15 @@ async function cargarSeleccionCatalogo() {
         }
 
         else {
-
-            const configuracion =
-                CATEGORIAS_NERE[
-                    window.estadoCatalogo.categoria
-                ];
-
-
-            const consulta =
-                configuracion[
-                    window.estadoCatalogo.tipo
-                ]
-                ||
-                configuracion.nombre;
-
-
             libros =
-                await buscarOpenLibrarySimple(
-                    consulta,
-                    "todo",
-                    window.estadoCatalogo.idioma,
-                    false,
-                    60
+                await obtenerCatalogoCasaNere(
+                    {
+                        idioma: window.estadoCatalogo.idioma,
+                        limite: 20,
+                        seccion: window.estadoCatalogo.tipo,
+                        edad: window.estadoCatalogo.edad,
+                        categoria: window.estadoCatalogo.categoria
+                    }
                 );
 
         }
@@ -3022,6 +3009,21 @@ function prepararLibrosCatalogo(
     libros
 ) {
 
+    if (
+        window.modoBusquedaNere === "casa"
+    ) {
+
+        return combinarSinDuplicados(
+            [],
+            libros || []
+        )
+        .slice(
+            0,
+            20
+        );
+
+    }
+
     const tipo =
         window.estadoCatalogo.tipo;
 
@@ -3390,7 +3392,9 @@ function ponerMensajeCatalogo(
     ) {
 
         ponerEstadoCatalogo(
-            "No encontramos libros adecuados para esta edad y sección."
+            window.estadoCatalogo.soloGratis
+                ? "No encontramos libros gratuitos adecuados para esta edad y sección."
+                : "No hay una selección disponible de Casa del Libro para este filtro."
         );
 
         return;
@@ -3445,7 +3449,7 @@ function ponerMensajeCatalogo(
     ) {
 
         ponerEstadoCatalogo(
-            "📚 Libros para adultos recomendados"
+            "🛍️ Libros para adultos en Casa del Libro"
         );
 
     }
@@ -3455,7 +3459,7 @@ function ponerMensajeCatalogo(
     ) {
 
         ponerEstadoCatalogo(
-            "🧒 Libros infantiles recomendados"
+            "🛍️ Libros infantiles en Casa del Libro"
         );
 
     }
@@ -3463,7 +3467,7 @@ function ponerMensajeCatalogo(
     else {
 
         ponerEstadoCatalogo(
-            "🧑 Libros juveniles recomendados"
+            "🛍️ Libros juveniles en Casa del Libro"
         );
 
     }
@@ -3500,6 +3504,29 @@ function pintarLibrosCatalogo(
         !libros ||
         !libros.length
     ) {
+
+        const consulta =
+            document.getElementById(
+                "input-busqueda-catalogo"
+            )
+            ?.value
+            .trim();
+
+
+        if (
+            window.modoBusquedaNere === "casa"
+            && consulta
+            && typeof pintarBusquedaDirectaCasaNere === "function"
+        ) {
+
+            pintarBusquedaDirectaCasaNere(
+                contenedor,
+                consulta
+            );
+
+            return;
+
+        }
 
         contenedor.innerHTML = `
 
@@ -3680,5 +3707,5 @@ document.addEventListener(
 
 
 console.log(
-    "✅ Catálogo Nere v1.3 · Menores revisados e idioma verificado"
+    "✅ Catálogo Nere v1.6 · Gutenberg + Casa del Libro"
 );
