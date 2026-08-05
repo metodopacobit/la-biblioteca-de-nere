@@ -1,0 +1,126 @@
+name: Instalar corrección buscador v1.8
+
+on:
+  push:
+    branches:
+      - agent/instala-correccion-buscador-v18
+    paths:
+      - correccion-buscador-v18.js
+
+permissions:
+  contents: write
+
+concurrency:
+  group: instalar-buscador-v18
+  cancel-in-progress: true
+
+jobs:
+  instalar-y-probar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Descargar rama de prueba
+        uses: actions/checkout@v4
+        with:
+          ref: agent/instala-correccion-buscador-v18
+          fetch-depth: 0
+
+      - name: Aplicar cambios controlados
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          index = Path("index.html")
+          contenido = index.read_text(encoding="utf-8")
+          anterior = '<script src="comercial.js?v=1.6"></script>'
+          nuevo = '<script src="correccion-buscador-v18.js?v=1.8"></script>'
+
+          if nuevo not in contenido:
+              if anterior not in contenido:
+                  raise SystemExit("No se encontró comercial.js en index.html")
+              contenido = contenido.replace(anterior, anterior + "\n" + nuevo, 1)
+              index.write_text(contenido, encoding="utf-8")
+
+          Path(".github/workflows/build-v17.yml").unlink(missing_ok=True)
+          Path(".github/workflows/instalar-v18.yml").unlink(missing_ok=True)
+          PY
+
+      - name: Comprobar sintaxis
+        run: node --check correccion-buscador-v18.js
+
+      - name: Probar relevancia del buscador
+        shell: bash
+        run: |
+          node <<'NODE'
+          const assert = require('node:assert/strict');
+
+          global.window = {
+            estadoApp: { filtroBusqueda: 'autor' },
+            normalizarCasaNere(texto) {
+              return String(texto || '')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, ' ')
+                .trim()
+                .replace(/\s+/g, ' ');
+            },
+            tokensCasaNere(texto) {
+              return this.normalizarCasaNere(texto).split(' ').filter(Boolean);
+            },
+            abrirBuscar() {},
+            cambiarModoBusquedaNere() {},
+            buscarLibros() {}
+          };
+
+          global.document = {
+            querySelectorAll() { return []; },
+            querySelector() { return null; },
+            getElementById() { return null; }
+          };
+
+          global.setTimeout = function (fn) { fn(); return 1; };
+
+          require('./correccion-buscador-v18.js');
+
+          const puntuar = window.puntuacionRegistroCasaNere;
+          const registro = (titulo, autor, isbn = '') => [1, titulo, autor, isbn];
+
+          assert.ok(puntuar(registro('Me llamo Goa 12', 'Miriam Tirado'), 'Goa', 'todo') >= 0);
+          assert.equal(puntuar(registro('Otro título', 'Iñaki Bengoa'), 'Goa', 'todo'), -1);
+          assert.equal(puntuar(registro('Otro título', 'Jean Ngoa'), 'Goa', 'todo'), -1);
+          assert.equal(puntuar(registro('Otro título', 'Ana Goaz'), 'Goa', 'todo'), -1);
+          assert.ok(puntuar(registro('Me llamo Goa', 'Miriam Tirado'), 'Me llamo Goa', 'titulo') >= 0);
+          assert.ok(puntuar(registro('Me llamo Goa', 'Miriam Tirado'), 'Miriam Tirado', 'autor') >= 0);
+          assert.equal(window.estadoApp.filtroBusqueda, 'todo');
+
+          console.log('Pruebas v1.8 superadas');
+          NODE
+
+      - name: Verificar instalación
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          contenido = Path("index.html").read_text(encoding="utf-8")
+          etiqueta = '<script src="correccion-buscador-v18.js?v=1.8"></script>'
+          comercial = '<script src="comercial.js?v=1.6"></script>'
+
+          assert contenido.count(etiqueta) == 1
+          assert contenido.index(etiqueta) > contenido.index(comercial)
+          assert not Path(".github/workflows/build-v17.yml").exists()
+          assert not Path(".github/workflows/instalar-v18.yml").exists()
+          print("Instalación verificada")
+          PY
+
+      - name: Guardar corrección en la rama
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Instala y valida la corrección del buscador v1.8"
+          git push origin HEAD:agent/instala-correccion-buscador-v18
