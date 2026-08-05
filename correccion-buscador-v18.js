@@ -83,9 +83,12 @@
   window.detectarIdiomaTituloV19Nere = detectarIdioma;
   window.idiomaCompatibleCasaNere = function (r, idioma) {
     if (!idioma || idioma === "todos") return true;
+    const declarado = String(r?.[9] || "").toLowerCase().trim();
     const detectado = detectarIdioma(r?.[1]);
+    if (detectado && detectado !== "es") return detectado === idioma;
+    if (declarado && declarado !== "es") return declarado === idioma;
     if (detectado) return detectado === idioma;
-    return String(r?.[9] || "").toLowerCase().trim() === idioma;
+    return declarado === idioma;
   };
 
   window.fragmentosDesdeIndiceCasaV17Nere = function (indice, consulta) {
