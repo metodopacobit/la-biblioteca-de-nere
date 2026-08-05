@@ -1,0 +1,55 @@
+name: Generar índice Casa v1.7
+
+on:
+  push:
+    branches:
+      - agent/corrige-busqueda-idioma-portadas-v17
+    paths:
+      - tools/generar_indice_v17.py
+      - casa-v17.js
+      - .github/workflows/build-v17.yml
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: agent/corrige-busqueda-idioma-portadas-v17
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Generar y validar índice
+        run: python tools/generar_indice_v17.py
+
+      - name: Comprobar JavaScript
+        run: |
+          node --check casa-v17.js
+          node --check casa.js
+          node --check api.js
+          node --check catalogo.js
+
+      - name: Guardar archivos generados
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add casa-data-v17 index.html
+          if git diff --cached --quiet; then
+            echo "No hay cambios generados"
+          else
+            git commit -m "Genera índice de búsqueda e idiomas v1.7"
+            git push origin HEAD:agent/corrige-busqueda-idioma-portadas-v17
+          fi
