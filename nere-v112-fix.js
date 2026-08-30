@@ -1,4 +1,4 @@
-/* La Biblioteca de Nere · v1.12 · idioma estricto y compra por ISBN */
+/* La Biblioteca de Nere · v1.12.1 · idioma estricto y compra por ISBN */
 (function () {
   "use strict";
   if (window.NereV112Fix) return;
@@ -95,6 +95,9 @@
     }
 
     const declarado = String(registro?.[9] || "").toLowerCase().trim();
+    // Una declaración extranjera explícita tiene prioridad sobre el grupo ISBN.
+    // Esto evita que una edición catalana con ISBN 97884 se convierta en castellana.
+    if (declarado && declarado !== "es" && Object.prototype.hasOwnProperty.call(PERFIL, declarado)) return declarado;
     if (Object.prototype.hasOwnProperty.call(puntos, declarado)) puntos[declarado] += 6;
 
     const porIsbn = idiomaPorISBN(registro?.[3]);
@@ -143,6 +146,7 @@
     return "https://www.awin1.com/cread.php" +
       "?awinmid=" + AWIN_MID +
       "&awinaffid=" + AWIN_AFF +
+      "&fix=1" +
       "&clickref=" + encodeURIComponent("nere-" + tipo) +
       "&ued=" + encodeURIComponent(destino);
   }
@@ -194,5 +198,5 @@
     actualizarMensajeComercial();
   };
 
-  console.log("✅ Nere v1.12 · idioma estricto y enlaces por ISBN activos");
+  console.log("✅ Nere v1.12.1 · idioma estricto y enlaces por ISBN activos");
 })();
